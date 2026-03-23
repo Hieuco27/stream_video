@@ -162,6 +162,18 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     });
   }
 
+  void _togglePlayPause(int index) {
+    final player = _players[index];
+    if (player == null) return;
+    setState(() {
+      if (player.state.playing) {
+        player.pause();
+      } else {
+        player.play();
+      }
+    });
+  }
+
   // ─── Video Tile (1 ô video) ──────────────────────────
 
   Widget _buildVideoTile(int index) {
@@ -189,6 +201,25 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
                       controller: controller,
                       fit: BoxFit.cover, // Ensures video fills the area
                       controls: NoVideoControls, // Tắt control mặc định
+                    ),
+                  ),
+                  // Nút Play/Pause (góc dưới trái)
+                  Positioned(
+                    bottom: 4,
+                    left: 4,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _togglePlayPause(index),
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Icon(
+                          _players[index]?.state.playing ?? false
+                              ? Icons.pause_circle_outline
+                              : Icons.play_circle_outline,
+                          color: Colors.white70,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
                   // Icon Zoom (góc dưới phải)
