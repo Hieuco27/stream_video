@@ -1,0 +1,45 @@
+import 'package:flutter/material.dart';
+import '../../core/app_colors.dart';
+import '../../widget/filter_video_section.dart';
+import '../../core/app_theme.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+class LiveScreen extends StatelessWidget {
+  final bool isActive;
+
+  const LiveScreen({super.key, this.isActive = true});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: AppGradients.primaryButton),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {},
+        ),
+        title: Text(
+          'Xem trực tiếp',
+          style: TextStyle(
+            color: AppColors.textColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 16.sp,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: 10.h),
+              FilterVideoSection(isActive: isActive),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
