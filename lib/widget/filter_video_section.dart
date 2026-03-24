@@ -83,9 +83,9 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     if (_players[i] != null) return;
 
     final url =
-        'http://cameraxe.net:6604/hls/1_020260000062_${i}_1.m3u8?jsession=66C1F6188BD177E83724E6BFEA856591';
+        'http://cameraxe.net:6604/hls/1_020260000062_${i}_1.m3u8?jsession=EF5464C3ECB5D1AC9D21CF7D2D215B9C';
 
-    // Cấu hình player đảm bảo an toàn & chống chập chờn
+    // Cấu hình player
     final player = Player(
       configuration: const PlayerConfiguration(bufferSize: 16 * 1024 * 1024),
     );
@@ -103,12 +103,12 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     // NẾU trong lúc await mà người dùng đổi kênh khác -> _players[i] đã bị huỷ dở -> thoát để tránh lỗi Exception Disposed
     if (!mounted || _players[i] != player) return;
 
-    // Cấu hình http headers nếu cần
+    // Cấu hình http
     player.open(
       Media(
         url,
         httpHeaders: {
-          'Cookie': 'JSESSIONID=66C1F6188BD177E83724E6BFEA856591',
+          'Cookie': 'JSESSIONID=EF5464C3ECB5D1AC9D21CF7D2D215B9C',
           'Referer': 'https://cameraxe.net/',
         },
       ),
@@ -157,6 +157,7 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
 
   Widget _buildVideoTile(int index) {
     return VideoTile(
+      key: ValueKey('channel_$index'),
       index: index,
       player: _players[index],
       controller: _controllers[index],
