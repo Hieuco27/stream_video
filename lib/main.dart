@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/screens/main_screen.dart';
-
 import 'package:media_kit/media_kit.dart';
 
 void main() {

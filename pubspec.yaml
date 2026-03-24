@@ -15,11 +15,20 @@ dependencies:
   media_kit_video: ^1.2.5
   media_kit_libs_video: ^1.0.5
   cupertino_icons: ^1.0.8
+  gal: ^2.3.0
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1 
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/logo.png" 
+  min_sdk_android: 21
 
 flutter:
   uses-material-design: true

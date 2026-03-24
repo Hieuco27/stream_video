@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'filter_bar.dart';
+import 'video_tile.dart';
 
 class FilterVideoSection extends StatefulWidget {
   final bool isActive;
@@ -22,6 +23,7 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
   final List<VideoController?> _controllers = List.filled(4, null);
 
   int? _expandedIndex;
+  int? _selectedIndex;
 
   // Danh sách Kênh có sẵn
   final List<String> _listKenh = [
@@ -41,8 +43,6 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     '43A-222.22',
   ];
 
-  // ─── Lifecycle ───────────────────────────────────────
-
   @override
   void didUpdateWidget(covariant FilterVideoSection oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -58,8 +58,6 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     }
     super.dispose();
   }
-
-  // ─── Video Controls ──────────────────────────────────
 
   void _pauseAllVideos() {
     for (var player in _players) {
@@ -81,48 +79,43 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     }
   }
 
-  void _connectChannel(int i) {
+  Future<void> _connectChannel(int i) async {
     if (_players[i] != null) return;
 
     final url =
-        'http://cameraxe.net:6604/hls/1_020260000062_${i}_1.m3u8?jsession=AE51616B33CE830CA0E37FE2CB9DCD74';
+        'http://cameraxe.net:6604/hls/1_020260000062_${i}_1.m3u8?jsession=66C1F6188BD177E83724E6BFEA856591';
 
-    // Tạo player mới của media_kit
-    final player = Player();
+    // Cấu hình player đảm bảo an toàn & chống chập chờn
+    final player = Player(
+      configuration: const PlayerConfiguration(bufferSize: 16 * 1024 * 1024),
+    );
     final controller = VideoController(player);
 
     _players[i] = player;
     _controllers[i] = controller;
 
-    // Cấu hình http headers nếu cần (media_kit hỗ trợ qua httpHeaders argument)
+    // Tối ưu live stream: chỉ giới hạn đọc trước, TUYỆT ĐỐI KHÔNG tắt cache (cache='no')
+    if (player.platform is NativePlayer) {
+      final native = player.platform as NativePlayer;
+      await native.setProperty('demuxer-readahead-secs', '8');
+    }
+
+    // NẾU trong lúc await mà người dùng đổi kênh khác -> _players[i] đã bị huỷ dở -> thoát để tránh lỗi Exception Disposed
+    if (!mounted || _players[i] != player) return;
+
+    // Cấu hình http headers nếu cần
     player.open(
       Media(
         url,
         httpHeaders: {
-          'Cookie': 'JSESSIONID=AE51616B33CE830CA0E37FE2CB9DCD74',
+          'Cookie': 'JSESSIONID=66C1F6188BD177E83724E6BFEA856591',
           'Referer': 'https://cameraxe.net/',
         },
       ),
       play: true,
     );
 
-    // Xử lý lỗi
-    player.stream.error.listen((event) {
-      // Tự động thử lại sau 3 giây
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) _reconnectChannel(i);
-      });
-    });
-
     setState(() {});
-  }
-
-  /// Huỷ controller cũ và kết nối lại kênh
-  void _reconnectChannel(int i) {
-    _players[i]?.dispose();
-    _players[i] = null;
-    _controllers[i] = null;
-    _connectChannel(i);
   }
 
   void _playDemoVideo() {
@@ -162,118 +155,17 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     });
   }
 
-  void _togglePlayPause(int index) {
-    final player = _players[index];
-    if (player == null) return;
-    setState(() {
-      if (player.state.playing) {
-        player.pause();
-      } else {
-        player.play();
-      }
-    });
-  }
-
-  // ─── Video Tile (1 ô video) ──────────────────────────
-
   Widget _buildVideoTile(int index) {
-    final controller = _controllers[index];
-    final isInitialized = controller != null;
-    final isExpanded = _expandedIndex == index;
-
-    return GestureDetector(
-      onTap: () => _toggleExpand(index),
-      child: Container(
-        margin: const EdgeInsets.all(1),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          border: Border.all(
-            color: isExpanded ? Colors.green : Colors.grey.shade800,
-            width: 1,
-          ),
-        ),
-        child: isInitialized
-            ? Stack(
-                children: [
-                  // Lấp đầy ô bằng video
-                  Positioned.fill(
-                    child: Video(
-                      controller: controller,
-                      fit: BoxFit.cover, // Ensures video fills the area
-                      controls: NoVideoControls, // Tắt control mặc định
-                    ),
-                  ),
-                  // Nút Play/Pause (góc dưới trái)
-                  Positioned(
-                    bottom: 4,
-                    left: 4,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => _togglePlayPause(index),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(
-                          _players[index]?.state.playing ?? false
-                              ? Icons.pause_circle_outline
-                              : Icons.play_circle_outline,
-                          color: Colors.white70,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Icon Zoom (góc dưới phải)
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Icon(
-                      isExpanded ? Icons.fullscreen_exit : Icons.fullscreen,
-                      color: Colors.white70,
-                      size: 20,
-                    ),
-                  ),
-                  // Tên Kênh (góc trên trái)
-                  _buildChannelLabel(index),
-                ],
-              )
-            : Stack(
-                alignment: Alignment.center,
-                children: [
-                  const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white70,
-                      strokeWidth: 2,
-                    ),
-                  ),
-                  _buildChannelLabel(index),
-                ],
-              ),
-      ),
+    return VideoTile(
+      index: index,
+      player: _players[index],
+      controller: _controllers[index],
+      isExpanded: _expandedIndex == index,
+      isSelected: _selectedIndex == index,
+      onTap: () => setState(() => _selectedIndex = index),
+      onDoubleTap: () => _toggleExpand(index),
     );
   }
-
-  Widget _buildChannelLabel(int index) {
-    return Positioned(
-      top: 4,
-      left: 4,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        color: Colors.black54,
-        child: Text(
-          'CH${index + 1}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ─── Video Grid (lưới 2x2) ───────────────────────────
 
   Widget _buildVideoGrid() {
     return Padding(
@@ -311,8 +203,6 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
       ),
     );
   }
-
-  // ─── Build ───────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
