@@ -3,6 +3,7 @@ import 'package:stream_video/screens/gallery/gallery_screen.dart';
 import 'package:stream_video/screens/home/home_image_screen.dart';
 import 'package:stream_video/screens/live/live_screen.dart';
 import 'package:stream_video/screens/playback/playback_screen.dart';
+import 'package:stream_video/presentation/tracking/pages/tracking_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -30,6 +31,7 @@ class _MainScreenState extends State<MainScreen> {
           LiveScreen(isActive: _selectedIndex == 1),
           PlaybackScreen(isActive: _selectedIndex == 2),
           GalleryScreen(isActive: _selectedIndex == 3),
+          const TrackingPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -49,6 +51,7 @@ class _MainScreenState extends State<MainScreen> {
             icon: Icon(Icons.photo_library),
             label: 'Thư viện',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Bản đồ'),
         ],
       ),
     );
