@@ -7,6 +7,7 @@ import '../bloc/tracking_event.dart';
 import '../bloc/tracking_state.dart';
 import '../../../../../core/service_locator.dart';
 import '../widgets/route_info_card.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TrackingPage extends StatelessWidget {
   const TrackingPage({super.key});

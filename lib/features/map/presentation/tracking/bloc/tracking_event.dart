@@ -54,3 +54,12 @@ class SelectDestination extends TrackingEvent {
 class ClearRoute extends TrackingEvent {
   const ClearRoute();
 }
+
+class ResetRoute extends TrackingEvent {
+  const ResetRoute();
+}
+
+// Timer tự động cập nhật route mỗi 5s
+class RefreshRoute extends TrackingEvent {
+  const RefreshRoute();
+}

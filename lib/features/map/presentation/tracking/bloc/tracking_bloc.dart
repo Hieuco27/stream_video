@@ -18,6 +18,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   final GetCurrentLocationUseCase getCurrentLocationUseCase;
   final GetRouteUseCase getRouteUseCase;
   final ReverseGeocodeUseCase reverseGeocodeUseCase;
+  Timer? _routeUpdateTimer;
 
   StreamSubscription? _vehicleSubscription;
 
@@ -35,6 +36,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<LoadCurrentLocation>(_onLoadCurrentLocation);
     on<SelectDestination>(_onSelectDestination);
     on<ClearRoute>(_onClearRoute);
+    on<ResetRoute>(_onResetRoute);
+    on<RefreshRoute>(_onRefreshRoute);
   }
 
   /// Xử lý lấy vị trí GPS hiện tại
@@ -75,21 +78,76 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       final route = results[0] as dynamic;
       final address = results[1] as String;
 
-      emit(state.copyWith(
-        routePoints: route.points,
-        routeLoading: false,
-        routeDistanceKm: route.distanceKm,
-        routeDurationMinutes: route.durationMinutes,
-        destinationAddress: address,
-      ));
+      emit(
+        state.copyWith(
+          routePoints: route.points,
+          routeLoading: false,
+          routeDistanceKm: route.distanceKm,
+          routeDurationMinutes: route.durationMinutes,
+          destinationAddress: address,
+        ),
+      );
+
+      // Bắt đầu timer cập nhật route mỗi 5s
+      _startRouteTimer();
     } catch (e) {
       emit(state.copyWith(routeLoading: false, routeError: e.toString()));
     }
   }
 
-  /// Xóa đường đi
+  /// Xóa đường đi + hủy timer
   void _onClearRoute(ClearRoute event, Emitter<TrackingState> emit) {
+    _stopRouteTimer();
     emit(state.copyWith(clearRoute: true));
+  }
+
+  /// Reset đường đi + hủy timer
+  void _onResetRoute(ResetRoute event, Emitter<TrackingState> emit) {
+    _stopRouteTimer();
+    emit(state.copyWith(clearRoute: true));
+  }
+
+  /// Cập nhật route từ vị trí GPS mới (gọi bởi timer mỗi 5s)
+  Future<void> _onRefreshRoute(
+    RefreshRoute event,
+    Emitter<TrackingState> emit,
+  ) async {
+    if (state.destination == null) return;
+
+    try {
+      // Lấy vị trí GPS mới
+      final newLocation = await getCurrentLocationUseCase();
+
+      // Tính lại route từ vị trí mới
+      final route = await getRouteUseCase(newLocation, state.destination!);
+
+      emit(
+        state.copyWith(
+          currentLocation: newLocation,
+          routePoints: route.points,
+          routeDistanceKm: route.distanceKm,
+          routeDurationMinutes: route.durationMinutes,
+        ),
+      );
+    } catch (_) {
+      // Lỗi refresh không cần hiển thị — giữ route cũ
+    }
+  }
+
+  /// Bắt đầu timer cập nhật route
+  void _startRouteTimer() {
+    _stopRouteTimer();
+    _routeUpdateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!isClosed && state.destination != null) {
+        add(const RefreshRoute());
+      }
+    });
+  }
+
+  /// Hủy timer
+  void _stopRouteTimer() {
+    _routeUpdateTimer?.cancel();
+    _routeUpdateTimer = null;
   }
 
   Future<void> _onStartTracking(
@@ -187,6 +245,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   @override
   Future<void> close() {
     _vehicleSubscription?.cancel();
+    _stopRouteTimer();
     return super.close();
   }
 }
