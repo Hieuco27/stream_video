@@ -1,4 +1,4 @@
-import 'package:stream_video/domain/entities/vehicle.dart';
+import 'package:stream_video/features/map/domain/entities/vehicle.dart';
 
 class VehicleModel extends VehicleEntity {
   VehicleModel({
@@ -32,7 +32,8 @@ class VehicleModel extends VehicleEntity {
     DateTime parsedTime = DateTime.now();
     final timeStr = json['Time']?.toString() ?? '';
     if (timeStr.contains('Date')) {
-      final milliseconds = int.tryParse(timeStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+      final milliseconds =
+          int.tryParse(timeStr.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
       parsedTime = DateTime.fromMillisecondsSinceEpoch(milliseconds);
     }
 

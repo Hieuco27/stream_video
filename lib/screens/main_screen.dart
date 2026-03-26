@@ -3,7 +3,7 @@ import 'package:stream_video/screens/gallery/gallery_screen.dart';
 import 'package:stream_video/screens/home/home_image_screen.dart';
 import 'package:stream_video/screens/live/live_screen.dart';
 import 'package:stream_video/screens/playback/playback_screen.dart';
-import 'package:stream_video/presentation/tracking/pages/tracking_page.dart';
+import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

@@ -83,7 +83,7 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     if (_players[i] != null) return;
 
     final url =
-        'http://cameraxe.net:6604/hls/1_020260000062_${i}_1.m3u8?jsession=EF5464C3ECB5D1AC9D21CF7D2D215B9C';
+        'http://cameraxe.net:6604/hls/1_020260000062_${i}_1.m3u8?jsession=8E0DAFBC0B9372413DD55E315697A481';
 
     // Cấu hình player
     final player = Player(
@@ -108,7 +108,7 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
       Media(
         url,
         httpHeaders: {
-          'Cookie': 'JSESSIONID=EF5464C3ECB5D1AC9D21CF7D2D215B9C',
+          'Cookie': 'JSESSIONID=8E0DAFBC0B9372413DD55E315697A481',
           'Referer': 'https://cameraxe.net/',
         },
       ),

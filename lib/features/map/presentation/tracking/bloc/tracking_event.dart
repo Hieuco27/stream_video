@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:latlong2/latlong.dart';
 import '../../../domain/entities/vehicle.dart';
 
 sealed class TrackingEvent extends Equatable {
@@ -33,4 +34,23 @@ class StopTracking extends TrackingEvent {
   const StopTracking();
   @override
   List<Object?> get props => [];
+}
+
+// Lấy vị trí hiện tại của thiết bị
+class LoadCurrentLocation extends TrackingEvent {
+  const LoadCurrentLocation();
+}
+
+// Chọn điểm đến trên bản đồ → vẽ đường đi
+class SelectDestination extends TrackingEvent {
+  final LatLng destination;
+  const SelectDestination(this.destination);
+
+  @override
+  List<Object?> get props => [destination];
+}
+
+// Xóa đường đi
+class ClearRoute extends TrackingEvent {
+  const ClearRoute();
 }
