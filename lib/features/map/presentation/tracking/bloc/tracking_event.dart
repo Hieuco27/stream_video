@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../domain/entities/vehicle.dart';
+import '../../../domain/entities/map_type.dart';
 
 sealed class TrackingEvent extends Equatable {
   const TrackingEvent();
@@ -41,7 +42,7 @@ class LoadCurrentLocation extends TrackingEvent {
   const LoadCurrentLocation();
 }
 
-// Chọn điểm đến trên bản đồ → vẽ đường đi
+// Chọn điểm đến trên bản đồ -> vẽ đường đi
 class SelectDestination extends TrackingEvent {
   final LatLng destination;
   const SelectDestination(this.destination);
@@ -57,6 +58,15 @@ class ClearRoute extends TrackingEvent {
 
 class ResetRoute extends TrackingEvent {
   const ResetRoute();
+}
+
+// Kiểu map
+class ChangeMapType extends TrackingEvent {
+  final MapType mapType;
+  const ChangeMapType(this.mapType);
+
+  @override
+  List<Object?> get props => [mapType];
 }
 
 // Timer tự động cập nhật route mỗi 5s

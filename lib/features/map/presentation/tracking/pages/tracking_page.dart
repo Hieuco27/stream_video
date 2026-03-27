@@ -8,6 +8,7 @@ import '../bloc/tracking_state.dart';
 import '../../../../../core/service_locator.dart';
 import '../widgets/route_info_card.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../domain/entities/map_type.dart';
 
 class TrackingPage extends StatelessWidget {
   const TrackingPage({super.key});
@@ -94,6 +95,29 @@ class _TrackingViewState extends State<_TrackingView> {
             title: const Text('Bản đồ'),
             backgroundColor: const Color(0xFFAED569),
             actions: [
+              PopupMenuButton<MapType>(
+                icon: const Icon(Icons.layers),
+                tooltip: 'Kiểu bản đồ',
+                onSelected: (type) {
+                  context.read<TrackingBloc>().add(ChangeMapType(type));
+                },
+                itemBuilder: (_) => MapType.values
+                    .map(
+                      (type) => PopupMenuItem(
+                        value: type,
+                        child: Row(
+                          children: [
+                            if (type == state.mapType)
+                              const Icon(Icons.check, size: 18),
+                            const SizedBox(width: 8),
+                            Text(type.label),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+
               // Nút xóa đường đi
               if (state.routePoints.isNotEmpty)
                 IconButton(
@@ -127,8 +151,8 @@ class _TrackingViewState extends State<_TrackingView> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate: state.mapType.url,
+                    subdomains: state.mapType.subdomains,
                     userAgentPackageName: 'com.example.stream_video',
                   ),
                   // Vẽ đường đi

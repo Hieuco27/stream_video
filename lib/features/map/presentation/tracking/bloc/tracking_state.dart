@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../domain/entities/vehicle.dart';
+import '../../../domain/entities/map_type.dart';
 
 enum TrackingStatus { initial, loading, success, failure }
 
@@ -26,6 +27,7 @@ class TrackingState extends Equatable {
   final double? routeDistanceKm;
   final double? routeDurationMinutes;
   final String? destinationAddress;
+  final MapType mapType;
 
   const TrackingState({
     this.status = TrackingStatus.initial,
@@ -43,6 +45,7 @@ class TrackingState extends Equatable {
     this.routeError,
     this.routeDistanceKm,
     this.routeDurationMinutes,
+    this.mapType = MapType.normal,
     this.destinationAddress,
   });
 
@@ -64,6 +67,7 @@ class TrackingState extends Equatable {
     bool clearRoute = false,
     double? routeDistanceKm,
     double? routeDurationMinutes,
+    MapType? mapType,
     String? destinationAddress,
   }) {
     if (clearRoute) {
@@ -76,7 +80,9 @@ class TrackingState extends Equatable {
         markerVersion: bumpVersion ? markerVersion + 1 : markerVersion,
         currentLocation: currentLocation ?? this.currentLocation,
         locationLoading: locationLoading ?? this.locationLoading,
-        locationError: clearLocationError ? null : (locationError ?? this.locationError),
+        locationError: clearLocationError
+            ? null
+            : (locationError ?? this.locationError),
         // Route fields reset
         destination: null,
         routePoints: const [],
@@ -84,6 +90,7 @@ class TrackingState extends Equatable {
         routeError: null,
         routeDistanceKm: null,
         routeDurationMinutes: null,
+        mapType: mapType ?? this.mapType,
         destinationAddress: null,
       );
     }
@@ -97,7 +104,9 @@ class TrackingState extends Equatable {
       markerVersion: bumpVersion ? markerVersion + 1 : markerVersion,
       currentLocation: currentLocation ?? this.currentLocation,
       locationLoading: locationLoading ?? this.locationLoading,
-      locationError: clearLocationError ? null : (locationError ?? this.locationError),
+      locationError: clearLocationError
+          ? null
+          : (locationError ?? this.locationError),
       destination: destination ?? this.destination,
       routePoints: routePoints ?? this.routePoints,
       routeLoading: routeLoading ?? this.routeLoading,
@@ -105,6 +114,7 @@ class TrackingState extends Equatable {
       routeDistanceKm: routeDistanceKm ?? this.routeDistanceKm,
       routeDurationMinutes: routeDurationMinutes ?? this.routeDurationMinutes,
       destinationAddress: destinationAddress ?? this.destinationAddress,
+      mapType: mapType ?? this.mapType,
     );
   }
 
@@ -126,5 +136,6 @@ class TrackingState extends Equatable {
     routeDistanceKm,
     routeDurationMinutes,
     destinationAddress,
+    mapType,
   ];
 }

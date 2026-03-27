@@ -51,9 +51,9 @@ class ServiceLocator {
   late final StreamVehicleUpdatesUseCase streamVehicleUpdatesUseCase =
       StreamVehicleUpdatesUseCase(vehicleRepository);
   late final GetRouteUseCase getRouteUseCase = GetRouteUseCase(routeRepository);
-  late final GeocodingService geocodingService = GeocodingService();
+  late final NominatimService nominatimService = NominatimService();
   late final ReverseGeocodeUseCase reverseGeocodeUseCase =
-      ReverseGeocodeUseCase(geocodingService);
+      ReverseGeocodeUseCase(nominatimService);
 }
 
 /// Truy cập nhanh ServiceLocator

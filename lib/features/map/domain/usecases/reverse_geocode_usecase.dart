@@ -2,11 +2,11 @@ import 'package:latlong2/latlong.dart';
 import '../../../../services/geocoding_service.dart';
 
 class ReverseGeocodeUseCase {
-  final GeocodingService geocodingService;
+  final NominatimService nominatimService;
 
-  ReverseGeocodeUseCase(this.geocodingService);
+  ReverseGeocodeUseCase(this.nominatimService);
 
   Future<String> call(LatLng location) {
-    return geocodingService.getAddress(location);
+    return nominatimService.getAddress(location);
   }
 }

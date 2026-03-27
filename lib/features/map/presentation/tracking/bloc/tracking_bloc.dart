@@ -8,6 +8,7 @@ import '../../../domain/usecases/get_current_location_usecase.dart';
 import '../../../domain/usecases/get_route_usecase.dart';
 import '../../../domain/usecases/reverse_geocode_usecase.dart';
 import '../../../domain/entities/vehicle.dart';
+import '../../../domain/entities/map_type.dart';
 import 'tracking_event.dart';
 import 'tracking_state.dart';
 import 'dart:async';
@@ -38,6 +39,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<ClearRoute>(_onClearRoute);
     on<ResetRoute>(_onResetRoute);
     on<RefreshRoute>(_onRefreshRoute);
+    on<ChangeMapType>(_onChangeMapType);
   }
 
   /// Xử lý lấy vị trí GPS hiện tại
@@ -129,9 +131,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
           routeDurationMinutes: route.durationMinutes,
         ),
       );
-    } catch (_) {
-      // Lỗi refresh không cần hiển thị — giữ route cũ
-    }
+    } catch (_) {}
   }
 
   /// Bắt đầu timer cập nhật route
@@ -194,6 +194,10 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
         ),
       );
     }
+  }
+
+  void _onChangeMapType(ChangeMapType event, Emitter<TrackingState> emit) {
+    emit(state.copyWith(mapType: event.mapType));
   }
 
   void _onUpdateVehiclePositions(
