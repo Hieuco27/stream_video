@@ -10,6 +10,7 @@ import '../features/map/domain/usecases/get_vehicles_usecase.dart';
 import '../features/map/domain/usecases/stream_vehicle_updates_usecase.dart';
 import '../features/map/domain/usecases/get_current_location_usecase.dart';
 import '../features/map/domain/usecases/get_route_usecase.dart';
+import '../features/map/domain/usecases/get_route_history_usecase.dart';
 import '../services/location_service.dart';
 import '../services/directions_service.dart';
 import '../services/geocoding_service.dart';
@@ -51,6 +52,8 @@ class ServiceLocator {
   late final StreamVehicleUpdatesUseCase streamVehicleUpdatesUseCase =
       StreamVehicleUpdatesUseCase(vehicleRepository);
   late final GetRouteUseCase getRouteUseCase = GetRouteUseCase(routeRepository);
+  late final GetRouteHistoryUseCase getRouteHistoryUseCase =
+      GetRouteHistoryUseCase(routeRepository);
   late final NominatimService nominatimService = NominatimService();
   late final ReverseGeocodeUseCase reverseGeocodeUseCase =
       ReverseGeocodeUseCase(nominatimService);

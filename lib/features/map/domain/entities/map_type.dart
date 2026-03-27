@@ -8,9 +8,9 @@ enum MapType {
       case MapType.normal:
         return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
       case MapType.satellite:
-        return 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}';
+        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
       case MapType.terrain:
-        return 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
+        return 'https://tile.opentopomap.org/{z}/{x}/{y}.png';
     }
   }
 
@@ -28,10 +28,9 @@ enum MapType {
   List<String> get subdomains {
     switch (this) {
       case MapType.normal:
-        return [];
       case MapType.satellite:
       case MapType.terrain:
-        return ['mt0', 'mt1', 'mt2', 'mt3'];
+        return [];
     }
   }
 }

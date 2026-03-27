@@ -3,6 +3,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'filter_bar.dart';
 import 'video_tile.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FilterVideoSection extends StatefulWidget {
   final bool isActive;
@@ -155,6 +156,7 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     });
   }
 
+  // video tile
   Widget _buildVideoTile(int index) {
     return VideoTile(
       key: ValueKey('channel_$index'),
@@ -168,11 +170,12 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     );
   }
 
+  // video grid
   Widget _buildVideoGrid() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
       child: Container(
-        height: 300,
+        height: 400,
         width: double.infinity,
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(

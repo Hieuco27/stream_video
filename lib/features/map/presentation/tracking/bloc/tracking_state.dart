@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:stream_video/features/map/domain/entities/route_history_point.dart';
 import '../../../domain/entities/vehicle.dart';
 import '../../../domain/entities/map_type.dart';
 
@@ -29,6 +30,12 @@ class TrackingState extends Equatable {
   final String? destinationAddress;
   final MapType mapType;
 
+  // Route history state
+  final List<RouteHistoryPoint> routeHistory;
+  final RouteHistoryPoint? selectedHistoryPoint;
+  final bool routeHistoryLoading;
+  final String? routeHistoryError;
+
   const TrackingState({
     this.status = TrackingStatus.initial,
     this.vehicles = const [],
@@ -47,6 +54,10 @@ class TrackingState extends Equatable {
     this.routeDurationMinutes,
     this.mapType = MapType.normal,
     this.destinationAddress,
+    this.routeHistory = const [],
+    this.selectedHistoryPoint,
+    this.routeHistoryLoading = false,
+    this.routeHistoryError,
   });
 
   TrackingState copyWith({
@@ -69,6 +80,11 @@ class TrackingState extends Equatable {
     double? routeDurationMinutes,
     MapType? mapType,
     String? destinationAddress,
+    List<RouteHistoryPoint>? routeHistory,
+    RouteHistoryPoint? selectedHistoryPoint,
+    bool? routeHistoryLoading,
+    String? routeHistoryError,
+    bool clearRouteHistory = false,
   }) {
     if (clearRoute) {
       return TrackingState(
@@ -92,6 +108,12 @@ class TrackingState extends Equatable {
         routeDurationMinutes: null,
         mapType: mapType ?? this.mapType,
         destinationAddress: null,
+        routeHistory: clearRouteHistory
+            ? const []
+            : (routeHistory ?? this.routeHistory),
+        selectedHistoryPoint: selectedHistoryPoint ?? this.selectedHistoryPoint,
+        routeHistoryLoading: routeHistoryLoading ?? this.routeHistoryLoading,
+        routeHistoryError: routeHistoryError ?? this.routeHistoryError,
       );
     }
 
@@ -115,6 +137,12 @@ class TrackingState extends Equatable {
       routeDurationMinutes: routeDurationMinutes ?? this.routeDurationMinutes,
       destinationAddress: destinationAddress ?? this.destinationAddress,
       mapType: mapType ?? this.mapType,
+      routeHistory: clearRouteHistory
+          ? const []
+          : (routeHistory ?? this.routeHistory),
+      selectedHistoryPoint: selectedHistoryPoint ?? this.selectedHistoryPoint,
+      routeHistoryLoading: routeHistoryLoading ?? this.routeHistoryLoading,
+      routeHistoryError: routeHistoryError ?? this.routeHistoryError,
     );
   }
 
@@ -137,5 +165,9 @@ class TrackingState extends Equatable {
     routeDurationMinutes,
     destinationAddress,
     mapType,
+    routeHistory,
+    selectedHistoryPoint,
+    routeHistoryLoading,
+    routeHistoryError,
   ];
 }

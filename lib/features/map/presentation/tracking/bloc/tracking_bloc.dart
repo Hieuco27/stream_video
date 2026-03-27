@@ -6,6 +6,7 @@ import '../../../domain/usecases/get_vehicles_usecase.dart';
 import '../../../domain/usecases/stream_vehicle_updates_usecase.dart';
 import '../../../domain/usecases/get_current_location_usecase.dart';
 import '../../../domain/usecases/get_route_usecase.dart';
+import '../../../domain/usecases/get_route_history_usecase.dart';
 import '../../../domain/usecases/reverse_geocode_usecase.dart';
 import '../../../domain/entities/vehicle.dart';
 import '../../../domain/entities/map_type.dart';
@@ -19,6 +20,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   final GetCurrentLocationUseCase getCurrentLocationUseCase;
   final GetRouteUseCase getRouteUseCase;
   final ReverseGeocodeUseCase reverseGeocodeUseCase;
+  final GetRouteHistoryUseCase getRouteHistoryUseCase;
+
   Timer? _routeUpdateTimer;
 
   StreamSubscription? _vehicleSubscription;
@@ -29,6 +32,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     required this.getCurrentLocationUseCase,
     required this.getRouteUseCase,
     required this.reverseGeocodeUseCase,
+    required this.getRouteHistoryUseCase,
   }) : super(const TrackingState()) {
     on<StartTracking>(_onStartTracking);
     on<UpdateVehiclePositions>(_onUpdateVehiclePositions);
@@ -40,6 +44,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<ResetRoute>(_onResetRoute);
     on<RefreshRoute>(_onRefreshRoute);
     on<ChangeMapType>(_onChangeMapType);
+    on<LoadRouteHistory>(_onLoadRouteHistory);
+    on<ClearRouteHistory>(_onClearRouteHistory);
   }
 
   /// Xử lý lấy vị trí GPS hiện tại
@@ -150,6 +156,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     _routeUpdateTimer = null;
   }
 
+  /// Xử lý lấy danh sách xe
   Future<void> _onStartTracking(
     StartTracking event,
     Emitter<TrackingState> emit,
@@ -198,6 +205,61 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
   void _onChangeMapType(ChangeMapType event, Emitter<TrackingState> emit) {
     emit(state.copyWith(mapType: event.mapType));
+  }
+
+  /// Load lịch sử lộ trình
+  Future<void> _onLoadRouteHistory(
+    LoadRouteHistory event,
+    Emitter<TrackingState> emit,
+  ) async {
+    emit(state.copyWith(routeHistoryLoading: true));
+    try {
+      final history = await getRouteHistoryUseCase(
+        event.vehicleId,
+        event.from,
+        event.to,
+      );
+      final gpsPoints = history
+          .map((p) => LatLng(p.latitude, p.longitude))
+          .toList();
+
+      try {
+        // Thử snap lên đường thật
+        final route = await getRouteHistoryUseCase.repository.matchRoute(
+          gpsPoints,
+        );
+        emit(
+          state.copyWith(
+            routeHistory: history,
+            routePoints: route.points,
+            routeHistoryLoading: false,
+          ),
+        );
+      } catch (matchError) {
+        emit(
+          state.copyWith(
+            routeHistory: history,
+            routePoints: gpsPoints,
+            routeHistoryLoading: false,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          routeHistoryLoading: false,
+          routeHistoryError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  /// Xóa lịch sử lộ trình
+  void _onClearRouteHistory(
+    ClearRouteHistory event,
+    Emitter<TrackingState> emit,
+  ) {
+    emit(state.copyWith(clearRouteHistory: true));
   }
 
   void _onUpdateVehiclePositions(

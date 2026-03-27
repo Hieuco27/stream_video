@@ -22,6 +22,7 @@ class TrackingPage extends StatelessWidget {
         getCurrentLocationUseCase: sl.getCurrentLocationUseCase,
         getRouteUseCase: sl.getRouteUseCase,
         reverseGeocodeUseCase: sl.reverseGeocodeUseCase,
+        getRouteHistoryUseCase: sl.getRouteHistoryUseCase,
       )..add(const LoadCurrentLocation()),
       child: const _TrackingView(),
     );
@@ -95,6 +96,29 @@ class _TrackingViewState extends State<_TrackingView> {
             title: const Text('Bản đồ'),
             backgroundColor: const Color(0xFFAED569),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.route),
+                tooltip: 'Lộ trình',
+                onPressed: () {
+                  context.read<TrackingBloc>().add(
+                    LoadRouteHistory(
+                      vehicleId: '51F05669', // mock vehicle ID
+                      from: DateTime(2026, 3, 26, 0, 0),
+                      to: DateTime(2026, 3, 26, 23, 55),
+                    ),
+                  );
+                },
+              ),
+              // Nút xóa lộ trình
+              if (state.routeHistory.isNotEmpty)
+                IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: 'Xóa lộ trình',
+                  onPressed: () {
+                    context.read<TrackingBloc>().add(const ClearRouteHistory());
+                  },
+                ),
+
               PopupMenuButton<MapType>(
                 icon: const Icon(Icons.layers),
                 tooltip: 'Kiểu bản đồ',
@@ -117,7 +141,6 @@ class _TrackingViewState extends State<_TrackingView> {
                     )
                     .toList(),
               ),
-
               // Nút xóa đường đi
               if (state.routePoints.isNotEmpty)
                 IconButton(
@@ -155,6 +178,77 @@ class _TrackingViewState extends State<_TrackingView> {
                     subdomains: state.mapType.subdomains,
                     userAgentPackageName: 'com.example.stream_video',
                   ),
+                  // Vẽ đường lịch sử lộ trình
+                  if (state.routeHistory.isNotEmpty)
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: state.routeHistory
+                              .map(
+                                (point) =>
+                                    LatLng(point.latitude, point.longitude),
+                              )
+                              .toList(),
+                          color: const Color.fromARGB(255, 245, 63, 63),
+                          strokeWidth: 4,
+                        ),
+                      ],
+                    ),
+                  // Marker cho mỗi điểm lịch sử
+                  if (state.routeHistory.isNotEmpty)
+                    MarkerLayer(
+                      markers: state.routeHistory.map((point) {
+                        final isStop = point.speedGPS == 0;
+                        return Marker(
+                          point: LatLng(point.latitude, point.longitude),
+                          width: 40,
+                          height: 40,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Hiện popup chi tiết
+                              showDialog(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: Text(
+                                    '${point.timestamp.hour}:${point.timestamp.minute.toString().padLeft(2, '0')}:${point.timestamp.second.toString().padLeft(2, '0')}',
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Đ/C: ${point.engineOn ? "Bật" : "Tắt"}',
+                                      ),
+                                      Text(
+                                        'V-GPS: ${point.speedGPS.toInt()} km/h',
+                                      ),
+                                      Text(
+                                        'Km tích lũy: ${point.cumulativeKm} km',
+                                      ),
+                                      if (point.address != null)
+                                        Text('Địa chỉ: ${point.address}'),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Đóng'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Icon(
+                              isStop ? Icons.pause_circle : Icons.circle,
+                              color: isStop ? Colors.red : Colors.orange,
+                              size: isStop ? 24 : 16,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+
                   // Vẽ đường đi
                   if (state.routePoints.isNotEmpty)
                     PolylineLayer(
@@ -162,7 +256,7 @@ class _TrackingViewState extends State<_TrackingView> {
                         Polyline(
                           points: state.routePoints,
                           color: Colors.blue,
-                          strokeWidth: 6,
+                          strokeWidth: 4,
                         ),
                       ],
                     ),

@@ -69,6 +69,41 @@ class ChangeMapType extends TrackingEvent {
   List<Object?> get props => [mapType];
 }
 
+// Lấy lịch sử di chuyển
+class LoadRouteHistory extends TrackingEvent {
+  final String vehicleId;
+  final DateTime from;
+  final DateTime to;
+  const LoadRouteHistory({
+    required this.vehicleId,
+    required this.from,
+    required this.to,
+  });
+
+  @override
+  List<Object?> get props => [vehicleId, from, to];
+}
+
+// Tải chi tiết lịch sử di chuyển
+class LoadRouteHistoryDetail extends TrackingEvent {
+  final String vehicleId;
+  final DateTime from;
+  final DateTime to;
+  const LoadRouteHistoryDetail({
+    required this.vehicleId,
+    required this.from,
+    required this.to,
+  });
+
+  @override
+  List<Object?> get props => [vehicleId, from, to];
+}
+
+// Xóa lịch sử di chuyển
+class ClearRouteHistory extends TrackingEvent {
+  const ClearRouteHistory();
+}
+
 // Timer tự động cập nhật route mỗi 5s
 class RefreshRoute extends TrackingEvent {
   const RefreshRoute();

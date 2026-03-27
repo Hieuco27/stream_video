@@ -63,4 +63,47 @@ class DirectionsService {
       throw Exception('Không thể tìm đường đi, vui lòng thử lại');
     }
   }
+
+  Future<RouteEntity> matchRoute(List<LatLng> points) async {
+    final url =
+        'https://router.project-osrm.org/match/v1/driving/'
+        '${points.map((p) => '${p.longitude},${p.latitude}').join(';')}'
+        '?overview=full&geometries=geojson';
+    try {
+      final response = await dio.get(url);
+      final data = response.data;
+
+      if (data['code'] == 'Ok') {
+        final matching = data['matchings'][0];
+
+        // Parse GeoJSON giống getRoute
+        final coordinates = matching['geometry']['coordinates'] as List;
+        final matchedPoints = coordinates
+            .map<LatLng>(
+              (coord) => LatLng(
+                (coord[1] as num).toDouble(),
+                (coord[0] as num).toDouble(),
+              ),
+            )
+            .toList();
+
+        final distanceKm = (matching['distance'] as num).toDouble() / 1000;
+        final durationMinutes = (matching['duration'] as num).toDouble() / 60;
+
+        return RouteEntity(
+          id: 'match_${points.hashCode}',
+          points: matchedPoints,
+          distanceKm: distanceKm,
+          durationMinutes: durationMinutes,
+        );
+      }
+      throw Exception('OSRM match failed');
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout) {
+        throw Exception('Mất kết nối internet, vui lòng thử lại ');
+      }
+      throw Exception('Không thể tìm đường đi, vui lòng thử lại');
+    }
+  }
 }
