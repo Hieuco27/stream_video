@@ -13,6 +13,9 @@ import '../../../domain/entities/map_type.dart';
 import 'tracking_event.dart';
 import 'tracking_state.dart';
 import 'dart:async';
+import 'package:stream_video/core/errors/failure.dart';
+import 'package:stream_video/core/errors/result.dart';
+import 'package:stream_video/features/map/domain/entities/route_entity.dart';
 
 class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   final GetVehiclesUseCase getVehiclesUseCase;
@@ -54,12 +57,21 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     Emitter<TrackingState> emit,
   ) async {
     emit(state.copyWith(locationLoading: true, clearLocationError: true));
-    try {
-      final location = await getCurrentLocationUseCase();
-      emit(state.copyWith(currentLocation: location, locationLoading: false));
-    } catch (e) {
-      emit(state.copyWith(locationLoading: false, locationError: e.toString()));
-    }
+
+    final result = await getCurrentLocationUseCase();
+    result.when(
+      success: (location) {
+        emit(state.copyWith(currentLocation: location, locationLoading: false));
+      },
+      error: (failure) {
+        emit(
+          state.copyWith(
+            locationLoading: false,
+            locationError: failure.message,
+          ),
+        );
+      },
+    );
   }
 
   /// Xử lý chọn điểm đến → lấy đường đi từ OSRM
@@ -76,31 +88,53 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
         routePoints: const [],
       ),
     );
+    final results = await Future.wait([
+      getRouteUseCase(state.currentLocation!, event.destination),
+      reverseGeocodeUseCase(event.destination),
+    ]);
+    final route = results[0] as Result<RouteEntity>;
+    final address = results[1] as String;
+    route.when(
+      success: (route) {
+        emit(
+          state.copyWith(
+            routePoints: route.points,
+            routeLoading: false,
+            routeDistanceKm: route.distanceKm,
+            routeDurationMinutes: route.durationMinutes,
+            destinationAddress: address,
+          ),
+        );
+      },
+      error: (failure) {
+        emit(state.copyWith(routeLoading: false, routeError: failure.message));
+      },
+    );
 
-    try {
-      // Gọi song song: tìm đường + lấy địa chỉ
-      final results = await Future.wait([
-        getRouteUseCase(state.currentLocation!, event.destination),
-        reverseGeocodeUseCase(event.destination),
-      ]);
-      final route = results[0] as dynamic;
-      final address = results[1] as String;
+    // try {
+    //   // Gọi song song: tìm đường + lấy địa chỉ
+    //   final results = await Future.wait([
+    //     getRouteUseCase(state.currentLocation!, event.destination),
+    //     reverseGeocodeUseCase(event.destination),
+    //   ]);
+    //   final route = results[0] as dynamic;
+    //   final address = results[1] as String;
 
-      emit(
-        state.copyWith(
-          routePoints: route.points,
-          routeLoading: false,
-          routeDistanceKm: route.distanceKm,
-          routeDurationMinutes: route.durationMinutes,
-          destinationAddress: address,
-        ),
-      );
+    //   emit(
+    //     state.copyWith(
+    //       routePoints: route.points,
+    //       routeLoading: false,
+    //       routeDistanceKm: route.distanceKm,
+    //       routeDurationMinutes: route.durationMinutes,
+    //       destinationAddress: address,
+    //     ),
+    //   );
 
-      // Bắt đầu timer cập nhật route mỗi 5s
-      _startRouteTimer();
-    } catch (e) {
-      emit(state.copyWith(routeLoading: false, routeError: e.toString()));
-    }
+    //   // Bắt đầu timer cập nhật route mỗi 5s
+    //   _startRouteTimer();
+    // } catch (e) {
+    //   emit(state.copyWith(routeLoading: false, routeError: e.toString()));
+    // }
   }
 
   /// Xóa đường đi + hủy timer
@@ -122,22 +156,20 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   ) async {
     if (state.destination == null) return;
 
-    try {
-      // Lấy vị trí GPS mới
-      final newLocation = await getCurrentLocationUseCase();
-
-      // Tính lại route từ vị trí mới
-      final route = await getRouteUseCase(newLocation, state.destination!);
-
-      emit(
-        state.copyWith(
-          currentLocation: newLocation,
-          routePoints: route.points,
-          routeDistanceKm: route.distanceKm,
-          routeDurationMinutes: route.durationMinutes,
-        ),
-      );
-    } catch (_) {}
+    final result = await getCurrentLocationUseCase();
+    result.when(
+      success: (location) {
+        emit(state.copyWith(currentLocation: location, locationLoading: false));
+      },
+      error: (failure) {
+        emit(
+          state.copyWith(
+            locationLoading: false,
+            locationError: failure.message,
+          ),
+        );
+      },
+    );
   }
 
   /// Bắt đầu timer cập nhật route

@@ -52,9 +52,12 @@ class ServiceLocator {
   late final StreamVehicleUpdatesUseCase streamVehicleUpdatesUseCase =
       StreamVehicleUpdatesUseCase(vehicleRepository);
   late final GetRouteUseCase getRouteUseCase = GetRouteUseCase(routeRepository);
+
   late final GetRouteHistoryUseCase getRouteHistoryUseCase =
       GetRouteHistoryUseCase(routeRepository);
+
   late final NominatimService nominatimService = NominatimService();
+
   late final ReverseGeocodeUseCase reverseGeocodeUseCase =
       ReverseGeocodeUseCase(nominatimService);
 }

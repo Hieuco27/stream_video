@@ -94,7 +94,6 @@ class LoadRouteHistoryDetail extends TrackingEvent {
     required this.from,
     required this.to,
   });
-
   @override
   List<Object?> get props => [vehicleId, from, to];
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:stream_video/core/app_colors.dart';
 import '../bloc/tracking_bloc.dart';
 import '../bloc/tracking_event.dart';
 import '../bloc/tracking_state.dart';
@@ -9,6 +10,8 @@ import '../../../../../core/service_locator.dart';
 import '../widgets/route_info_card.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../domain/entities/map_type.dart';
+import 'dart:math' show atan2, pi;
+import 'package:flutter_compass/flutter_compass.dart';
 
 class TrackingPage extends StatelessWidget {
   const TrackingPage({super.key});
@@ -189,7 +192,7 @@ class _TrackingViewState extends State<_TrackingView> {
                                     LatLng(point.latitude, point.longitude),
                               )
                               .toList(),
-                          color: const Color.fromARGB(255, 245, 63, 63),
+                          color: AppColors.directions,
                           strokeWidth: 4,
                         ),
                       ],
@@ -197,15 +200,28 @@ class _TrackingViewState extends State<_TrackingView> {
                   // Marker cho mỗi điểm lịch sử
                   if (state.routeHistory.isNotEmpty)
                     MarkerLayer(
-                      markers: state.routeHistory.map((point) {
+                      markers: state.routeHistory.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final point = entry.value;
                         final isStop = point.speedGPS == 0;
+
+                        // Tính góc hướng di chuyển
+                        double angle = 0;
+                        if (!isStop && index < state.routeHistory.length - 1) {
+                          final next = state.routeHistory[index + 1];
+                          angle = atan2(
+                            next.longitude - point.longitude,
+                            next.latitude - point.latitude,
+                          );
+                        }
+
                         return Marker(
                           point: LatLng(point.latitude, point.longitude),
                           width: 40,
                           height: 40,
                           child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onTap: () {
-                              // Hiện popup chi tiết
                               showDialog(
                                 context: context,
                                 builder: (_) => AlertDialog(
@@ -239,11 +255,20 @@ class _TrackingViewState extends State<_TrackingView> {
                                 ),
                               );
                             },
-                            child: Icon(
-                              isStop ? Icons.pause_circle : Icons.circle,
-                              color: isStop ? Colors.red : Colors.orange,
-                              size: isStop ? 24 : 16,
-                            ),
+                            child: isStop
+                                ? const Icon(
+                                    Icons.pause_circle,
+                                    color: Colors.red,
+                                    size: 20,
+                                  )
+                                : Transform.rotate(
+                                    angle: angle,
+                                    child: const Icon(
+                                      Icons.navigation,
+                                      color: Colors.orange,
+                                      size: 20,
+                                    ),
+                                  ),
                           ),
                         );
                       }).toList(),
@@ -255,7 +280,9 @@ class _TrackingViewState extends State<_TrackingView> {
                       polylines: [
                         Polyline(
                           points: state.routePoints,
-                          color: Colors.blue,
+                          color: state.routeHistory.isNotEmpty
+                              ? AppColors.directions
+                              : Colors.blue,
                           strokeWidth: 4,
                         ),
                       ],
@@ -266,21 +293,38 @@ class _TrackingViewState extends State<_TrackingView> {
                       markers: [
                         Marker(
                           point: state.currentLocation!,
-                          width: 25,
-                          height: 25,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.3),
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.blue, width: 2),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.location_on,
-                                color: Colors.blue,
-                                size: 14,
-                              ),
-                            ),
+                          width: 50,
+                          height: 50,
+                          child: StreamBuilder<CompassEvent>(
+                            stream: FlutterCompass.events,
+                            builder: (context, snapshot) {
+                              double heading = 0;
+                              if (snapshot.hasData &&
+                                  snapshot.data?.heading != null) {
+                                heading = snapshot.data!.heading!;
+                              }
+
+                              return Transform.rotate(
+                                angle: (heading * pi / 180),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.blue.withValues(alpha: 0.5),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.navigation,
+                                      color: Colors.blue,
+                                      size: 28,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],

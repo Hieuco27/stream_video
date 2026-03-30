@@ -23,7 +23,6 @@ class VehicleRepositoryImpl implements VehicleRepository {
         final cars = await getInitialVehicles();
         yield cars;
       } catch (e) {
-        print("Polling error: $e");
       }
     }
   }

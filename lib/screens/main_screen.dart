@@ -4,6 +4,7 @@ import 'package:stream_video/screens/home/home_image_screen.dart';
 import 'package:stream_video/screens/live/live_screen.dart';
 import 'package:stream_video/screens/playback/playback_screen.dart';
 import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
+import 'package:stream_video/core/app_colors.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -38,7 +39,7 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFFAED569),
+        selectedItemColor: AppColors.headerColor,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Hình ảnh'),

@@ -30,7 +30,6 @@ class VehicleRemoteDataSourceImpl implements VehicleRemoteDataSource {
         throw Exception("Server status error: ${response.statusCode}");
       }
     } catch (e) {
-      print("Network error: $e");
       rethrow;
     }
   }

@@ -6,9 +6,6 @@ class AppGradients {
 
   /// Primary button gradient (orange to light orange)
   static const LinearGradient primaryButton = LinearGradient(
-    colors: <Color>[
-      Color.fromARGB(255, 178, 248, 138),
-      Color.fromARGB(255, 210, 247, 189),
-    ],
+    colors: <Color>[Color(0xFFC2F1A6), Color(0xFFDEF7CF)],
   );
 }

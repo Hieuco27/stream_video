@@ -5,7 +5,8 @@ class AppColors {
 
   static const backgroundColor = Color(0xFF000000);
   static const textColor = Color(0xFFFFFFFF);
-  static const headerColor = Color.fromRGBO(194, 241, 166, 1);
-  static const gradientStart = Color.fromRGBO(194, 241, 166, 1);
-  static const gradientEnd = Color.fromRGBO(222, 247, 207, 1);
+  static const headerColor = Color(0xFFC2F1A6);
+  static const gradientStart = Color(0xFFC2F1A6);
+  static const gradientEnd = Color(0xFFDEF7CF);
+  static const directions = Color(0xFFF53F3F);
 }
