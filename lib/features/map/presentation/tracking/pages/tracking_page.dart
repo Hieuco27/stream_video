@@ -47,7 +47,7 @@ class _TrackingViewState extends State<_TrackingView> {
     return BlocBuilder<TrackingBloc, TrackingState>(
       builder: (context, state) {
         // Loading vị trí
-        if (state.locationLoading) {
+        if (state.location is LocationLoading) {
           return const Scaffold(
             body: Center(
               child: Column(
@@ -63,7 +63,7 @@ class _TrackingViewState extends State<_TrackingView> {
         }
 
         // Lỗi GPS
-        if (state.locationError != null) {
+        if (state.location is LocationError) {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Bản đồ'),
@@ -75,7 +75,10 @@ class _TrackingViewState extends State<_TrackingView> {
                 children: [
                   const Icon(Icons.location_off, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
-                  Text(state.locationError!, textAlign: TextAlign.center),
+                  Text(
+                    (state.location as LocationError).message,
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
@@ -113,7 +116,7 @@ class _TrackingViewState extends State<_TrackingView> {
                 },
               ),
               // Nút xóa lộ trình
-              if (state.routeHistory.isNotEmpty)
+              if (state.routeHistory is RouteHistoryLoaded)
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
                   tooltip: 'Xóa lộ trình',
@@ -145,7 +148,7 @@ class _TrackingViewState extends State<_TrackingView> {
                     .toList(),
               ),
               // Nút xóa đường đi
-              if (state.routePoints.isNotEmpty)
+              if (state.route is RouteLoaded)
                 IconButton(
                   icon: const Icon(Icons.clear),
                   tooltip: 'Xóa đường đi',
@@ -182,107 +185,110 @@ class _TrackingViewState extends State<_TrackingView> {
                     userAgentPackageName: 'com.example.stream_video',
                   ),
                   // Vẽ đường lịch sử lộ trình
-                  if (state.routeHistory.isNotEmpty)
+                  if (state.routeHistory is RouteHistoryLoaded)
                     PolylineLayer(
                       polylines: [
                         Polyline(
-                          points: state.routeHistory
-                              .map(
-                                (point) =>
-                                    LatLng(point.latitude, point.longitude),
-                              )
-                              .toList(),
+                          points: (state.routeHistory as RouteHistoryLoaded)
+                              .routePoints,
                           color: AppColors.directions,
                           strokeWidth: 4,
                         ),
                       ],
                     ),
                   // Marker cho mỗi điểm lịch sử
-                  if (state.routeHistory.isNotEmpty)
+                  if (state.routeHistory is RouteHistoryLoaded)
                     MarkerLayer(
-                      markers: state.routeHistory.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final point = entry.value;
-                        final isStop = point.speedGPS == 0;
+                      markers: (state.routeHistory as RouteHistoryLoaded)
+                          .history
+                          .asMap()
+                          .entries
+                          .map((entry) {
+                            final index = entry.key;
+                            final point = entry.value;
+                            final isStop = point.speedGPS == 0;
 
-                        // Tính góc hướng di chuyển
-                        double angle = 0;
-                        if (!isStop && index < state.routeHistory.length - 1) {
-                          final next = state.routeHistory[index + 1];
-                          angle = atan2(
-                            next.longitude - point.longitude,
-                            next.latitude - point.latitude,
-                          );
-                        }
-
-                        return Marker(
-                          point: LatLng(point.latitude, point.longitude),
-                          width: 40,
-                          height: 40,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => AlertDialog(
-                                  title: Text(
-                                    '${point.timestamp.hour}:${point.timestamp.minute.toString().padLeft(2, '0')}:${point.timestamp.second.toString().padLeft(2, '0')}',
-                                  ),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Đ/C: ${point.engineOn ? "Bật" : "Tắt"}',
-                                      ),
-                                      Text(
-                                        'V-GPS: ${point.speedGPS.toInt()} km/h',
-                                      ),
-                                      Text(
-                                        'Km tích lũy: ${point.cumulativeKm} km',
-                                      ),
-                                      if (point.address != null)
-                                        Text('Địa chỉ: ${point.address}'),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('Đóng'),
-                                    ),
-                                  ],
-                                ),
+                            // Tính góc hướng di chuyển
+                            double angle = 0;
+                            final historyList =
+                                (state.routeHistory as RouteHistoryLoaded)
+                                    .history;
+                            if (!isStop && index < historyList.length - 1) {
+                              final next = historyList[index + 1];
+                              angle = atan2(
+                                next.longitude - point.longitude,
+                                next.latitude - point.latitude,
                               );
-                            },
-                            child: isStop
-                                ? const Icon(
-                                    Icons.pause_circle,
-                                    color: Colors.red,
-                                    size: 20,
-                                  )
-                                : Transform.rotate(
-                                    angle: angle,
-                                    child: const Icon(
-                                      Icons.navigation,
-                                      color: Colors.orange,
-                                      size: 20,
+                            }
+
+                            return Marker(
+                              point: LatLng(point.latitude, point.longitude),
+                              width: 40,
+                              height: 40,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      title: Text(
+                                        '${point.timestamp.hour}:${point.timestamp.minute.toString().padLeft(2, '0')}:${point.timestamp.second.toString().padLeft(2, '0')}',
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Đ/C: ${point.engineOn ? "Bật" : "Tắt"}',
+                                          ),
+                                          Text(
+                                            'V-GPS: ${point.speedGPS.toInt()} km/h',
+                                          ),
+                                          Text(
+                                            'Km tích lũy: ${point.cumulativeKm} km',
+                                          ),
+                                          if (point.address != null)
+                                            Text('Địa chỉ: ${point.address}'),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('Đóng'),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                          ),
-                        );
-                      }).toList(),
+                                  );
+                                },
+                                child: isStop
+                                    ? const Icon(
+                                        Icons.pause_circle,
+                                        color: Colors.red,
+                                        size: 20,
+                                      )
+                                    : Transform.rotate(
+                                        angle: angle,
+                                        child: const Icon(
+                                          Icons.navigation,
+                                          color: Colors.orange,
+                                          size: 20,
+                                        ),
+                                      ),
+                              ),
+                            );
+                          })
+                          .toList(),
                     ),
 
-                  // Vẽ đường đi
-                  if (state.routePoints.isNotEmpty)
+                  // Vẽ đường đi navigation
+                  if (state.route is RouteLoaded)
                     PolylineLayer(
                       polylines: [
                         Polyline(
-                          points: state.routePoints,
-                          color: state.routeHistory.isNotEmpty
-                              ? AppColors.directions
-                              : Colors.blue,
+                          points: (state.route as RouteLoaded).points,
+                          color: Colors.blue,
                           strokeWidth: 4,
                         ),
                       ],
@@ -330,11 +336,11 @@ class _TrackingViewState extends State<_TrackingView> {
                       ],
                     ),
                   // Marker điểm đến (đỏ)
-                  if (state.destination != null)
+                  if (state.route is RouteLoaded)
                     MarkerLayer(
                       markers: [
                         Marker(
-                          point: state.destination!,
+                          point: (state.route as RouteLoaded).destination,
                           width: 40,
                           height: 40,
                           child: const Icon(
@@ -348,7 +354,7 @@ class _TrackingViewState extends State<_TrackingView> {
                 ],
               ),
               // Loading indicator khi đang tải đường đi
-              if (state.routeLoading)
+              if (state.route is RouteLoading)
                 const Positioned(
                   top: 16,
                   left: 0,
@@ -377,21 +383,21 @@ class _TrackingViewState extends State<_TrackingView> {
                   ),
                 ),
               // Thông tin khoảng cách + thời gian + địa chỉ
-              if (state.routePoints.isNotEmpty &&
-                  state.routeDistanceKm != null &&
-                  state.routeDurationMinutes != null)
+              if (state.route is RouteLoaded)
                 Positioned(
                   bottom: 16,
                   left: 16,
                   right: 16,
                   child: RouteInfoCard(
-                    destinationAddress: state.destinationAddress,
-                    distanceKm: state.routeDistanceKm!,
-                    durationMinutes: state.routeDurationMinutes!,
+                    destinationAddress:
+                        (state.route as RouteLoaded).destinationAddress,
+                    distanceKm: (state.route as RouteLoaded).distanceKm,
+                    durationMinutes:
+                        (state.route as RouteLoaded).durationMinutes,
                   ),
                 ),
               // Lỗi tìm đường
-              if (state.routeError != null)
+              if (state.route is RouteError)
                 Positioned(
                   top: 16,
                   left: 16,
@@ -406,7 +412,7 @@ class _TrackingViewState extends State<_TrackingView> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              state.routeError!,
+                              (state.route as RouteError).message,
                               style: const TextStyle(color: Colors.red),
                             ),
                           ),

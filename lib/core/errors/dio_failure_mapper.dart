@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'failure.dart';
 
-
 class DioFailureMapper {
   static Failure map(DioException error) {
     switch (error.type) {
@@ -20,7 +19,9 @@ class DioFailureMapper {
         return const NetworkFailure(message: 'Yêu cầu đã bị hủy');
 
       default:
-        return UnexpectedFailure(message: error.message ?? 'Lỗi không xác định');
+        return UnexpectedFailure(
+          message: error.message ?? 'Lỗi không xác định',
+        );
     }
   }
 
@@ -29,15 +30,24 @@ class DioFailureMapper {
       case 400:
         return const ServerFailure(message: 'Yêu cầu không hợp lệ', code: 400);
       case 401:
-        return const AuthFailure(message: 'Chưa xác thực, vui lòng đăng nhập lại', code: 401);
+        return const AuthFailure(
+          message: 'Chưa xác thực, vui lòng đăng nhập lại',
+          code: 401,
+        );
       case 403:
         return const AuthFailure(message: 'Không có quyền truy cập', code: 403);
       case 404:
-        return const ServerFailure(message: 'Không tìm thấy tài nguyên', code: 404);
+        return const ServerFailure(
+          message: 'Không tìm thấy tài nguyên',
+          code: 404,
+        );
       case 500:
         return const ServerFailure(message: 'Lỗi nội bộ server', code: 500);
       default:
-        return ServerFailure(message: 'Lỗi server: $statusCode', code: statusCode);
+        return ServerFailure(
+          message: 'Lỗi server: $statusCode',
+          code: statusCode,
+        );
     }
   }
 }

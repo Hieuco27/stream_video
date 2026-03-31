@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:stream_video/screens/gallery/gallery_screen.dart';
-import 'package:stream_video/screens/home/home_image_screen.dart';
-import 'package:stream_video/screens/live/live_screen.dart';
-import 'package:stream_video/screens/playback/playback_screen.dart';
-import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/features/home/presentation/home_page.dart';
+import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,6 +13,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
+  /// Chuyển tab – được gọi từ BottomNavBar hoặc từ HomePage callback
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -28,11 +26,17 @@ class _MainScreenState extends State<MainScreen> {
       body: IndexedStack(
         index: _selectedIndex,
         children: [
-          HomeImageScreen(isActive: _selectedIndex == 0),
-          LiveScreen(isActive: _selectedIndex == 1),
-          PlaybackScreen(isActive: _selectedIndex == 2),
-          GalleryScreen(isActive: _selectedIndex == 3),
+          HomePage(onNavigateToTab: _onItemTapped),
+          const Scaffold(
+            body: Center(child: Text('Danh sách xe\n(Chưa phát triển)')),
+          ),
           const TrackingPage(),
+          const Scaffold(
+            body: Center(child: Text('Xem lại\n(Chưa phát triển)')),
+          ),
+          const Scaffold(
+            body: Center(child: Text('Tài khoản\n(Chưa phát triển)')),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -42,17 +46,14 @@ class _MainScreenState extends State<MainScreen> {
         selectedItemColor: AppColors.headerColor,
         unselectedItemColor: Colors.grey,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Hình ảnh'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.videocam),
-            label: 'Trực tiếp',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.replay), label: 'Xem lại'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.photo_library),
-            label: 'Thư viện',
+            icon: Icon(Icons.directions_car),
+            label: 'Danh sách xe',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Bản đồ'),
+          BottomNavigationBarItem(icon: Icon(Icons.replay), label: 'Xem lại'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Tài khoản'),
         ],
       ),
     );

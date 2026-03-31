@@ -31,18 +31,28 @@ class RouteRepositoryImpl implements RouteRepository {
   }
 
   @override
-  Future<List<RouteHistoryPoint>> getRouteHistory(
+  Future<Result<List<RouteHistoryPoint>>> getRouteHistory(
     String vehicleId,
     DateTime from,
     DateTime to,
   ) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    return mockRouteHistory;
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
+      return Result.success(mockRouteHistory);
+    } catch (e) {
+      return Result.error(NetworkFailure(message: e.toString()));
+    }
   }
 
   @override
-  Future<RouteEntity> matchRoute(List<LatLng> points) {
-    return directionsService.matchRoute(points);
+  Future<Result<RouteEntity>> matchRoute(List<LatLng> points) async {
+    try {
+      final route = await directionsService.matchRoute(points);
+      return Result.success(route);
+    } on DioException catch (e) {
+      return Result.error(DioFailureMapper.map(e));
+    } catch (e) {
+      return Result.error(NetworkFailure(message: e.toString()));
+    }
   }
 }

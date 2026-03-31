@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/tracking_bloc.dart';
 import '../bloc/tracking_event.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RouteInfoCard extends StatelessWidget {
   final String? destinationAddress;
@@ -20,7 +21,7 @@ class RouteInfoCard extends StatelessWidget {
     return Card(
       elevation: 4,
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12.sp),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -29,11 +30,11 @@ class RouteInfoCard extends StatelessWidget {
               Row(
                 children: [
                   const Icon(Icons.location_on, color: Colors.red, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
                       destinationAddress!,
-                      style: const TextStyle(fontSize: 13),
+                      style: TextStyle(fontSize: 13.sp),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -55,25 +56,29 @@ class RouteInfoCard extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(Icons.straighten, color: Colors.blue, size: 20),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4.w),
                     Text(
                       '${distanceKm.toStringAsFixed(1)} km',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 15.sp,
                       ),
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, color: Colors.orange, size: 20),
-                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.access_time,
+                      color: Colors.orange,
+                      size: 20,
+                    ),
+                    SizedBox(width: 4.w),
                     Text(
                       '${durationMinutes.toStringAsFixed(0)} phút',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 15.sp,
                       ),
                     ),
                   ],

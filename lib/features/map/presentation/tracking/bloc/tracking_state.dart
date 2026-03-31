@@ -5,169 +5,234 @@ import 'package:stream_video/features/map/domain/entities/route_history_point.da
 import '../../../domain/entities/vehicle.dart';
 import '../../../domain/entities/map_type.dart';
 
-enum TrackingStatus { initial, loading, success, failure }
+// ─── Vị trí ───────────────────────────
+sealed class LocationState extends Equatable {
+  const LocationState();
+}
 
-class TrackingState extends Equatable {
-  final TrackingStatus status;
+class LocationInitial extends LocationState {
+  const LocationInitial();
+  @override
+  List<Object?> get props => [];
+}
+
+class LocationLoading extends LocationState {
+  const LocationLoading();
+  @override
+  List<Object?> get props => [];
+}
+
+class LocationLoaded extends LocationState {
+  final LatLng location;
+  const LocationLoaded(this.location);
+  @override
+  List<Object?> get props => [location];
+}
+
+class LocationError extends LocationState {
+  final String message;
+  const LocationError(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
+// ─── Xe ───────────────────────────────────────────
+sealed class VehicleState extends Equatable {
+  const VehicleState();
+}
+
+class VehicleIdle extends VehicleState {
+  const VehicleIdle();
+  @override
+  List<Object?> get props => [];
+}
+
+class VehicleLoading extends VehicleState {
+  const VehicleLoading();
+  @override
+  List<Object?> get props => [];
+}
+
+class VehicleLoaded extends VehicleState {
   final List<VehicleEntity> vehicles;
-  final VehicleEntity? selectedVehicle;
   final List<Marker> markers;
-  final String? errorMessage;
+  final VehicleEntity? selectedVehicle;
   final int markerVersion;
 
-  // Location state
-  final LatLng? currentLocation;
-  final bool locationLoading;
-  final String? locationError;
-
-  // Route state
-  final LatLng? destination;
-  final List<LatLng> routePoints;
-  final bool routeLoading;
-  final String? routeError;
-  final double? routeDistanceKm;
-  final double? routeDurationMinutes;
-  final String? destinationAddress;
-  final MapType mapType;
-
-  // Route history state
-  final List<RouteHistoryPoint> routeHistory;
-  final RouteHistoryPoint? selectedHistoryPoint;
-  final bool routeHistoryLoading;
-  final String? routeHistoryError;
-
-  const TrackingState({
-    this.status = TrackingStatus.initial,
-    this.vehicles = const [],
+  const VehicleLoaded({
+    required this.vehicles,
+    required this.markers,
     this.selectedVehicle,
-    this.markers = const [],
-    this.errorMessage,
     this.markerVersion = 0,
-    this.currentLocation,
-    this.locationLoading = true,
-    this.locationError,
-    this.destination,
-    this.routePoints = const [],
-    this.routeLoading = false,
-    this.routeError,
-    this.routeDistanceKm,
-    this.routeDurationMinutes,
-    this.mapType = MapType.normal,
-    this.destinationAddress,
-    this.routeHistory = const [],
-    this.selectedHistoryPoint,
-    this.routeHistoryLoading = false,
-    this.routeHistoryError,
   });
 
-  TrackingState copyWith({
-    TrackingStatus? status,
+  VehicleLoaded copyWith({
     List<VehicleEntity>? vehicles,
-    VehicleEntity? selectedVehicle,
     List<Marker>? markers,
-    String? errorMessage,
+    VehicleEntity? selectedVehicle,
     bool bumpVersion = false,
-    LatLng? currentLocation,
-    bool? locationLoading,
-    String? locationError,
-    bool clearLocationError = false,
-    LatLng? destination,
-    List<LatLng>? routePoints,
-    bool? routeLoading,
-    String? routeError,
-    bool clearRoute = false,
-    double? routeDistanceKm,
-    double? routeDurationMinutes,
-    MapType? mapType,
-    String? destinationAddress,
-    List<RouteHistoryPoint>? routeHistory,
-    RouteHistoryPoint? selectedHistoryPoint,
-    bool? routeHistoryLoading,
-    String? routeHistoryError,
-    bool clearRouteHistory = false,
   }) {
-    if (clearRoute) {
-      return TrackingState(
-        status: status ?? this.status,
-        vehicles: vehicles ?? this.vehicles,
-        selectedVehicle: selectedVehicle ?? this.selectedVehicle,
-        markers: markers ?? this.markers,
-        errorMessage: errorMessage ?? this.errorMessage,
-        markerVersion: bumpVersion ? markerVersion + 1 : markerVersion,
-        currentLocation: currentLocation ?? this.currentLocation,
-        locationLoading: locationLoading ?? this.locationLoading,
-        locationError: clearLocationError
-            ? null
-            : (locationError ?? this.locationError),
-        // Route fields reset
-        destination: null,
-        routePoints: const [],
-        routeLoading: false,
-        routeError: null,
-        routeDistanceKm: null,
-        routeDurationMinutes: null,
-        mapType: mapType ?? this.mapType,
-        destinationAddress: null,
-        routeHistory: clearRouteHistory
-            ? const []
-            : (routeHistory ?? this.routeHistory),
-        selectedHistoryPoint: selectedHistoryPoint ?? this.selectedHistoryPoint,
-        routeHistoryLoading: routeHistoryLoading ?? this.routeHistoryLoading,
-        routeHistoryError: routeHistoryError ?? this.routeHistoryError,
-      );
-    }
-
-    return TrackingState(
-      status: status ?? this.status,
+    return VehicleLoaded(
       vehicles: vehicles ?? this.vehicles,
-      selectedVehicle: selectedVehicle ?? this.selectedVehicle,
       markers: markers ?? this.markers,
-      errorMessage: errorMessage ?? this.errorMessage,
+      selectedVehicle: selectedVehicle ?? this.selectedVehicle,
       markerVersion: bumpVersion ? markerVersion + 1 : markerVersion,
-      currentLocation: currentLocation ?? this.currentLocation,
-      locationLoading: locationLoading ?? this.locationLoading,
-      locationError: clearLocationError
-          ? null
-          : (locationError ?? this.locationError),
-      destination: destination ?? this.destination,
-      routePoints: routePoints ?? this.routePoints,
-      routeLoading: routeLoading ?? this.routeLoading,
-      routeError: routeError ?? this.routeError,
-      routeDistanceKm: routeDistanceKm ?? this.routeDistanceKm,
-      routeDurationMinutes: routeDurationMinutes ?? this.routeDurationMinutes,
-      destinationAddress: destinationAddress ?? this.destinationAddress,
-      mapType: mapType ?? this.mapType,
-      routeHistory: clearRouteHistory
-          ? const []
-          : (routeHistory ?? this.routeHistory),
-      selectedHistoryPoint: selectedHistoryPoint ?? this.selectedHistoryPoint,
-      routeHistoryLoading: routeHistoryLoading ?? this.routeHistoryLoading,
-      routeHistoryError: routeHistoryError ?? this.routeHistoryError,
     );
   }
 
   @override
+  List<Object?> get props => [vehicles, markers, selectedVehicle, markerVersion];
+}
+
+class VehicleError extends VehicleState {
+  final String message;
+  const VehicleError(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
+// ─── Đường đi  ─────────────────────────
+sealed class RouteState extends Equatable {
+  const RouteState();
+}
+
+class RouteIdle extends RouteState {
+  const RouteIdle();
+  @override
+  List<Object?> get props => [];
+}
+
+class RouteLoading extends RouteState {
+  final LatLng destination;
+  const RouteLoading(this.destination);
+  @override
+  List<Object?> get props => [destination];
+}
+
+class RouteLoaded extends RouteState {
+  final LatLng destination;
+  final List<LatLng> points;
+  final double distanceKm;
+  final double durationMinutes;
+  final String? destinationAddress;
+
+  const RouteLoaded({
+    required this.destination,
+    required this.points,
+    required this.distanceKm,
+    required this.durationMinutes,
+    this.destinationAddress,
+  });
+
+  @override
   List<Object?> get props => [
-    status,
-    vehicles,
-    selectedVehicle,
-    markers,
-    errorMessage,
-    markerVersion,
-    currentLocation,
-    locationLoading,
-    locationError,
-    destination,
-    routePoints,
-    routeLoading,
-    routeError,
-    routeDistanceKm,
-    routeDurationMinutes,
-    destinationAddress,
-    mapType,
-    routeHistory,
-    selectedHistoryPoint,
-    routeHistoryLoading,
-    routeHistoryError,
+    destination, points, distanceKm, durationMinutes, destinationAddress,
   ];
+}
+
+class RouteError extends RouteState {
+  final String message;
+  const RouteError(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
+// ─── Lịch sử lộ trình ───────────────────────────────
+sealed class RouteHistoryState extends Equatable {
+  const RouteHistoryState();
+}
+
+class RouteHistoryIdle extends RouteHistoryState {
+  const RouteHistoryIdle();
+  @override
+  List<Object?> get props => [];
+}
+
+class RouteHistoryLoading extends RouteHistoryState {
+  const RouteHistoryLoading();
+  @override
+  List<Object?> get props => [];
+}
+
+class RouteHistoryLoaded extends RouteHistoryState {
+  final List<RouteHistoryPoint> history;
+  final List<LatLng> routePoints;
+  final RouteHistoryPoint? selectedPoint;
+
+  const RouteHistoryLoaded({
+    required this.history,
+    required this.routePoints,
+    this.selectedPoint,
+  });
+
+  RouteHistoryLoaded copyWith({
+    List<RouteHistoryPoint>? history,
+    List<LatLng>? routePoints,
+    RouteHistoryPoint? selectedPoint,
+  }) {
+    return RouteHistoryLoaded(
+      history: history ?? this.history,
+      routePoints: routePoints ?? this.routePoints,
+      selectedPoint: selectedPoint ?? this.selectedPoint,
+    );
+  }
+
+  @override
+  List<Object?> get props => [history, routePoints, selectedPoint];
+}
+
+class RouteHistoryError extends RouteHistoryState {
+  final String message;
+  const RouteHistoryError(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
+// ─── State tổng ──────────────────────────────────────
+class TrackingState extends Equatable {
+  final LocationState location;
+  final VehicleState vehicle;
+  final RouteState route;
+  final RouteHistoryState routeHistory;
+  final MapType mapType;
+
+  const TrackingState({
+    this.location = const LocationLoading(),
+    this.vehicle = const VehicleIdle(),
+    this.route = const RouteIdle(),
+    this.routeHistory = const RouteHistoryIdle(),
+    this.mapType = MapType.normal,
+  });
+
+  TrackingState copyWith({
+    LocationState? location,
+    VehicleState? vehicle,
+    RouteState? route,
+    RouteHistoryState? routeHistory,
+    MapType? mapType,
+  }) {
+    return TrackingState(
+      location: location ?? this.location,
+      vehicle: vehicle ?? this.vehicle,
+      route: route ?? this.route,
+      routeHistory: routeHistory ?? this.routeHistory,
+      mapType: mapType ?? this.mapType,
+    );
+  }
+
+  // ─── Getter tiện ích ─────────────────────────────
+  LatLng? get currentLocation =>
+      location is LocationLoaded ? (location as LocationLoaded).location : null;
+
+  List<VehicleEntity> get vehicles =>
+      vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).vehicles : [];
+
+  List<Marker> get markers =>
+      vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).markers : [];
+
+  VehicleEntity? get selectedVehicle =>
+      vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).selectedVehicle : null;
+
+  @override
+  List<Object?> get props => [location, vehicle, route, routeHistory, mapType];
 }

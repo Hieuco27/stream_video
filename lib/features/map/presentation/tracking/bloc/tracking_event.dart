@@ -56,6 +56,7 @@ class ClearRoute extends TrackingEvent {
   const ClearRoute();
 }
 
+
 class ResetRoute extends TrackingEvent {
   const ResetRoute();
 }

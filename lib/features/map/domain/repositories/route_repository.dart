@@ -5,10 +5,10 @@ import '../../../../core/errors/result.dart';
 
 abstract class RouteRepository {
   Future<Result<RouteEntity>> getRoute(LatLng origin, LatLng destination);
-  Future<List<RouteHistoryPoint>> getRouteHistory(
+  Future<Result<List<RouteHistoryPoint>>> getRouteHistory(
     String vehicleId,
     DateTime from,
     DateTime to,
   );
-  Future<RouteEntity> matchRoute(List<LatLng> points);
+  Future<Result<RouteEntity>> matchRoute(List<LatLng> points);
 }

@@ -9,11 +9,10 @@ import '../../../domain/usecases/get_route_usecase.dart';
 import '../../../domain/usecases/get_route_history_usecase.dart';
 import '../../../domain/usecases/reverse_geocode_usecase.dart';
 import '../../../domain/entities/vehicle.dart';
-import '../../../domain/entities/map_type.dart';
+
 import 'tracking_event.dart';
 import 'tracking_state.dart';
 import 'dart:async';
-import 'package:stream_video/core/errors/failure.dart';
 import 'package:stream_video/core/errors/result.dart';
 import 'package:stream_video/features/map/domain/entities/route_entity.dart';
 
@@ -26,7 +25,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   final GetRouteHistoryUseCase getRouteHistoryUseCase;
 
   Timer? _routeUpdateTimer;
-
   StreamSubscription? _vehicleSubscription;
 
   TrackingBloc({
@@ -51,247 +49,127 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<ClearRouteHistory>(_onClearRouteHistory);
   }
 
-  /// Xử lý lấy vị trí GPS hiện tại
+  // Vị trí
   Future<void> _onLoadCurrentLocation(
     LoadCurrentLocation event,
     Emitter<TrackingState> emit,
   ) async {
-    emit(state.copyWith(locationLoading: true, clearLocationError: true));
+    emit(state.copyWith(location: const LocationLoading()));
 
     final result = await getCurrentLocationUseCase();
     result.when(
       success: (location) {
-        emit(state.copyWith(currentLocation: location, locationLoading: false));
+        emit(state.copyWith(location: LocationLoaded(location)));
       },
       error: (failure) {
-        emit(
-          state.copyWith(
-            locationLoading: false,
-            locationError: failure.message,
-          ),
-        );
+        emit(state.copyWith(location: LocationError(failure.message)));
       },
     );
   }
 
-  /// Xử lý chọn điểm đến → lấy đường đi từ OSRM
+  // Đường đi + địa chỉ
   Future<void> _onSelectDestination(
     SelectDestination event,
     Emitter<TrackingState> emit,
   ) async {
     if (state.currentLocation == null) return;
 
-    emit(
-      state.copyWith(
-        destination: event.destination,
-        routeLoading: true,
-        routePoints: const [],
-      ),
-    );
+    emit(state.copyWith(route: RouteLoading(event.destination)));
+
     final results = await Future.wait([
       getRouteUseCase(state.currentLocation!, event.destination),
       reverseGeocodeUseCase(event.destination),
     ]);
-    final route = results[0] as Result<RouteEntity>;
+    final routeResult = results[0] as Result<RouteEntity>;
     final address = results[1] as String;
-    route.when(
+
+    routeResult.when(
       success: (route) {
         emit(
           state.copyWith(
-            routePoints: route.points,
-            routeLoading: false,
-            routeDistanceKm: route.distanceKm,
-            routeDurationMinutes: route.durationMinutes,
-            destinationAddress: address,
+            route: RouteLoaded(
+              destination: event.destination,
+              points: route.points,
+              distanceKm: route.distanceKm,
+              durationMinutes: route.durationMinutes,
+              destinationAddress: address,
+            ),
           ),
         );
+        _startRouteTimer();
       },
       error: (failure) {
-        emit(state.copyWith(routeLoading: false, routeError: failure.message));
+        emit(state.copyWith(route: RouteError(failure.message)));
       },
     );
-
-    // try {
-    //   // Gọi song song: tìm đường + lấy địa chỉ
-    //   final results = await Future.wait([
-    //     getRouteUseCase(state.currentLocation!, event.destination),
-    //     reverseGeocodeUseCase(event.destination),
-    //   ]);
-    //   final route = results[0] as dynamic;
-    //   final address = results[1] as String;
-
-    //   emit(
-    //     state.copyWith(
-    //       routePoints: route.points,
-    //       routeLoading: false,
-    //       routeDistanceKm: route.distanceKm,
-    //       routeDurationMinutes: route.durationMinutes,
-    //       destinationAddress: address,
-    //     ),
-    //   );
-
-    //   // Bắt đầu timer cập nhật route mỗi 5s
-    //   _startRouteTimer();
-    // } catch (e) {
-    //   emit(state.copyWith(routeLoading: false, routeError: e.toString()));
-    // }
   }
 
-  /// Xóa đường đi + hủy timer
   void _onClearRoute(ClearRoute event, Emitter<TrackingState> emit) {
     _stopRouteTimer();
-    emit(state.copyWith(clearRoute: true));
+    emit(state.copyWith(route: const RouteIdle()));
   }
 
-  /// Reset đường đi + hủy timer
   void _onResetRoute(ResetRoute event, Emitter<TrackingState> emit) {
     _stopRouteTimer();
-    emit(state.copyWith(clearRoute: true));
+    emit(state.copyWith(route: const RouteIdle()));
   }
 
-  /// Cập nhật route từ vị trí GPS mới (gọi bởi timer mỗi 5s)
   Future<void> _onRefreshRoute(
     RefreshRoute event,
     Emitter<TrackingState> emit,
   ) async {
-    if (state.destination == null) return;
+    final currentRoute = state.route;
+    if (currentRoute is! RouteLoaded) return;
 
     final result = await getCurrentLocationUseCase();
     result.when(
       success: (location) {
-        emit(state.copyWith(currentLocation: location, locationLoading: false));
+        emit(state.copyWith(location: LocationLoaded(location)));
       },
       error: (failure) {
-        emit(
-          state.copyWith(
-            locationLoading: false,
-            locationError: failure.message,
-          ),
-        );
+        emit(state.copyWith(location: LocationError(failure.message)));
       },
     );
   }
 
-  /// Bắt đầu timer cập nhật route
   void _startRouteTimer() {
     _stopRouteTimer();
     _routeUpdateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (!isClosed && state.destination != null) {
+      if (!isClosed && state.route is RouteLoaded) {
         add(const RefreshRoute());
       }
     });
   }
 
-  /// Hủy timer
   void _stopRouteTimer() {
     _routeUpdateTimer?.cancel();
     _routeUpdateTimer = null;
   }
 
-  /// Xử lý lấy danh sách xe
+  // ─── Xe ───────────────────────────────────────────
+
   Future<void> _onStartTracking(
     StartTracking event,
     Emitter<TrackingState> emit,
   ) async {
     await _vehicleSubscription?.cancel();
-    emit(state.copyWith(status: TrackingStatus.loading));
-    try {
-      final vehicles = await getVehiclesUseCase();
+    emit(state.copyWith(vehicle: const VehicleLoading()));
 
-      if (vehicles.isEmpty) {
-        emit(
-          state.copyWith(
-            status: TrackingStatus.success,
-            vehicles: [],
-            markers: [],
-          ),
-        );
-        return;
-      }
-      final markers = _buildMarkers(vehicles);
+    final vehicles = await getVehiclesUseCase();
+    if (vehicles.isEmpty) {
       emit(
         state.copyWith(
-          status: TrackingStatus.success,
-          vehicles: vehicles,
-          markers: markers,
-          bumpVersion: true,
+          vehicle: const VehicleLoaded(vehicles: [], markers: []),
         ),
       );
-
-      _vehicleSubscription = streamVehicleUpdatesUseCase().listen((
-        updatedVehicles,
-      ) {
-        if (!isClosed) {
-          add(UpdateVehiclePositions(updatedVehicles));
-        }
-      });
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: TrackingStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
+      return;
     }
-  }
-
-  void _onChangeMapType(ChangeMapType event, Emitter<TrackingState> emit) {
-    emit(state.copyWith(mapType: event.mapType));
-  }
-
-  /// Load lịch sử lộ trình
-  Future<void> _onLoadRouteHistory(
-    LoadRouteHistory event,
-    Emitter<TrackingState> emit,
-  ) async {
-    emit(state.copyWith(routeHistoryLoading: true));
-    try {
-      final history = await getRouteHistoryUseCase(
-        event.vehicleId,
-        event.from,
-        event.to,
-      );
-      final gpsPoints = history
-          .map((p) => LatLng(p.latitude, p.longitude))
-          .toList();
-
-      try {
-        // Thử snap lên đường thật
-        final route = await getRouteHistoryUseCase.repository.matchRoute(
-          gpsPoints,
-        );
-        emit(
-          state.copyWith(
-            routeHistory: history,
-            routePoints: route.points,
-            routeHistoryLoading: false,
-          ),
-        );
-      } catch (matchError) {
-        emit(
-          state.copyWith(
-            routeHistory: history,
-            routePoints: gpsPoints,
-            routeHistoryLoading: false,
-          ),
-        );
-      }
-    } catch (e) {
-      emit(
-        state.copyWith(
-          routeHistoryLoading: false,
-          routeHistoryError: e.toString(),
-        ),
-      );
-    }
-  }
-
-  /// Xóa lịch sử lộ trình
-  void _onClearRouteHistory(
-    ClearRouteHistory event,
-    Emitter<TrackingState> emit,
-  ) {
-    emit(state.copyWith(clearRouteHistory: true));
+    final markers = _buildMarkers(vehicles);
+    emit(
+      state.copyWith(
+        vehicle: VehicleLoaded(vehicles: vehicles, markers: markers),
+      ),
+    );
   }
 
   void _onUpdateVehiclePositions(
@@ -299,18 +177,116 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     Emitter<TrackingState> emit,
   ) {
     final markers = _buildMarkers(event.vehicles);
-    emit(
-      state.copyWith(
-        vehicles: event.vehicles,
-        markers: markers,
-        bumpVersion: true,
-      ),
-    );
+    final currentVehicle = state.vehicle;
+    if (currentVehicle is VehicleLoaded) {
+      emit(
+        state.copyWith(
+          vehicle: currentVehicle.copyWith(
+            vehicles: event.vehicles,
+            markers: markers,
+            bumpVersion: true,
+          ),
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          vehicle: VehicleLoaded(vehicles: event.vehicles, markers: markers),
+        ),
+      );
+    }
   }
 
   void _onSelectVehicle(SelectVehicle event, Emitter<TrackingState> emit) {
-    emit(state.copyWith(selectedVehicle: event.vehicle));
+    final currentVehicle = state.vehicle;
+    if (currentVehicle is VehicleLoaded) {
+      emit(
+        state.copyWith(
+          vehicle: currentVehicle.copyWith(selectedVehicle: event.vehicle),
+        ),
+      );
+    }
   }
+
+  // ─── Bản đồ ───────────────────────────────────────
+
+  void _onChangeMapType(ChangeMapType event, Emitter<TrackingState> emit) {
+    emit(state.copyWith(mapType: event.mapType));
+  }
+
+  // ─── Lịch sử lộ trình ─────────────────────────────
+
+  Future<void> _onLoadRouteHistory(
+    LoadRouteHistory event,
+    Emitter<TrackingState> emit,
+  ) async {
+    emit(state.copyWith(routeHistory: const RouteHistoryLoading()));
+
+    final historyResult = await getRouteHistoryUseCase(
+      event.vehicleId,
+      event.from,
+      event.to,
+    );
+    if (historyResult.isError) {
+      emit(
+        state.copyWith(
+          routeHistory: RouteHistoryError(historyResult.failureOrNull!.message),
+        ),
+      );
+      return;
+    }
+    final history = historyResult.dataOrNull!;
+
+    final gpsPoints = history
+        .map((e) => LatLng(e.latitude, e.longitude))
+        .toList();
+
+    final routeResult = await getRouteHistoryUseCase.repository.matchRoute(
+      gpsPoints,
+    );
+    routeResult.when(
+      success: (route) {
+        emit(
+          state.copyWith(
+            routeHistory: RouteHistoryLoaded(
+              history: history,
+              routePoints: route.points,
+            ),
+          ),
+        );
+      },
+      error: (failure) {
+        emit(
+          state.copyWith(
+            routeHistory: RouteHistoryLoaded(
+              history: history,
+              routePoints: gpsPoints,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _onClearRouteHistory(
+    ClearRouteHistory event,
+    Emitter<TrackingState> emit,
+  ) {
+    emit(state.copyWith(routeHistory: const RouteHistoryIdle()));
+  }
+
+  // ─── Dừng theo dõi ────────────────────────────────
+
+  Future<void> _onStopTracking(
+    StopTracking event,
+    Emitter<TrackingState> emit,
+  ) async {
+    await _vehicleSubscription?.cancel();
+    _vehicleSubscription = null;
+    emit(state.copyWith(vehicle: const VehicleIdle()));
+  }
+
+  // ─── Helper ───────────────────────────────────────
 
   List<Marker> _buildMarkers(List<VehicleEntity> vehicles) {
     return vehicles.map((v) => _buildSingleMarker(v)).toList();
@@ -329,15 +305,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
         ),
       ),
     );
-  }
-
-  Future<void> _onStopTracking(
-    StopTracking event,
-    Emitter<TrackingState> emit,
-  ) async {
-    await _vehicleSubscription?.cancel();
-    _vehicleSubscription = null;
-    emit(state.copyWith(status: TrackingStatus.initial));
   }
 
   @override
