@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/app_theme.dart';
 import 'feature_grid_item.dart';
 import 'package:stream_video/screens/camera_main_screen.dart';
+import 'package:stream_video/core/app_theme.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeBody extends StatefulWidget {
   final ValueChanged<int> onNavigateToTab;
@@ -30,45 +33,71 @@ class _HomeBodyState extends State<HomeBody>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // ---- TAB BAR ----
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(25.r),
-          ),
-          child: TabBar(
-            controller: _tabController,
-            indicator: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(25.r),
+    return Container(
+      color: Colors.grey.shade100, // Đặt nền màu xám nhạt ở đây
+      child: Column(
+        children: [
+          // ---- TAB BAR ----
+          Container(
+            height: 35.h,
+            margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(
+                25.r,
+              ), // Thu nhỏ độ bo tương xứng với chiều cao
             ),
-            indicatorSize: TabBarIndicatorSize.tab,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.black54,
-            labelStyle: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
-            dividerColor: Colors.transparent,
-            tabs: const [
-              Tab(text: 'Tất cả'),
-              Tab(text: 'Báo cáo'),
-              Tab(text: 'Giám sát'),
-            ],
+            child: TabBar(
+              padding: EdgeInsets.zero,
+              labelPadding: EdgeInsets.zero,
+              controller: _tabController,
+              indicator: BoxDecoration(
+                gradient: AppGradients.primaryButton,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.black54,
+              labelStyle: TextStyle(
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w600,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text('Tất cả'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text('Báo cáo'),
+                  ),
+                ),
+                Tab(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text('Giám sát'),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
 
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildAllFeaturesGrid(),
-              _buildReportFeaturesGrid(),
-              _buildMonitorFeaturesGrid(),
-            ],
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildAllFeaturesGrid(),
+                _buildReportFeaturesGrid(),
+                _buildMonitorFeaturesGrid(),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -96,68 +125,51 @@ class _HomeBodyState extends State<HomeBody>
         icon: Icons.summarize,
         color: Colors.teal,
         label: 'Báo cáo tổng hợp',
-        onTap: () {
-          // TODO: Mở màn hình báo cáo tổng hợp
-        },
+        onTap: () {},
       ),
       _FeatureItem(
         icon: Icons.description,
         color: Colors.indigo,
         label: 'Báo cáo hành trình',
-        onTap: () {
-          // TODO: Mở màn hình báo cáo hành trình
-        },
+        onTap: () {},
       ),
       _FeatureItem(
         icon: Icons.speed,
         color: Colors.purple,
         label: 'Báo cáo lái xe liên tục',
-        onTap: () {
-          // TODO: Mở màn hình báo cáo lái xe liên tục
-        },
+        onTap: () {},
       ),
       _FeatureItem(
         icon: Icons.local_parking,
         color: Colors.blue.shade700,
         label: 'Báo cáo dừng đỗ',
-        onTap: () {
-          // TODO: Mở màn hình báo cáo dừng đỗ
-        },
+        onTap: () {},
       ),
       _FeatureItem(
         icon: Icons.videocam,
         color: Colors.orange,
         label: 'Camera',
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CameraMainScreen()),
-          );
+          context.push('/camera');
         },
       ),
       _FeatureItem(
         icon: Icons.thermostat,
         color: Colors.red.shade400,
         label: 'Báo cáo nhiệt độ',
-        onTap: () {
-          // TODO: Mở báo cáo nhiệt độ
-        },
+        onTap: () {},
       ),
       _FeatureItem(
         icon: Icons.local_gas_station,
         color: Colors.amber,
         label: 'Báo cáo nhiên liệu',
-        onTap: () {
-          // TODO: Mở báo cáo nhiên liệu
-        },
+        onTap: () {},
       ),
       _FeatureItem(
         icon: Icons.assignment_ind,
         color: Colors.cyan,
         label: 'Báo cáo theo lái xe',
-        onTap: () {
-          // TODO: Mở báo cáo theo lái xe
-        },
+        onTap: () {},
       ),
     ];
 
@@ -207,7 +219,6 @@ class _HomeBodyState extends State<HomeBody>
     return _buildGrid(features);
   }
 
-  /// Lưới "Giám sát" – Chỉ các ô liên quan đến Giám sát
   Widget _buildMonitorFeaturesGrid() {
     final features = [
       _FeatureItem(
@@ -227,10 +238,7 @@ class _HomeBodyState extends State<HomeBody>
         color: Colors.orange,
         label: 'Camera',
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CameraMainScreen()),
-          );
+          context.push('/camera');
         },
       ),
     ];
@@ -238,7 +246,6 @@ class _HomeBodyState extends State<HomeBody>
     return _buildGrid(features);
   }
 
-  /// Helper: Dựng GridView từ danh sách chức năng
   Widget _buildGrid(List<_FeatureItem> features) {
     return GridView.builder(
       padding: EdgeInsets.all(16.w),
@@ -262,7 +269,7 @@ class _HomeBodyState extends State<HomeBody>
   }
 }
 
-/// Class nội bộ lưu thông tin 1 ô chức năng
+// Class nội bộ lưu thông tin 1 ô chức năng
 class _FeatureItem {
   final IconData icon;
   final Color color;

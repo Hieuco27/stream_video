@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/home/presentation/home_page.dart';
 import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/features/profile/presentation/pages/profile_setting_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -34,17 +36,23 @@ class _MainScreenState extends State<MainScreen> {
           const Scaffold(
             body: Center(child: Text('Xem lại\n(Chưa phát triển)')),
           ),
-          const Scaffold(
-            body: Center(child: Text('Tài khoản\n(Chưa phát triển)')),
-          ),
+          const ProfileSettingPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.headerColor,
+        selectedItemColor: const Color.fromARGB(255, 33, 134, 250),
         unselectedItemColor: Colors.grey,
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 11.sp,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 11.sp,
+        ),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
           BottomNavigationBarItem(

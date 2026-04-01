@@ -23,6 +23,7 @@ class VehicleRepositoryImpl implements VehicleRepository {
         final cars = await getInitialVehicles();
         yield cars;
       } catch (e) {
+        throw Exception(e.toString());
       }
     }
   }

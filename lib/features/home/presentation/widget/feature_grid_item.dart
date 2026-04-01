@@ -23,13 +23,13 @@ class FeatureGridItem extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 56.w,
-            height: 56.w,
+            width: 70.w,
+            height: 70.w,
             decoration: BoxDecoration(
               color: iconColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(icon, color: iconColor, size: 28.sp),
+            child: Icon(icon, color: iconColor, size: 35.sp),
           ),
           SizedBox(height: 8.h),
           Text(

@@ -10,7 +10,6 @@ abstract class Failure extends Equatable {
   List<Object?> get props => [message, code];
 }
 
-/// Lỗi từ Server (API trả về error)
 class ServerFailure extends Failure {
   const ServerFailure({
     super.message = 'Lỗi server, vui lòng thử lại sau',
