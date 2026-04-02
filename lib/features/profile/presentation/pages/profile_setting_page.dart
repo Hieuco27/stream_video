@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_video/core/app_theme.dart';
+import 'package:go_router/go_router.dart';
+import 'package:stream_video/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:stream_video/features/auth/presentation/bloc/auth_event.dart';
+import 'package:stream_video/features/auth/presentation/bloc/auth_state.dart';
+import 'package:stream_video/core/app_colors.dart';
 
 class ProfileSettingPage extends StatelessWidget {
   const ProfileSettingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(children: [_buildHeader(), _buildMenuItems(context)]),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthInitial) {
+          context.go('/login');
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Column(children: [_buildHeader(), _buildMenuItems(context)]),
+      ),
     );
   }
 
@@ -17,7 +30,7 @@ class ProfileSettingPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
-        top: 60.h, // Padding cho status bar
+        top: 50.h,
         bottom: 30.h,
         left: 20.w,
         right: 20.w,
@@ -127,11 +140,107 @@ class ProfileSettingPage extends StatelessWidget {
             iconColor: Colors.blue.shade400,
             title: 'Đăng xuất',
             onTap: () {
-              // TODO: Xử lý đăng xuất
+              _confirmSignout(context);
             },
           ),
           _buildDivider(),
         ],
+      ),
+    );
+  }
+
+  void _confirmSignout(BuildContext context) {
+    final authBloc = context.read<AuthBloc>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(20.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Tiêu đề
+              Text(
+                'Đăng xuất',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 8.h),
+
+              // Nội dung
+              Text(
+                'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  color: AppColors.backgroundColor,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 24.h),
+
+              // 2 nút
+              Row(
+                children: [
+                  // Nút Hủy
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        side: BorderSide(color: Colors.grey.shade300),
+                      ),
+                      child: Text(
+                        'Hủy',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+
+                  // Nút Đăng xuất
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        authBloc.add(AuthSignOutRequested());
+                        Navigator.of(dialogContext).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade400,
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Đăng xuất',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

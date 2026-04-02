@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  Widget build(BuildContext context) {
+  Widget build  (BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100, // Đổi sang xám nhạt
       body: Column(

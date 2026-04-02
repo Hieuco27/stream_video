@@ -34,7 +34,6 @@ class Success<T> extends Result<T> {
   const Success(this.data);
 }
 
-/// Kết quả thất bại
 class Error<T> extends Result<T> {
   final Failure failure;
   const Error(this.failure);

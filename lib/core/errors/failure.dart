@@ -41,3 +41,8 @@ class LocationFailure extends Failure {
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure({super.message = 'Đã xảy ra lỗi', super.code});
 }
+
+/// Lỗi validation (input không hợp lệ)
+class ValidationFailure extends Failure {
+  const ValidationFailure({required super.message, super.code});
+}

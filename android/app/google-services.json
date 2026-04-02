@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331367741787",
+    "project_id": "hms-gps-33588",
+    "storage_bucket": "hms-gps-33588.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331367741787:android:a11cd6b6645e761508827e",
+        "android_client_info": {
+          "package_name": "com.example.stream_video"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhQ1j0q_87kt4lU4W1AD0XBfxh9ewaesQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

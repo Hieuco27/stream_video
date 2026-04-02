@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <application
         android:usesCleartextTraffic="true"
-        android:label="stream_video"
+        android:label="HMS GPS"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/logo3">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="[GCP_API_KEY]"/>

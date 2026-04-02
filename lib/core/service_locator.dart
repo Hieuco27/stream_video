@@ -15,6 +15,15 @@ import '../services/location_service.dart';
 import '../services/directions_service.dart';
 import '../services/geocoding_service.dart';
 import '../features/map/domain/usecases/reverse_geocode_usecase.dart';
+import '../features/auth/data/repositories/auth_repository_impl.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
+import '../features/auth/data/datasources/auth_remote_datasource.dart';
+import '../features/auth/domain/usecases/sign_in_usecase.dart';
+import '../features/auth/domain/usecases/sign_out_usecase.dart';
+import '../features/auth/domain/usecases/reset_passwword_usecase.dart';
+import '../features/auth/domain/usecases/get_current_user_usecase.dart';
+import '../features/auth/domain/usecases/remember_me_ussecase.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Quản lý tất cả dependencies của app.
 class ServiceLocator {
@@ -43,6 +52,13 @@ class ServiceLocator {
     directionsService: directionsService,
   );
 
+  // ---------Auth feature---------
+  // Data source
+  late final AuthRemoteDataSource authRemoteDataSource = AuthRemoteDataSource();
+
+  // Repositories
+  late final AuthRepository authRepository = AuthRepositoryImpl();
+
   // Use cases
   late final GetVehiclesUseCase getVehiclesUseCase = GetVehiclesUseCase(
     vehicleRepository,
@@ -60,6 +76,16 @@ class ServiceLocator {
 
   late final ReverseGeocodeUseCase reverseGeocodeUseCase =
       ReverseGeocodeUseCase(nominatimService);
+
+  late final SignInUseCase signInUseCase = SignInUseCase(authRepository);
+  late final SignOutUseCase signOutUseCase = SignOutUseCase(authRepository);
+  late final ResetPasswordUseCase resetPasswordUseCase = ResetPasswordUseCase(
+    authRepository,
+  );
+  late final GetCurrentUserUseCase getCurrentUserUseCase =
+      GetCurrentUserUseCase(authRepository);
+  late final RememberMeUseCase rememberMeUseCase =
+      RememberMeUseCase(authRepository);
 }
 
 /// Truy cập nhanh ServiceLocator

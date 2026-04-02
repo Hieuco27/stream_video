@@ -1,0 +1,87 @@
+﻿Resolving dependencies...
+flutter : The current Dart SDK 
+version is 3.8.0.
+At line:1 char:1
++ flutter pub get 2>&1 | Out-File 
+-FilePath 
+C:\Users\Administrator\stre ...
++ ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotS 
+   pecified: (The current Dart SD  
+  K version is 3.8.0.:String) []   
+ , RemoteException
+    + FullyQualifiedErrorId : Nati 
+   veCommandError
+ 
+
+    Because no versions of 
+signalr_core match >1.1.2 <2.0.0 
+and signalr_core <1.1.0 doesn't 
+support null safety, signalr_core 
+<1.1.0-Γê₧ or >1.1.2 <2.0.0 is 
+forbidden.
+    And because signalr_core 
+>=1.1.0 <1.1.2 depends on http 
+^0.13.0 and signalr_core 1.1.2 
+depends on web_socket_channel 
+^2.4.3, signalr_core <2.0.0 
+requires http ^0.13.0 or 
+web_socket_channel ^2.4.3.
+    Because web_socket_channel 
+>=2.4.4 <3.0.1 depends on web 
+^0.5.0 and web_socket_channel 
+>=2.4.1 <2.4.4 depends on web 
+^0.4.0, web_socket_channel >=2.4.1 
+<3.0.1 requires web ^0.4.0 or 
+^0.5.0.
+    Thus, signalr_core <2.0.0 
+requires http ^0.13.0 or web 
+^0.4.0 or ^0.5.0.
+(1) So, because firebase_core_web 
+>=2.18.0 depends on web ^1.0.0, if 
+signalr_core <2.0.0 and 
+firebase_core_web >=2.18.0 then 
+http ^0.13.0.
+
+    Because firebase_core >=4.2.1 
+<4.3.0 depends on 
+firebase_core_web ^3.3.0 and 
+firebase_core >=4.3.0 <4.4.0 
+depends on firebase_core_web 
+^3.3.1, firebase_core >=4.2.1 
+<4.4.0 requires firebase_core_web 
+^3.3.0.
+    And because firebase_core 
+>=4.4.0 <4.5.0 depends on 
+firebase_core_web ^3.4.0, 
+firebase_core >=4.2.1 <4.5.0 
+requires firebase_core_web ^3.3.0.
+    And because firebase_core 
+>=4.5.0 <4.6.0 depends on 
+firebase_core_web ^3.5.0 and 
+firebase_core >=4.6.0 depends on 
+firebase_core_web ^3.5.1, 
+firebase_core >=4.2.1 requires 
+firebase_core_web ^3.3.0.
+    And because if signalr_core 
+<2.0.0 and firebase_core_web 
+>=2.18.0 then http ^0.13.0 (1), if 
+signalr_core <2.0.0 and 
+firebase_core >=4.2.1 then http 
+^0.13.0.
+    And because stream_video 
+depends on http ^1.2.2, 
+signalr_core <2.0.0 is 
+incompatible with firebase_core 
+>=4.2.1.
+    So, because stream_video 
+depends on both signalr_core 
+^1.0.0 and firebase_core ^4.2.1, 
+version solving failed.
+
+The lower bound of "sdk: '>=2.6.0 
+<3.0.0'" must be 2.12.0 or higher 
+to enable null safety.
+For details, see 
+https://dart.dev/null-safety
+Failed to update packages.
