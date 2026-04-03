@@ -175,7 +175,7 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
       child: Container(
-        height: 400,
+        height: 400.h,
         width: double.infinity,
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(

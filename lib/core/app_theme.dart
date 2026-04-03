@@ -6,7 +6,7 @@ class AppGradients {
 
   static const LinearGradient primaryButton = LinearGradient(
     colors: <Color>[AppColors.gradientStart, AppColors.gradientEnd],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 }

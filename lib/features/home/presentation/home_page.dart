@@ -11,19 +11,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String _searchQuery = '';
+  
   @override
-  Widget build  (BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100, // Đổi sang xám nhạt
-      body: Column(
+      body: Stack(
         children: [
-          const HomeHeader(),
-          Expanded(
-            child: HomeBody(
-              onNavigateToTab: (index) {
-                widget.onNavigateToTab?.call(index);
-              },
+          // Background image (logo3) - chìm sâu phía sau, mờ dần
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.15,
+              child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
             ),
+          ),
+          // Header + Body nổi lên trên background
+          Column(
+            children: [
+              HomeHeader(
+                onSearchChanged: (query) {
+                  setState(() {
+                    _searchQuery = query.toLowerCase();
+                  });
+                },
+              ),
+              Expanded(
+                child: HomeBody(
+                  searchQuery: _searchQuery,
+                  onNavigateToTab: (index) {
+                    widget.onNavigateToTab?.call(index);
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),

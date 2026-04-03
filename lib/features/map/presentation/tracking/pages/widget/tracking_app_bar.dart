@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:stream_video/core/app_colors.dart';
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
 import '../../bloc/tracking_state.dart';
 import '../../../../domain/entities/map_type.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TrackingAppBar({
@@ -23,7 +25,7 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: const Text('Bản đồ'),
-      backgroundColor: const Color(0xFFAED569),
+      backgroundColor: AppColors.primary,
       actions: [
         IconButton(
           icon: const Icon(Icons.route),

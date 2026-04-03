@@ -26,29 +26,20 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       decoration: InputDecoration(
-        prefixIcon: Icon(
-          prefixIcon,
-          color: AppColors.gradientStart,
-        ),
+        prefixIcon: Icon(prefixIcon, color: AppColors.gradientStart),
         hintText: hintText,
-        hintStyle: TextStyle(
-          color: Colors.grey.shade400,
-        ),
+        hintStyle: TextStyle(color: Colors.grey.shade400),
         filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        fillColor: Colors.white.withValues(alpha: 0.8),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            color: Colors.grey.shade300,
-          ),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
-          borderSide: BorderSide(
-            color: Colors.grey.shade300,
-          ),
+          borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),

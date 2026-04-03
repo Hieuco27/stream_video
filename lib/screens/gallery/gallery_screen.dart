@@ -18,7 +18,11 @@ class GalleryScreen extends StatelessWidget {
           decoration: const BoxDecoration(gradient: AppGradients.primaryButton),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.textColor,
+            size: 20,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },

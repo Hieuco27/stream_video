@@ -9,6 +9,7 @@ import 'package:stream_video/features/auth/presentation/widget/custom_text_field
 import 'package:stream_video/features/auth/presentation/widget/validator.dart';
 import 'package:stream_video/features/auth/presentation/widget/bottom_action_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -77,17 +78,7 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                             SizedBox(height: 16.h),
                             // Title
-                            Text(
-                              'HMS GPS',
-                              style: TextStyle(
-                                fontSize: 30.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.directions,
-                                letterSpacing: 2,
-                              ),
-                            ),
                             SizedBox(height: 20.h),
-
                             // Email
                             CustomTextField(
                               controller: _emailController,
@@ -148,10 +139,7 @@ class _SignInPageState extends State<SignInPage> {
                                     SizedBox(width: 8.w),
                                     Text(
                                       'Ghi nhớ đăng nhập',
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        color: Colors.black87,
-                                      ),
+                                      style: AppTextStyles.titleSmall2(),
                                     ),
                                   ],
                                 ),
@@ -162,10 +150,7 @@ class _SignInPageState extends State<SignInPage> {
                                   },
                                   child: Text(
                                     'Quên mật khẩu?',
-                                    style: TextStyle(
-                                      color: AppColors.gradientStart,
-                                      fontSize: 14.sp,
-                                    ),
+                                    style: AppTextStyles.titleSmall2(),
                                   ),
                                 ),
                               ],
@@ -175,7 +160,7 @@ class _SignInPageState extends State<SignInPage> {
                             // Sign In button
                             SizedBox(
                               width: double.infinity,
-                              height: 50.h,
+                              height: 40.h,
                               child: ElevatedButton(
                                 onPressed: isLoading
                                     ? null
@@ -197,16 +182,16 @@ class _SignInPageState extends State<SignInPage> {
                                   backgroundColor: AppColors.gradientStart,
                                   foregroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
                                   elevation: 3,
                                 ),
                                 child: Text(
                                   'ĐĂNG NHẬP',
                                   style: TextStyle(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.5,
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 1.3,
                                   ),
                                 ),
                               ),
@@ -247,8 +232,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
 
                 // Bottom action buttons
-                if (!isKeyboardOpen)
-                  const BottomActionBar(),
+                if (!isKeyboardOpen) const BottomActionBar(),
 
                 // Loading overlay
                 if (isLoading)
@@ -273,20 +257,15 @@ class _BackgroundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            AppColors.gradientEnd.withValues(alpha: 0.3),
-            Colors.white.withValues(alpha: 0.9),
-          ],
-          stops: const [0.0, 0.5, 1.0],
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Opacity(
+            opacity: 0.05,
+            child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
-

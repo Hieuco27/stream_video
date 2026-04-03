@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/app_colors.dart';
 import 'select_popup.dart';
 
 /// Thanh bộ lọc: Chọn BKS + Chọn Kênh + Nút Xem
@@ -37,7 +39,7 @@ class FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Row(
         children: [
           // Nút chọn BKS
@@ -46,13 +48,10 @@ class FilterBar extends StatelessWidget {
             child: GestureDetector(
               onTap: () => _showBksPopup(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 8,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE5E5E5),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,32 +61,36 @@ class FilterBar extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         text: TextSpan(
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.black,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                           ),
                           children: [
-                            const TextSpan(
+                            TextSpan(
                               text: 'BKS: ',
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12.sp,
+                              ),
                             ),
                             TextSpan(
                               text: selectedBks,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.normal,
+                                fontSize: 12.sp,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const Icon(Icons.arrow_drop_down, size: 20),
+                    Icon(Icons.arrow_drop_down, size: 20.sp),
                   ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
 
           // Nút chọn Kênh
           Expanded(
@@ -95,33 +98,27 @@ class FilterBar extends StatelessWidget {
             child: PopupMenuButton<String>(
               color: Colors.white,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.r),
               ),
-              offset: const Offset(0, 45),
+              offset: Offset(0, 45.h),
               onSelected: onKenhChanged,
               itemBuilder: (BuildContext context) => listKenh.map((String kh) {
                 return PopupMenuItem<String>(
                   value: kh,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 4.0,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 4.w),
                     child: Text(
                       kh,
-                      style: const TextStyle(fontSize: 16, color: Colors.black),
+                      style: TextStyle(fontSize: 16.sp, color: Colors.black),
                     ),
                   ),
                 );
               }).toList(),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 8,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE5E5E5),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -131,48 +128,52 @@ class FilterBar extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                         text: TextSpan(
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.black,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                           ),
                           children: [
-                            const TextSpan(
+                            TextSpan(
                               text: 'Kênh: ',
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12.sp,
+                              ),
                             ),
                             TextSpan(
                               text: selectedKenh,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.normal,
+                                fontSize: 12.sp,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const Icon(Icons.arrow_drop_down, size: 20),
+                    Icon(Icons.arrow_drop_down, size: 20.sp),
                   ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
 
           // Nút Xem
           Expanded(
             flex: 20,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFAED569),
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 6),
+                padding: EdgeInsets.symmetric(vertical: 6.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 elevation: 0,
               ),
               onPressed: onPlay,
-              child: const Text('Xem', style: TextStyle(fontSize: 12)),
+              child: Text('Xem', style: TextStyle(fontSize: 12.sp)),
             ),
           ),
         ],

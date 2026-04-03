@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:stream_video/core/app_colors.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class VideoTile extends StatefulWidget {
   final int index;
@@ -122,9 +124,9 @@ class _VideoTileState extends State<VideoTile> {
           color: Colors.black87,
           border: Border.all(
             color: widget.isExpanded
-                ? Colors.green
+                ? AppColors.primary
                 : widget.isSelected
-                ? Colors.lightGreenAccent
+                ? AppColors.primary
                 : Colors.grey.shade800,
             width: widget.isSelected || widget.isExpanded ? 2 : 1,
           ),
@@ -140,8 +142,8 @@ class _VideoTileState extends State<VideoTile> {
                     ),
                   ),
                   Positioned(
-                    bottom: 4,
-                    left: 4,
+                    bottom: 4.h,
+                    left: 4.w,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -249,12 +251,12 @@ class _VideoTileState extends State<VideoTile> {
                         GestureDetector(
                           behavior: HitTestBehavior.opaque,
                           onTap: _takeScreenshot,
-                          child: const Padding(
-                            padding: EdgeInsets.all(4),
+                          child: Padding(
+                            padding: EdgeInsets.all(4.w),
                             child: Icon(
                               Icons.camera_alt_outlined,
                               color: Colors.white70,
-                              size: 22,
+                              size: 22.sp,
                             ),
                           ),
                         ),
@@ -262,28 +264,28 @@ class _VideoTileState extends State<VideoTile> {
                     ),
                   ),
                   Positioned(
-                    bottom: 4,
-                    right: 4,
+                    bottom: 4.h,
+                    right: 4.w,
                     child: Icon(
                       widget.isExpanded
                           ? Icons.fullscreen_exit
                           : Icons.fullscreen,
                       color: Colors.white70,
-                      size: 20,
+                      size: 20.sp,
                     ),
                   ),
                   Positioned(
-                    top: 4,
-                    left: 4,
+                    top: 4.h,
+                    left: 4.w,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4.w,
+                        vertical: 2.h,
                       ),
                       color: Colors.black54,
                       child: Text(
                         'CH${widget.index + 1}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -296,28 +298,28 @@ class _VideoTileState extends State<VideoTile> {
             : Stack(
                 alignment: Alignment.center,
                 children: [
-                  const SizedBox(
-                    width: 20,
-                    height: 20,
+                  SizedBox(
+                    width: 20.w,
+                    height: 20.h,
                     child: CircularProgressIndicator(
                       color: Colors.white70,
                       strokeWidth: 2,
                     ),
                   ),
                   Positioned(
-                    top: 4,
-                    left: 4,
+                    top: 4.h,
+                    left: 4.w,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 4,
-                        vertical: 2,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 4.w,
+                        vertical: 2.h,
                       ),
                       color: Colors.black54,
                       child: Text(
                         'CH${widget.index + 1}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
+                          fontSize: 10.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

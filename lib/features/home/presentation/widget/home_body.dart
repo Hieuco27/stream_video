@@ -1,285 +1,200 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_video/core/app_theme.dart';
 import 'feature_grid_item.dart';
-import 'package:stream_video/screens/camera_main_screen.dart';
-import 'package:stream_video/core/app_theme.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeBody extends StatefulWidget {
+class HomeBody extends StatelessWidget {
   final ValueChanged<int> onNavigateToTab;
+  final String searchQuery;
 
-  const HomeBody({super.key, required this.onNavigateToTab});
-
-  @override
-  State<HomeBody> createState() => _HomeBodyState();
-}
-
-class _HomeBodyState extends State<HomeBody>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  const HomeBody({
+    super.key,
+    required this.onNavigateToTab,
+    this.searchQuery = '',
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey.shade100, // Đặt nền màu xám nhạt ở đây
-      child: Column(
-        children: [
-          // ---- TAB BAR ----
-          Container(
-            height: 35.h,
-            margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(
-                25.r,
-              ), // Thu nhỏ độ bo tương xứng với chiều cao
-            ),
-            child: TabBar(
-              padding: EdgeInsets.zero,
-              labelPadding: EdgeInsets.zero,
-              controller: _tabController,
-              indicator: BoxDecoration(
-                gradient: AppGradients.primaryButton,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.black54,
-              labelStyle: TextStyle(
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w600,
-              ),
-              dividerColor: Colors.transparent,
-              tabs: const [
-                Tab(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text('Tất cả'),
-                  ),
-                ),
-                Tab(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text('Báo cáo'),
-                  ),
-                ),
-                Tab(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text('Giám sát'),
-                  ),
-                ),
-              ],
-            ),
-          ),
+    final allItems = _buildAllItems(context);
+    final filtered = allItems.where((e) {
+      return e.label.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
 
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildAllFeaturesGrid(),
-                _buildReportFeaturesGrid(),
-                _buildMonitorFeaturesGrid(),
-              ],
-            ),
+    List<Widget> children = [];
+    if (filtered.isEmpty) {
+      children.add(
+        Padding(
+          padding: EdgeInsets.only(top: 40.h),
+          child: Text(
+            'Không tìm thấy tính năng nào',
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
           ),
-        ],
+        ),
+      );
+    } else {
+      for (int i = 0; i < filtered.length; i += 3) {
+        int end = (i + 3 < filtered.length) ? i + 3 : filtered.length;
+        children.add(_buildRow(filtered.sublist(i, end)));
+        if (end < filtered.length) {
+          children.add(SizedBox(height: 12.h));
+        }
+      }
+    }
+
+    return Container(
+      color: Colors.transparent,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        child: Column(children: children),
       ),
     );
   }
 
-  Widget _buildAllFeaturesGrid() {
-    final features = [
+  List<_FeatureItem> _buildAllItems(BuildContext context) {
+    return [
       _FeatureItem(
-        icon: Icons.map,
-        color: Colors.green,
+        icon: Image.asset(
+          'assets/images/home/map.png',
+          width: 40.sp,
+          height: 40.sp,
+        ),
         label: 'Bản đồ',
-        onTap: () => widget.onNavigateToTab(2),
+        onTap: () => onNavigateToTab(2),
       ),
       _FeatureItem(
-        icon: Icons.route,
-        color: Colors.blue,
+        icon: Image.asset(
+          'assets/images/home/hanhtrinh.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Xem lại hành trình',
-        onTap: () => widget.onNavigateToTab(3),
+        onTap: () => onNavigateToTab(3),
       ),
       _FeatureItem(
-        icon: Icons.directions_car,
-        color: Colors.red,
+        icon: Image.asset(
+          'assets/images/home/danhsachxe.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Danh sách xe',
-        onTap: () => widget.onNavigateToTab(1),
+        onTap: () => onNavigateToTab(1),
       ),
       _FeatureItem(
-        icon: Icons.summarize,
-        color: Colors.teal,
+        icon: Image.asset(
+          'assets/images/home/baocaotonghop.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Báo cáo tổng hợp',
         onTap: () {},
       ),
       _FeatureItem(
-        icon: Icons.description,
-        color: Colors.indigo,
+        icon: Image.asset(
+          'assets/images/home/baocaohanhtrinh.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Báo cáo hành trình',
         onTap: () {},
       ),
       _FeatureItem(
-        icon: Icons.speed,
-        color: Colors.purple,
-        label: 'Báo cáo lái xe liên tục',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Icons.local_parking,
-        color: Colors.blue.shade700,
+        icon: Image.asset(
+          'assets/images/home/baocaodungdo.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Báo cáo dừng đỗ',
         onTap: () {},
       ),
       _FeatureItem(
-        icon: Icons.videocam,
-        color: Colors.orange,
+        icon: Image.asset(
+          'assets/images/home/camera.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Camera',
         onTap: () {
           context.push('/camera');
         },
       ),
       _FeatureItem(
-        icon: Icons.thermostat,
-        color: Colors.red.shade400,
+        icon: Image.asset(
+          'assets/images/home/baocaonhietdo.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Báo cáo nhiệt độ',
         onTap: () {},
       ),
       _FeatureItem(
-        icon: Icons.local_gas_station,
-        color: Colors.amber,
+        icon: Image.asset(
+          'assets/images/home/baocaonhienlieu.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
         label: 'Báo cáo nhiên liệu',
         onTap: () {},
       ),
       _FeatureItem(
-        icon: Icons.assignment_ind,
-        color: Colors.cyan,
-        label: 'Báo cáo theo lái xe',
+        icon: Image.asset(
+          'assets/images/home/ghithongtinthe.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
+        label: 'Ghi thông tin thẻ',
+        onTap: () {},
+      ),
+      _FeatureItem(
+        icon: Image.asset(
+          'assets/images/home/thongtindichvu.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
+        label: 'Thông tin dịch vụ',
+        onTap: () {},
+      ),
+      _FeatureItem(
+        icon: Image.asset(
+          'assets/images/home/baocaotienich.png',
+          width: 20.sp,
+          height: 20.sp,
+        ),
+        label: 'Báo cáo tiện ích',
         onTap: () {},
       ),
     ];
-
-    return _buildGrid(features);
   }
 
-  Widget _buildReportFeaturesGrid() {
-    final features = [
-      _FeatureItem(
-        icon: Icons.summarize,
-        color: Colors.teal,
-        label: 'Báo cáo tổng hợp',
-        onTap: () {},
+  Widget _buildRow(List<_FeatureItem> items) {
+    return SizedBox(
+      height: 85.h,
+      child: Row(
+        children: List.generate(3, (index) {
+          if (index < items.length) {
+            final item = items[index];
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: FeatureGridItem(
+                  icon: item.icon,
+                  label: item.label,
+                  onTap: item.onTap,
+                ),
+              ),
+            );
+          } else {
+            return const Expanded(child: SizedBox.shrink());
+          }
+        }),
       ),
-      _FeatureItem(
-        icon: Icons.description,
-        color: Colors.indigo,
-        label: 'Báo cáo hành trình',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Icons.speed,
-        color: Colors.purple,
-        label: 'Báo cáo lái xe liên tục',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Icons.local_parking,
-        color: Colors.blue.shade700,
-        label: 'Báo cáo dừng đỗ',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Icons.thermostat,
-        color: Colors.red.shade400,
-        label: 'Báo cáo nhiệt độ',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Icons.local_gas_station,
-        color: Colors.amber,
-        label: 'Báo cáo nhiên liệu',
-        onTap: () {},
-      ),
-    ];
-
-    return _buildGrid(features);
-  }
-
-  Widget _buildMonitorFeaturesGrid() {
-    final features = [
-      _FeatureItem(
-        icon: Icons.map,
-        color: Colors.green,
-        label: 'Bản đồ',
-        onTap: () => widget.onNavigateToTab(2),
-      ),
-      _FeatureItem(
-        icon: Icons.directions_car,
-        color: Colors.red,
-        label: 'Danh sách xe',
-        onTap: () => widget.onNavigateToTab(1),
-      ),
-      _FeatureItem(
-        icon: Icons.videocam,
-        color: Colors.orange,
-        label: 'Camera',
-        onTap: () {
-          context.push('/camera');
-        },
-      ),
-    ];
-
-    return _buildGrid(features);
-  }
-
-  Widget _buildGrid(List<_FeatureItem> features) {
-    return GridView.builder(
-      padding: EdgeInsets.all(16.w),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 12.w,
-        mainAxisSpacing: 16.h,
-        childAspectRatio: 0.85,
-      ),
-      itemCount: features.length,
-      itemBuilder: (context, index) {
-        final item = features[index];
-        return FeatureGridItem(
-          icon: item.icon,
-          iconColor: item.color,
-          label: item.label,
-          onTap: item.onTap,
-        );
-      },
     );
   }
 }
 
-// Class nội bộ lưu thông tin 1 ô chức năng
 class _FeatureItem {
-  final IconData icon;
-  final Color color;
+  final Widget icon;
   final String label;
   final VoidCallback onTap;
 
-  _FeatureItem({
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.onTap,
-  });
+  _FeatureItem({required this.icon, required this.label, required this.onTap});
 }
