@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/app_theme.dart';
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
 import '../../bloc/tracking_state.dart';
 import '../../../../domain/entities/map_type.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TrackingAppBar({
@@ -23,9 +25,14 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = AppTextStyles.titleMediumBlack().copyWith(
+      color: Colors.white,
+    );
     return AppBar(
-      title: const Text('Bản đồ'),
-      backgroundColor: AppColors.primary,
+      title: Text('Bản đồ', style: titleStyle),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(gradient: AppGradients.primaryButton),
+      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.route),

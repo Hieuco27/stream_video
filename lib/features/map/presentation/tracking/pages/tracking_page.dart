@@ -8,6 +8,7 @@ import '../../../../../core/service_locator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widget/tracking_app_bar.dart';
 import 'widget/tracking_map.dart';
+import 'widget/tracking_fab_menu.dart';
 
 class TrackingPage extends StatelessWidget {
   const TrackingPage({super.key});
@@ -92,9 +93,62 @@ class _TrackingViewState extends State<_TrackingView> {
         // Hiện bản đồ
         return Scaffold(
           appBar: TrackingAppBar(state: state, mapController: _mapController),
-          body: TrackingMap(state: state, mapController: _mapController),
+          body: Stack(
+            children: [
+              TrackingMap(state: state, mapController: _mapController),
+              // Nút tìm kiếm — góc trên phải sát AppBar
+              Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
+              // FAB menu — góc dưới phải
+              Positioned(
+                right: 16.w,
+                bottom: 24.h,
+                child: TrackingFabMenu(
+                  state: state,
+                  mapController: _mapController,
+                ),
+              ),
+            ],
+          ),
         );
       },
+    );
+  }
+}
+
+// ─── Nút tìm kiếm ─────────────────────────────────────────────────────────────
+class _SearchButton extends StatelessWidget {
+  const _SearchButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final size = 48.r;
+    return Tooltip(
+      message: 'Tìm kiếm',
+      child: GestureDetector(
+        onTap: () {
+          // TODO: mở màn hình tìm kiếm
+        },
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.search_rounded,
+            color: const Color(0xFF075797),
+            size: size * 0.48,
+          ),
+        ),
+      ),
     );
   }
 }

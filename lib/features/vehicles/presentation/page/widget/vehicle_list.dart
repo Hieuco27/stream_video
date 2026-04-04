@@ -37,7 +37,6 @@ class VehicleList extends StatelessWidget {
         return VehicleCard(
           vehicle: vehicles[index],
           onTap: () {
-            // TODO: Navigate to vehicle detail
           },
         );
       },
