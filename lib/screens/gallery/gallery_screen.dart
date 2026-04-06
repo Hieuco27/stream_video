@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_video/core/text_styles.dart';
 import '../../core/app_colors.dart';
 import '../widget/filter_video_section.dart';
 import '../widget/date_time_picker_widget.dart';
@@ -7,9 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class GalleryScreen extends StatelessWidget {
   final bool isActive;
-
   const GalleryScreen({super.key, this.isActive = true});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,14 +26,7 @@ class GalleryScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          'Thư viện ảnh',
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
+        title: Text('Thư viện ảnh', style: AppTextStyles.titleMedium()),
         centerTitle: true,
       ),
       body: SafeArea(

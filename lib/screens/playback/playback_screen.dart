@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_video/core/text_styles.dart';
 import '../../core/app_colors.dart';
 import '../widget/filter_video_section.dart';
 import '../widget/date_time_picker_widget.dart';
@@ -27,14 +28,7 @@ class PlaybackScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          'Xem lại',
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
+        title: Text('Xem lại', style: AppTextStyles.titleMedium()),
         centerTitle: true,
       ),
       body: SafeArea(

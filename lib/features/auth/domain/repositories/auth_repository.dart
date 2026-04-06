@@ -9,8 +9,8 @@ abstract class AuthRepository {
   );
   // Sign out
   Future<Result<void>> signOut();
-  // Reset password
-  Future<Result<void>> resetPassword(String email);
+  // Change password
+  Future<Result<void>> changePassword(String oldPassword, String newPassword);
   // Get current user
   UserEntity? getCurrentUser();
   // Save remember me

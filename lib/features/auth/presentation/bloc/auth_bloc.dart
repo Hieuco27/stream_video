@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_video/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:stream_video/features/auth/domain/usecases/remember_me_ussecase.dart';
-import 'package:stream_video/features/auth/domain/usecases/reset_passwword_usecase.dart';
+import 'package:stream_video/features/auth/domain/usecases/change_passwword_usecase.dart';
 import 'package:stream_video/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:stream_video/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_event.dart';
@@ -11,20 +11,20 @@ import '../../../../core/errors/result.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignInUseCase signInUseCase;
   final SignOutUseCase signOutUseCase;
-  final ResetPasswordUseCase resetPasswordUseCase;
+  final ChangePasswordUseCase changePasswordUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final RememberMeUseCase rememberMeUseCase;
 
   AuthBloc({
     required this.signInUseCase,
     required this.signOutUseCase,
-    required this.resetPasswordUseCase,
+    required this.changePasswordUseCase,
     required this.getCurrentUserUseCase,
     required this.rememberMeUseCase,
   }) : super(AuthInitial()) {
     on<AuthSignInRequested>(_onAuthSignInRequested);
     on<AuthSignOutRequested>(_onAuthSignOutRequested);
-    on<AuthResetPasswordRequested>(_onAuthResetPasswordRequested);
+    on<AuthChangePasswordRequested>(_onAuthChangePasswordRequested);
     on<AuthCheckStatusRequested>(_onAuthCheckStatusRequested);
   }
 
@@ -57,14 +57,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  Future<void> _onAuthResetPasswordRequested(
-    AuthResetPasswordRequested event,
+  Future<void> _onAuthChangePasswordRequested(
+    AuthChangePasswordRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    final result = await resetPasswordUseCase(event.email);
+    final result = await changePasswordUseCase(
+      ChangePasswordParams(
+        oldPassword: event.oldPassword,
+        newPassword: event.newPassword,
+        confirmPassword: event.confirmPassword,
+      ),
+    );
     result.when(
-      success: (_) => emit(AuthInitial()),
+      success: (_) => emit(AuthChangePasswordSuccess()),
       error: (failure) => emit(AuthError(message: failure.message)),
     );
   }

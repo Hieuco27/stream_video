@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
               create: (_) => AuthBloc(
                 signInUseCase: sl.signInUseCase,
                 signOutUseCase: sl.signOutUseCase,
-                resetPasswordUseCase: sl.resetPasswordUseCase,
+                changePasswordUseCase: sl.changePasswordUseCase,
                 getCurrentUserUseCase: sl.getCurrentUserUseCase,
                 rememberMeUseCase: sl.rememberMeUseCase,
               ),

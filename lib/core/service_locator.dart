@@ -20,7 +20,7 @@ import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/data/datasources/auth_remote_datasource.dart';
 import '../features/auth/domain/usecases/sign_in_usecase.dart';
 import '../features/auth/domain/usecases/sign_out_usecase.dart';
-import '../features/auth/domain/usecases/reset_passwword_usecase.dart';
+import '../features/auth/domain/usecases/change_passwword_usecase.dart';
 import '../features/auth/domain/usecases/get_current_user_usecase.dart';
 import '../features/auth/domain/usecases/remember_me_ussecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -79,13 +79,13 @@ class ServiceLocator {
 
   late final SignInUseCase signInUseCase = SignInUseCase(authRepository);
   late final SignOutUseCase signOutUseCase = SignOutUseCase(authRepository);
-  late final ResetPasswordUseCase resetPasswordUseCase = ResetPasswordUseCase(
-    authRepository,
-  );
+  late final ChangePasswordUseCase changePasswordUseCase =
+      ChangePasswordUseCase(authRepository);
   late final GetCurrentUserUseCase getCurrentUserUseCase =
       GetCurrentUserUseCase(authRepository);
-  late final RememberMeUseCase rememberMeUseCase =
-      RememberMeUseCase(authRepository);
+  late final RememberMeUseCase rememberMeUseCase = RememberMeUseCase(
+    authRepository,
+  );
 }
 
 /// Truy cập nhanh ServiceLocator

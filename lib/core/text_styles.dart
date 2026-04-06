@@ -45,7 +45,7 @@ class AppTextStyles {
     return GoogleFonts.inter(
       fontSize: 16.sp,
       fontWeight: FontWeight.w600,
-      color: AppColors.textPrimary,
+      color: AppColors.textColor,
     );
   }
 
@@ -68,7 +68,7 @@ class AppTextStyles {
   static TextStyle titleSmall() {
     return GoogleFonts.inter(
       fontSize: 11.sp,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w500,
       color: AppColors.textPrimary,
     );
   }

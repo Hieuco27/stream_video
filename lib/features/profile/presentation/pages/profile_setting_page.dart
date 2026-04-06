@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_event.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_state.dart';
+import 'package:stream_video/features/auth/presentation/change_passwod_page.dart';
 import 'package:stream_video/core/app_colors.dart';
 
 class ProfileSettingPage extends StatelessWidget {
@@ -39,28 +40,13 @@ class ProfileSettingPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Khung Logo
           Container(
-            width: 70.w,
-            height: 70.w,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: EdgeInsets.all(8.w),
             child: Center(
-              // Hiện tại dùng icon tạm, nếu có logo asset thì thay bằng Image.asset
-              child: Icon(
-                Icons.directions_car,
-                color: Colors.redAccent,
-                size: 36.sp,
+              child: Image.asset(
+                'assets/images/logo2.png',
+                width: 70.w,
+                height: 70.w,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -122,7 +108,7 @@ class ProfileSettingPage extends StatelessWidget {
             iconColor: Colors.purple.shade300,
             title: 'Đổi mật khẩu',
             onTap: () {
-              // TODO: Xử lý đổi mật khẩu
+              context.push('/change-password');
             },
           ),
           _buildDivider(),
@@ -197,13 +183,13 @@ class ProfileSettingPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.r),
                         ),
-                        side: BorderSide(color: Colors.grey.shade300),
+                        side: BorderSide(color: AppColors.darkTextSecondary),
                       ),
                       child: Text(
                         'Hủy',
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: Colors.black54,
+                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -252,19 +238,15 @@ class ProfileSettingPage extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
       leading: Icon(icon, color: iconColor, size: 26.sp),
       title: Text(
         title,
-        style: TextStyle(
-          color: Colors.black87,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w500,
-        ),
+        style: TextStyle(color: AppColors.backgroundColor, fontSize: 14.sp),
       ),
       trailing: Icon(
         Icons.arrow_forward_ios,
-        color: Colors.grey.shade400,
+        color: AppColors.backgroundColor,
         size: 16.sp,
       ),
       onTap: onTap,

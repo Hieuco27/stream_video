@@ -3,6 +3,7 @@ import '../../core/app_colors.dart';
 import '../widget/filter_video_section.dart';
 import '../../core/app_theme.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class LiveScreen extends StatelessWidget {
   final bool isActive;
@@ -26,14 +27,7 @@ class LiveScreen extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        title: Text(
-          'Xem trực tiếp',
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontWeight: FontWeight.bold,
-            fontSize: 16.sp,
-          ),
-        ),
+        title: Text('Xem trực tiếp', style: AppTextStyles.titleMedium()),
         centerTitle: true,
       ),
       body: SafeArea(

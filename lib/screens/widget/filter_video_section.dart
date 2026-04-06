@@ -16,7 +16,6 @@ class FilterVideoSection extends StatefulWidget {
 
 class _FilterVideoSectionState extends State<FilterVideoSection> {
   bool _showVideo = false;
-  String _selectedBks = '30VZ';
   String _selectedKenh = 'Tất cả';
 
   // Quản lý media_kit players và controllers
@@ -33,15 +32,6 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     'Kênh 2',
     'Kênh 3',
     'Kênh 4',
-  ];
-
-  // Danh sách BKS mẫu
-  final List<String> _listBks = [
-    '30VZ',
-    '29A-123.45',
-    '30G-678.90',
-    '51F-111.11',
-    '43A-222.22',
   ];
 
   @override
@@ -213,11 +203,8 @@ class _FilterVideoSectionState extends State<FilterVideoSection> {
     return Column(
       children: [
         FilterBar(
-          selectedBks: _selectedBks,
           selectedKenh: _selectedKenh,
-          listBks: _listBks,
           listKenh: _listKenh,
-          onBksChanged: (value) => setState(() => _selectedBks = value),
           onKenhChanged: (value) => setState(() => _selectedKenh = value),
           onPlay: _playDemoVideo,
         ),

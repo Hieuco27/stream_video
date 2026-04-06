@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/app_colors.dart';
 
 class DateTimePickerWidget extends StatefulWidget {
   const DateTimePickerWidget({super.key});
@@ -12,8 +13,8 @@ class _DateTimePickerWidgetState extends State<DateTimePickerWidget> {
   late DateTime _startDate;
   late DateTime _endDate;
 
-  final Color _textColor = const Color(0xFF389EB1);
-  final Color _underlineColor = const Color(0xFFC0DAA4);
+  final Color _textColor = AppColors.primary;
+  final Color _underlineColor = AppColors.primary;
 
   @override
   void initState() {
