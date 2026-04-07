@@ -24,6 +24,8 @@ import '../features/auth/domain/usecases/change_passwword_usecase.dart';
 import '../features/auth/domain/usecases/get_current_user_usecase.dart';
 import '../features/auth/domain/usecases/remember_me_ussecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../features/profile/presentation/bloc/settings/settings_repository.dart';
+import '../features/profile/presentation/bloc/settings/settings_bloc.dart';
 
 /// Quản lý tất cả dependencies của app.
 class ServiceLocator {
@@ -85,6 +87,12 @@ class ServiceLocator {
       GetCurrentUserUseCase(authRepository);
   late final RememberMeUseCase rememberMeUseCase = RememberMeUseCase(
     authRepository,
+  );
+
+  // ---------Settings feature---------
+  late final SettingsRepository settingsRepository = SettingsRepository();
+  late final SettingsBloc settingsBloc = SettingsBloc(
+    repository: settingsRepository,
   );
 }
 

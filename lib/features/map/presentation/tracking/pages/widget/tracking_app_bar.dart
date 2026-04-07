@@ -25,14 +25,16 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradient = isDark
+        ? AppGradients.darkHeader
+        : AppGradients.primaryButton;
     final titleStyle = AppTextStyles.titleMediumBlack().copyWith(
       color: Colors.white,
     );
     return AppBar(
       title: Text('Bản đồ', style: titleStyle),
-      flexibleSpace: Container(
-        decoration: BoxDecoration(gradient: AppGradients.primaryButton),
-      ),
+      flexibleSpace: Container(decoration: BoxDecoration(gradient: gradient)),
       actions: [
         IconButton(
           icon: const Icon(Icons.route),

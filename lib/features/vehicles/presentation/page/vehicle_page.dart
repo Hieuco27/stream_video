@@ -9,8 +9,12 @@ class VehiclePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark
+        ? AppColors.lightTextPrimary.withValues(alpha: 0.85)
+        : Colors.white.withValues(alpha: 0.85);
     return Scaffold(
-      backgroundColor: AppColors.textColor,
+      backgroundColor: cardColor,
       body: Column(
         children: [
           const VehicleAppBar(),

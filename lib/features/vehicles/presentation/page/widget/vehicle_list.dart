@@ -10,6 +10,7 @@ class VehicleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     if (vehicles.isEmpty) {
       return Center(
         child: Column(

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
-import 'package:stream_video/core/text_styles.dart';
 
 class HomeHeader extends StatefulWidget {
   final ValueChanged<String>? onSearchChanged;
@@ -46,10 +45,27 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradient = isDark
+        ? AppGradients.darkHeader
+        : AppGradients.primaryButton;
+    final searchBg = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.white;
+    final searchTextColor = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final searchHintColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.darkTextSecondary;
+    final iconColor = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.darkTextSecondary;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: AppGradients.primaryButton,
+        gradient: gradient,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20.r),
           bottomRight: Radius.circular(20.r),
@@ -68,6 +84,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                   const Spacer(),
                   Text(
                     'HMS GPS',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
@@ -100,19 +117,15 @@ class _HomeHeaderState extends State<HomeHeader> {
               SizedBox(height: 12.h),
 
               Container(
-                height: 30.h,
+                height: 35.h,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.textColor,
                   borderRadius: BorderRadius.circular(25.r),
                 ),
                 child: Row(
                   children: [
                     SizedBox(width: 14.w),
-                    Icon(
-                      Icons.search,
-                      color: AppColors.darkTextSecondary,
-                      size: 22.sp,
-                    ),
+                    Icon(Icons.search, color: iconColor, size: 22.sp),
                     SizedBox(width: 8.w),
                     Expanded(
                       child: TextField(
@@ -121,13 +134,21 @@ class _HomeHeaderState extends State<HomeHeader> {
                           hintText: 'Tìm kiếm...',
                           hintStyle: TextStyle(
                             fontSize: 12.sp,
-                            color: AppColors.darkTextSecondary,
+                            color: searchHintColor,
                           ),
-                          border: InputBorder.none,
                           isDense: true,
-                          contentPadding: EdgeInsets.zero,
+                          filled: false,
+                          contentPadding: EdgeInsets.only(top: 2.h),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
                         ),
-                        style: AppTextStyles.titleSmall2(),
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
                   ],
@@ -140,7 +161,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                 child: Text(
                   _timeString,
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 13.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontStyle: FontStyle.italic,

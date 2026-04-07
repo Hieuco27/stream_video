@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/app_theme.dart';
 
 // ─── Mock BKS data ────────────────────────────────────────────────────────────
 const List<String> mockBksPlates = [
@@ -17,6 +18,23 @@ const List<String> mockBksPlates = [
   '43C11223',
   '30F99887',
 ];
+
+extension AppThemeExtension on BuildContext {
+  bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  Color get cardColor => isDark
+      ? AppColors.darkSurface.withValues(alpha: 0.85)
+      : Colors.white.withValues(alpha: 0.85);
+
+  Color get textColor =>
+      isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+
+  Color get searchBg =>
+      isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white;
+
+  LinearGradient get gradient =>
+      isDark ? AppGradients.darkHeader : AppGradients.primaryButton;
+}
 
 class SearchBKS extends StatefulWidget {
   const SearchBKS({
@@ -77,7 +95,7 @@ class _SearchBKSState extends State<SearchBKS> {
           child: ListView.separated(
             itemCount: _filtered.length,
             separatorBuilder: (_, __) =>
-                Divider(height: 1, thickness: 0.8, color: AppColors.border),
+                Divider(height: 0.5, thickness: 0.5, color: context.textColor),
             itemBuilder: (context, index) {
               final plate = _filtered[index];
               final isSelected = plate == _selected;
@@ -112,14 +130,24 @@ class _SearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark
+        ? AppColors.darkSurface.withValues(alpha: 0.85)
+        : Colors.white.withValues(alpha: 0.85);
+    final textColor = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final searchBg = isDark
+        ? Colors.white.withValues(alpha: 0.1)
+        : Colors.white;
+    final searchTextColor = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final gradient = isDark
+        ? AppGradients.darkHeader
+        : AppGradients.primaryButton;
     return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.gradientStart, AppColors.gradientEnd],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-      ),
+      decoration: BoxDecoration(gradient: gradient),
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
       child: SizedBox(
         height: 30.h,
@@ -215,7 +243,7 @@ class _PlateItem extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
+                      color: context.textColor,
                     ),
                   ),
                 ),
@@ -224,11 +252,7 @@ class _PlateItem extends StatelessWidget {
               ],
             ),
           ),
-          Divider(
-            height: 1,
-            thickness: 0.8,
-            color: AppColors.darkTextSecondary,
-          ),
+          Divider(height: 0.5, thickness: 0.5, color: context.textColor),
         ],
       ),
     );
@@ -246,13 +270,7 @@ class _ActionBar extends StatelessWidget {
     return SizedBox(
       height: 40.h,
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.gradientStart, AppColors.gradientEnd],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-        ),
+        decoration: BoxDecoration(gradient: context.gradient),
         child: Row(
           children: [
             // Trở lại
@@ -277,7 +295,7 @@ class _ActionBar extends StatelessWidget {
             ),
 
             // Divider dọc
-            Container(width: 1, height: 30.h, color: Colors.white54),
+            Container(width: 1, height: 40.h, color: Colors.white54),
 
             // Xác nhận
             Expanded(

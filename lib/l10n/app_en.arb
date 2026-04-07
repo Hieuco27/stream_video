@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appTitle": "Camera App",
+  "settings": "Settings",
+  "darkMode": "Display Mode",
+  "lightMode": "Light",
+  "darkModeLabel": "Dark",
+  "language": "Language",
+  "vietnamese": "Tiếng Việt",
+  "english": "English",
+  "changePassword": "Change Password",
+  "logout": "Logout",
+  "logoutConfirmTitle": "Logout",
+  "logoutConfirmMessage": "Are you sure you want to logout?",
+  "cancel": "Cancel",
+  "myInfo": "My Information",
+  "themeSection": "Appearance",
+  "languageSection": "Language"
+}

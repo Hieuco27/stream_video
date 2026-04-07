@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
-import 'package:stream_video/core/text_styles.dart';
 
 class FeatureGridItem extends StatelessWidget {
   final Widget icon;
@@ -17,15 +16,26 @@ class FeatureGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark
+        ? AppColors.darkSurface.withValues(alpha: 0.95)
+        : Colors.white.withValues(alpha: 0.85);
+    final textColor = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final shadowColor = isDark
+        ? Colors.black.withValues(alpha: 0.4)
+        : Colors.black.withValues(alpha: 0.15);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.8),
+          color: AppColors.textColor.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(10.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: Colors.black.withValues(alpha: 0.25),
               blurRadius: 15,
               offset: const Offset(0, 5),
             ),
@@ -43,7 +53,11 @@ class FeatureGridItem extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.titleSmall(),
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],

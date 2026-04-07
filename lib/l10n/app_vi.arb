@@ -1,0 +1,19 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Camera App",
+  "settings": "Cài đặt",
+  "darkMode": "Chế độ",
+  "lightMode": "Sáng",
+  "darkModeLabel": "Tối",
+  "language": "Ngôn ngữ",
+  "vietnamese": "Tiếng Việt",
+  "english": "English",
+  "changePassword": "Đổi mật khẩu",
+  "logout": "Đăng xuất",
+  "logoutConfirmTitle": "Đăng xuất",
+  "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?",
+  "cancel": "Hủy",
+  "myInfo": "Thông tin của tôi",
+  "themeSection": "Giao diện",
+  "languageSection": "Ngôn ngữ"
+}

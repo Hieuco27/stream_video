@@ -29,10 +29,20 @@ class AppColors {
   static const lightTextSecondary = Color(0xFF757575);
 
   // ── Dark ──
-  static const darkBackground = Color(0xFF121212);
-  static const darkSurface = Color(0xFF1E1E1E);
+  static const darkBackground = Color(0xFF0D1B2A); // xanh than đậm
+  static const darkSurface = Color(0xFF1A2C3D); // xanh than nhạt hơn
+  static const darkSurfaceAlt = Color(0xFF5C6875); // layer thứ 3
   static const darkTextPrimary = Color(0xFFEEEEEE);
   static const darkTextSecondary = Color(0xFF9E9E9E);
+
+  // ── Dark gradient (xanh than → xám trắng xanh) ──
+  static const darkGradientStart = Color(0xFF0D1B2A); // xanh than
+  static const darkGradientEnd = Color(0xFF525B64); // xanh xám nhạt
+
+  // ── Dark navbar ──
+  static const darkNavBarBackground = Color(0xFF1A2C3D);
+  static const darkNavBarActive = Color(0xFF4FC3F7); // xanh nhạt nổi bật
+  static const darkNavBarInactive = Color(0xFF607D8B);
 
   // ── Chung (không đổi theo theme) ──
   static const primary1 = Color(0xFF2186FA);

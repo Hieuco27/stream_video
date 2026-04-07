@@ -4,6 +4,7 @@ import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/home/presentation/home_page.dart';
 import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
 import 'package:stream_video/features/profile/presentation/pages/profile_setting_page.dart';
+import 'package:stream_video/features/review/presentation/pages/playback_page.dart';
 import 'package:stream_video/features/vehicles/presentation/page/vehicle_page.dart';
 
 class MainScreen extends StatefulWidget {
@@ -16,7 +17,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) => setState(() => _selectedIndex = index);
+  void _onItemTapped(int index) {
+    FocusScope.of(context).unfocus();
+    setState(() => _selectedIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
           HomePage(onNavigateToTab: _onItemTapped),
           const VehiclePage(),
           const TrackingPage(),
-          const Scaffold(body: Center(child: Text('Xem lại'))),
+          const PlaybackPage(),
           const ProfileSettingPage(),
         ],
       ),
@@ -44,9 +48,6 @@ class _PillNavBar extends StatelessWidget {
 
   final int selectedIndex;
   final ValueChanged<int> onTap;
-
-  static const _active = AppColors.primary;
-  static const _inactive = AppColors.lightTextSecondary;
 
   static const _items = [
     _NavItem(
@@ -78,6 +79,18 @@ class _PillNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = isDark ? AppColors.darkNavBarActive : AppColors.primary;
+    final inactiveColor = isDark
+        ? AppColors.darkNavBarInactive
+        : AppColors.lightTextSecondary;
+    final barBgColor = isDark
+        ? AppColors.darkNavBarBackground
+        : AppColors.navBarBackground;
+    final shadowColor = isDark
+        ? Colors.black.withValues(alpha: 0.3)
+        : Colors.black.withValues(alpha: 0.08);
+
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final barHeight = 40.h + bottomPadding;
     final notchRadius = 30.w;
@@ -92,8 +105,8 @@ class _PillNavBar extends StatelessWidget {
             child: CustomPaint(
               painter: _NotchedNavPainter(
                 notchRadius: notchRadius,
-                color: AppColors.navBarBackground,
-                shadowColor: Colors.black.withValues(alpha: 0.08),
+                color: barBgColor,
+                shadowColor: shadowColor,
               ),
               child: const SizedBox.expand(),
             ),
@@ -125,7 +138,7 @@ class _PillNavBar extends StatelessWidget {
                           Icon(
                             isSelected ? item.activeIcon : item.icon,
                             size: 25.sp,
-                            color: isSelected ? _active : _inactive,
+                            color: isSelected ? activeColor : inactiveColor,
                           ),
                           SizedBox(height: 3.h),
                           Text(
@@ -137,7 +150,7 @@ class _PillNavBar extends StatelessWidget {
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
-                              color: isSelected ? _active : _inactive,
+                              color: isSelected ? activeColor : inactiveColor,
                             ),
                           ),
                         ],

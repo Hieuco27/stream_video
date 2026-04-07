@@ -14,6 +14,10 @@ class ProfileSettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? AppColors.darkBackground : Colors.white;
+    final textColor = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthInitial) {
@@ -21,13 +25,14 @@ class ProfileSettingPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(children: [_buildHeader(), _buildMenuItems(context)]),
+        backgroundColor: bgColor,
+        body: Column(children: [_buildHeader(isDark), _buildMenuItems(context, textColor)]),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isDark) {
+    final gradient = isDark ? AppGradients.darkHeader : AppGradients.primaryButton;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(
@@ -36,7 +41,7 @@ class ProfileSettingPage extends StatelessWidget {
         left: 20.w,
         right: 20.w,
       ),
-      decoration: const BoxDecoration(gradient: AppGradients.primaryButton),
+      decoration: BoxDecoration(gradient: gradient),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -51,7 +56,6 @@ class ProfileSettingPage extends StatelessWidget {
             ),
           ),
           SizedBox(width: 16.w),
-          // Thông tin Text
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,15 +71,13 @@ class ProfileSettingPage extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 InkWell(
-                  onTap: () {
-                    // TODO: Xử lý xem thông tin chi tiết
-                  },
+                  onTap: () {},
                   child: Row(
                     children: [
                       Text(
                         'Thông tin của tôi',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
                         ),
@@ -83,7 +85,7 @@ class ProfileSettingPage extends StatelessWidget {
                       SizedBox(width: 4.w),
                       Icon(
                         Icons.arrow_forward_ios,
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         size: 12.sp,
                       ),
                     ],
@@ -97,7 +99,7 @@ class ProfileSettingPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItems(BuildContext context) {
+  Widget _buildMenuItems(BuildContext context, Color textColor) {
     return Expanded(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -107,6 +109,7 @@ class ProfileSettingPage extends StatelessWidget {
             icon: Icons.lock_outline,
             iconColor: Colors.purple.shade300,
             title: 'Đổi mật khẩu',
+            textColor: textColor,
             onTap: () {
               context.push('/change-password');
             },
@@ -114,10 +117,11 @@ class ProfileSettingPage extends StatelessWidget {
           _buildDivider(),
           _buildItem(
             icon: Icons.settings_outlined,
-            iconColor: Colors.grey.shade700,
+            iconColor: Colors.grey.shade600,
             title: 'Cài đặt',
+            textColor: textColor,
             onTap: () {
-              // TODO: Xử lý cài đặt (đổi theme, ngôn ngữ)
+              context.push('/settings');
             },
           ),
           _buildDivider(),
@@ -125,6 +129,7 @@ class ProfileSettingPage extends StatelessWidget {
             icon: Icons.logout,
             iconColor: Colors.blue.shade400,
             title: 'Đăng xuất',
+            textColor: textColor,
             onTap: () {
               _confirmSignout(context);
             },
@@ -235,6 +240,7 @@ class ProfileSettingPage extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required String title,
+    required Color textColor,
     required VoidCallback onTap,
   }) {
     return ListTile(
@@ -242,11 +248,11 @@ class ProfileSettingPage extends StatelessWidget {
       leading: Icon(icon, color: iconColor, size: 26.sp),
       title: Text(
         title,
-        style: TextStyle(color: AppColors.backgroundColor, fontSize: 14.sp),
+        style: TextStyle(color: textColor, fontSize: 14.sp),
       ),
       trailing: Icon(
         Icons.arrow_forward_ios,
-        color: AppColors.backgroundColor,
+        color: textColor.withValues(alpha: 0.5),
         size: 16.sp,
       ),
       onTap: onTap,

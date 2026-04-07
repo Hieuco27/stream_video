@@ -5,6 +5,7 @@ import 'package:stream_video/main_screen.dart';
 import 'package:stream_video/screens/camera_main_screen.dart';
 import 'package:stream_video/features/profile/presentation/pages/profile_setting_page.dart';
 import 'package:stream_video/features/auth/presentation/change_passwod_page.dart';
+import 'package:stream_video/features/profile/presentation/pages/setting_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -35,8 +36,13 @@ class AppRouter {
         name: 'change-password',
         builder: (context, state) => const ChangePasswordPage(),
       ),
+      GoRoute(
+        path: '/settings',
+        name: 'settings',
+        builder: (context, state) => const SettingsPage(),
+      ),
     ],
-    // Tùy chọn: Xử lý khi trang không tồn tại
+    //  Xử lý khi trang không tồn tại
     errorBuilder: (context, state) =>
         const Scaffold(body: Center(child: Text('Trang không tồn tại!'))),
   );

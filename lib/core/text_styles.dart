@@ -73,8 +73,12 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle titleSmall2() {
-    return GoogleFonts.inter(fontSize: 12.sp, fontWeight: FontWeight.w400);
+  static TextStyle titleSmall2({Color? color}) {
+    return GoogleFonts.inter(
+      fontSize: 12.sp,
+      fontWeight: FontWeight.w400,
+      color: color,
+    );
   }
 
   static TextStyle titleMediumIcon() {

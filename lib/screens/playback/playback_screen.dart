@@ -13,11 +13,13 @@ class PlaybackScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradient = isDark
+        ? AppGradients.darkHeader
+        : AppGradients.primaryButton;
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: AppGradients.primaryButton),
-        ),
+        flexibleSpace: Container(decoration: BoxDecoration(gradient: gradient)),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,

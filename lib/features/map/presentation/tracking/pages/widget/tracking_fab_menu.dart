@@ -77,6 +77,7 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
       _controller.reverse();
     }
   }
+  
 
   void _onItemTap(String tag) {
     switch (tag) {

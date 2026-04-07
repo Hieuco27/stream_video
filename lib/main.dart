@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:stream_video/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:stream_video/l10n/app_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:stream_video/firebase_options.dart';
 import 'package:stream_video/core/app_router.dart';
+import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/service_locator.dart';
-import 'package:stream_video/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:stream_video/features/profile/presentation/bloc/settings/settings_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,15 +40,24 @@ class MyApp extends StatelessWidget {
                 rememberMeUseCase: sl.rememberMeUseCase,
               ),
             ),
-          ],
-          child: MaterialApp.router(
-            routerConfig: AppRouter.router,
-            debugShowCheckedModeBanner: false,
-            title: 'Camera App',
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-              useMaterial3: true,
+            BlocProvider(
+              create: (_) => sl.settingsBloc..add(LoadSettingsEvent()),
             ),
+          ],
+          child: BlocBuilder<SettingsBloc, SettingsState>(
+            builder: (context, settings) {
+              return MaterialApp.router(
+                routerConfig: AppRouter.router,
+                debugShowCheckedModeBanner: false,
+                title: 'Camera App',
+                theme: AppTheme.light,
+                darkTheme: AppTheme.dark,
+                themeMode: settings.themeMode,
+                locale: settings.locale,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+              );
+            },
           ),
         );
       },

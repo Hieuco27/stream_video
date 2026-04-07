@@ -20,7 +20,6 @@ class ChangePasswordUseCase {
   ChangePasswordUseCase(this.repository);
 
   Future<Result<void>> call(ChangePasswordParams params) {
-    // ── Validate tại UseCase (business rule) ──
     if (params.oldPassword.isEmpty) {
       return Future.value(
         Result.error(ValidationFailure(message: 'Mật khẩu cũ không được để trống')),
@@ -47,7 +46,6 @@ class ChangePasswordUseCase {
       );
     }
 
-    // ── Chỉ truyền 2 tham số cần thiết xuống repository ──
     return repository.changePassword(params.oldPassword, params.newPassword);
   }
 }

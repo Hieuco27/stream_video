@@ -8,11 +8,15 @@ class VehicleAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradient = isDark
+        ? AppGradients.darkHeader
+        : AppGradients.primaryButton;
     return Container(
       width: double.infinity,
       height: 140.h,
       decoration: BoxDecoration(
-        gradient: AppGradients.primaryButton,
+        gradient: gradient,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(20.r),
           bottomRight: Radius.circular(20.r),

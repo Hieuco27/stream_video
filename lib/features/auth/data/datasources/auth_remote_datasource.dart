@@ -51,7 +51,6 @@ class AuthRemoteDataSource {
     try {
       final user = _firebaseAuth.currentUser;
       if (user == null) throw Exception('Phiên đăng nhập hết hạn');
-
       await user.reauthenticateWithCredential(
         EmailAuthProvider.credential(email: user.email!, password: oldPassword),
       );
