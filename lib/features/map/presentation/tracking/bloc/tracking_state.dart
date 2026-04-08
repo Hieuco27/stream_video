@@ -36,7 +36,7 @@ class LocationError extends LocationState {
   List<Object?> get props => [message];
 }
 
-// ─── Xe ───────────────────────────────────────────
+// ─── Xe ───
 sealed class VehicleState extends Equatable {
   const VehicleState();
 }
@@ -81,7 +81,12 @@ class VehicleLoaded extends VehicleState {
   }
 
   @override
-  List<Object?> get props => [vehicles, markers, selectedVehicle, markerVersion];
+  List<Object?> get props => [
+    vehicles,
+    markers,
+    selectedVehicle,
+    markerVersion,
+  ];
 }
 
 class VehicleError extends VehicleState {
@@ -126,7 +131,11 @@ class RouteLoaded extends RouteState {
 
   @override
   List<Object?> get props => [
-    destination, points, distanceKm, durationMinutes, destinationAddress,
+    destination,
+    points,
+    distanceKm,
+    durationMinutes,
+    destinationAddress,
   ];
 }
 
@@ -188,13 +197,14 @@ class RouteHistoryError extends RouteHistoryState {
   List<Object?> get props => [message];
 }
 
-// ─── State tổng ──────────────────────────────────────
+// ─── State tổng ───
 class TrackingState extends Equatable {
   final LocationState location;
   final VehicleState vehicle;
   final RouteState route;
   final RouteHistoryState routeHistory;
   final MapType mapType;
+  final LatLng? currentLocation;
 
   const TrackingState({
     this.location = const LocationLoading(),
@@ -202,6 +212,7 @@ class TrackingState extends Equatable {
     this.route = const RouteIdle(),
     this.routeHistory = const RouteHistoryIdle(),
     this.mapType = MapType.normal,
+    this.currentLocation,
   });
 
   TrackingState copyWith({
@@ -210,6 +221,7 @@ class TrackingState extends Equatable {
     RouteState? route,
     RouteHistoryState? routeHistory,
     MapType? mapType,
+    LatLng? currentLocation,
   }) {
     return TrackingState(
       location: location ?? this.location,
@@ -217,22 +229,21 @@ class TrackingState extends Equatable {
       route: route ?? this.route,
       routeHistory: routeHistory ?? this.routeHistory,
       mapType: mapType ?? this.mapType,
+      currentLocation: currentLocation ?? this.currentLocation,
     );
   }
 
   // ─── Getter tiện ích ─────────────────────────────
-  LatLng? get currentLocation =>
-      location is LocationLoaded ? (location as LocationLoaded).location : null;
-
   List<VehicleEntity> get vehicles =>
       vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).vehicles : [];
 
   List<Marker> get markers =>
       vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).markers : [];
 
-  VehicleEntity? get selectedVehicle =>
-      vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).selectedVehicle : null;
+  VehicleEntity? get selectedVehicle => vehicle is VehicleLoaded
+      ? (vehicle as VehicleLoaded).selectedVehicle
+      : null;
 
   @override
-  List<Object?> get props => [location, vehicle, route, routeHistory, mapType];
+  List<Object?> get props => [location, vehicle, route, routeHistory, mapType, currentLocation];
 }

@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/features/widget/location_marker.dart';
 import '../../bloc/playback_bloc.dart';
+import '../../bloc/playback_event.dart';
 import '../../bloc/playback_state.dart';
 
 class PlaybackMap extends StatelessWidget {
@@ -17,7 +19,8 @@ class PlaybackMap extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PlaybackBloc, PlaybackState>(
       builder: (context, state) {
-        if (state.status != PlaybackStatus.loaded || state.routePoints.isEmpty) {
+        if (state.status != PlaybackStatus.loaded ||
+            state.routePoints.isEmpty) {
           return FlutterMap(
             mapController: mapController,
             options: const MapOptions(
@@ -26,7 +29,8 @@ class PlaybackMap extends StatelessWidget {
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: state.mapType.url,
+                subdomains: state.mapType.subdomains,
                 userAgentPackageName: 'com.example.stream_video',
               ),
             ],
@@ -50,16 +54,26 @@ class PlaybackMap extends StatelessWidget {
 
         return FlutterMap(
           mapController: mapController,
-          options: MapOptions(
-            initialCenter: currentLatLng,
-            initialZoom: 15,
-          ),
+          options: MapOptions(initialCenter: currentLatLng, initialZoom: 15),
           children: [
             // Nền bản đồ
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              urlTemplate: state.mapType.url,
+              subdomains: state.mapType.subdomains,
               userAgentPackageName: 'com.example.stream_video',
             ),
+
+            // Điểm GPS thiết bị của bạn
+            if (state.currentLocation != null)
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: state.currentLocation!,
+
+                    child: const LocationMarker(),
+                  ),
+                ],
+              ),
 
             // Polyline chưa đi — MÀU ĐỎ
             if (state.remainingPoints.length >= 2)
@@ -99,8 +113,11 @@ class PlaybackMap extends StatelessWidget {
                       border: Border.all(color: Colors.white, width: 2),
                     ),
                     child: const Center(
-                      child:
-                          Icon(Icons.play_arrow, color: Colors.white, size: 14),
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 14,
+                      ),
                     ),
                   ),
                 ),
@@ -169,21 +186,28 @@ class PlaybackMap extends StatelessWidget {
             MarkerLayer(
               markers: state.history
                   .where((p) => !p.engineOn && p.speedGPS == 0)
-                  .map((p) => Marker(
-                        point: LatLng(p.latitude, p.longitude),
-                        width: 20,
-                        height: 20,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.orange.shade100,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.orange.shade400, width: 1.5),
+                  .map(
+                    (p) => Marker(
+                      point: LatLng(p.latitude, p.longitude),
+                      width: 20,
+                      height: 20,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade100,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.orange.shade400,
+                            width: 1.5,
                           ),
-                          child: Icon(Icons.local_parking,
-                              size: 12, color: Colors.orange.shade700),
                         ),
-                      ))
+                        child: Icon(
+                          Icons.local_parking,
+                          size: 12,
+                          color: Colors.orange.shade700,
+                        ),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ],

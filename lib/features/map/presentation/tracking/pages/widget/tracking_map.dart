@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:stream_video/features/widget/location_marker.dart';
 
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
@@ -25,7 +26,6 @@ class TrackingMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final center = state.currentLocation ?? const LatLng(20.96, 105.82);
-
     return Stack(
       children: [
         FlutterMap(
@@ -38,14 +38,13 @@ class TrackingMap extends StatelessWidget {
             },
           ),
           children: [
-            // Tile (nền bản đồ)
             TileLayer(
               urlTemplate: state.mapType.url,
               subdomains: state.mapType.subdomains,
               userAgentPackageName: 'com.example.stream_video',
             ),
 
-            // Lịch sử lộ trình đo vẽ được tách trích riêng
+            // Lịch sử lộ trình
             if (state.routeHistory is RouteHistoryLoaded)
               RouteHistoryLayer(
                 routeHistory: state.routeHistory as RouteHistoryLoaded,
@@ -62,45 +61,23 @@ class TrackingMap extends StatelessWidget {
                   ),
                 ],
               ),
-
+            if (state.location is LocationLoading)
+              Container(
+                color: Colors.black.withValues(alpha: 0.3),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              ),
             // Vị trí hiện tại — marker có la bàn
             if (state.currentLocation != null)
               MarkerLayer(
                 markers: [
                   Marker(
                     point: state.currentLocation!,
-                    width: 50,
-                    height: 50,
-                    child: StreamBuilder<CompassEvent>(
-                      stream: FlutterCompass.events,
-                      builder: (context, snapshot) {
-                        final heading =
-                            (snapshot.hasData &&
-                                    snapshot.data?.heading != null)
-                                ? snapshot.data!.heading!
-                                : 0.0;
-                        return Transform.rotate(
-                          angle: heading * pi / 180,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.blue.withValues(alpha: 0.5),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.navigation,
-                                color: Colors.blue,
-                                size: 28,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                    child: const LocationMarker(),
                   ),
                 ],
               ),

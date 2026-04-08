@@ -77,7 +77,6 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
       _controller.reverse();
     }
   }
-  
 
   void _onItemTap(String tag) {
     switch (tag) {
@@ -101,9 +100,7 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
   }
 
   void _goToCurrentLocation() {
-    if (widget.state.currentLocation != null) {
-      widget.mapController.move(widget.state.currentLocation!, 15);
-    }
+    context.read<TrackingBloc>().add(const LoadCurrentLocation());
   }
 
   void _showRouteOptions() {

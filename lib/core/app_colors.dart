@@ -11,6 +11,9 @@ class AppColors {
   static const gradientStart = Color(0xFF075797);
   static const gradientEnd = Color(0xFF2184F5);
   static const primary = Color(0xFF007AFF);
+  static const primary2 = Color(0xFF0F6BAE);
+  static const primary3 = Color(0xFF1168A7);
+
   static const primaryDark = Color(0xFF005BB5);
   static const background = Color(0xFFF2F2F7);
   static const surface = Color(0xFFFFFFFF);

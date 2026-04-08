@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:stream_video/features/map/domain/entities/map_type.dart';
+
 
 sealed class PlaybackEvent extends Equatable {
   const PlaybackEvent();
@@ -56,4 +58,18 @@ class ChangeDuration extends PlaybackEvent {
 
   @override
   List<Object?> get props => [hours];
+}
+
+/// Lấy vị trí GPS hiện tại của thiết bị
+class FetchCurrentLocation extends PlaybackEvent {
+  const FetchCurrentLocation();
+}
+
+/// Thay đổi loại bản đồ (Normal / Satellite)
+class ChangeMapType extends PlaybackEvent {
+  final MapType mapType;
+  const ChangeMapType(this.mapType);
+
+  @override
+  List<Object?> get props => [mapType];
 }

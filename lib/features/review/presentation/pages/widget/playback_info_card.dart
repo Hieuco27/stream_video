@@ -29,7 +29,7 @@ class PlaybackInfoCard extends StatelessWidget {
         return Container(
           height: 110.h,
           width: 250.w,
-          margin: EdgeInsets.symmetric(horizontal: 10.w),
+          margin: EdgeInsets.symmetric(horizontal: 6.w),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10.r),
@@ -67,31 +67,36 @@ class PlaybackInfoCard extends StatelessWidget {
                     Text(
                       state.vehiclePlate,
                       style: TextStyle(
-                        fontSize: 13.sp,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textColor,
                       ),
                     ),
-                    SizedBox(width: 10.w),
+                    SizedBox(width: 30.w),
                     Icon(Icons.route_rounded, size: 14.sp, color: Colors.white),
-                    SizedBox(width: 10.w),
+                    SizedBox(width: 30.w),
                     Text(
                       '${state.currentDistanceKm.toStringAsFixed(1)}/'
                       '${state.totalDistanceKm.toStringAsFixed(1)} Km',
-                      style: TextStyle(fontSize: 12.sp, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 10.h),
 
               // Hàng 2: thời gian + vận tốc
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                padding: EdgeInsets.all(8.h),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           timeStr,
@@ -109,9 +114,9 @@ class PlaybackInfoCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    SizedBox(width: 20.w),
+                    SizedBox(width: 30.w),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           '${point.speedGPS.toInt()}',
@@ -123,7 +128,7 @@ class PlaybackInfoCard extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 4.h),
+                          padding: EdgeInsets.all(2.h),
                           child: Text(
                             ' km/h',
                             style: TextStyle(
@@ -134,68 +139,66 @@ class PlaybackInfoCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const Spacer(),
+                    // const Spacer(),
                     // Trạng thái động cơ
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 8.w,
-                        vertical: 4.h,
-                      ),
-                      decoration: BoxDecoration(
-                        color: point.engineOn
-                            ? Colors.green.withValues(alpha: 0.1)
-                            : Colors.red.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6.r),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            point.engineOn
-                                ? Icons.power_rounded
-                                : Icons.power_off_rounded,
-                            size: 14.sp,
-                            color: point.engineOn ? Colors.green : Colors.red,
-                          ),
-                          SizedBox(width: 4.w),
-                          Text(
-                            point.engineOn ? 'ON' : 'OFF',
-                            style: TextStyle(
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w600,
-                              color: point.engineOn ? Colors.green : Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: EdgeInsets.symmetric(
+                    //     horizontal: 8.w,
+                    //     vertical: 4.h,
+                    //   ),
+                    //   decoration: BoxDecoration(
+                    //     color: point.engineOn
+                    //         ? Colors.green.withValues(alpha: 0.1)
+                    //         : Colors.red.withValues(alpha: 0.1),
+                    //     borderRadius: BorderRadius.circular(6.r),
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       Icon(
+                    //         point.engineOn
+                    //             ? Icons.power_rounded
+                    //             : Icons.power_off_rounded,
+                    //         size: 14.sp,
+                    //         color: point.engineOn ? Colors.green : Colors.red,
+                    //       ),
+                    //       SizedBox(width: 4.w),
+                    //       Text(
+                    //         point.engineOn ? 'ON' : 'OFF',
+                    //         style: TextStyle(
+                    //           fontSize: 11.sp,
+                    //           fontWeight: FontWeight.w600,
+                    //           color: point.engineOn ? Colors.green : Colors.red,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
-              SizedBox(height: 6.h),
 
+              Spacer(),
               // Hàng 3: địa chỉ
               if (point.address != null)
-                Row(
-                  children: [
-                    // Icon(
-                    //   Icons.location_on_outlined,
-                    //   size: 14.sp,
-                    //   color: Colors.grey.shade500,
-                    // ),
-                    Expanded(
-                      child: Text(
-                        textAlign: TextAlign.center,
-                        point.address!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11.sp,
-                          color: AppColors.textPrimary,
+                Padding(
+                  padding: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 8.h),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          textAlign: TextAlign.center,
+                          point.address!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: AppColors.textPrimary,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
             ],
           ),

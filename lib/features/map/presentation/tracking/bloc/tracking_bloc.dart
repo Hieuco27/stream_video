@@ -59,7 +59,10 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     final result = await getCurrentLocationUseCase();
     result.when(
       success: (location) {
-        emit(state.copyWith(location: LocationLoaded(location)));
+        emit(state.copyWith(
+          location: LocationLoaded(location),
+          currentLocation: location,
+        ));
       },
       error: (failure) {
         emit(state.copyWith(location: LocationError(failure.message)));
@@ -124,7 +127,10 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     final result = await getCurrentLocationUseCase();
     result.when(
       success: (location) {
-        emit(state.copyWith(location: LocationLoaded(location)));
+        emit(state.copyWith(
+           location: LocationLoaded(location),
+           currentLocation: location,
+        ));
       },
       error: (failure) {
         emit(state.copyWith(location: LocationError(failure.message)));

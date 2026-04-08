@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_video/features/map/data/models/mock_route_history.dart';
+import 'package:stream_video/features/review/domain/usecases/get_current_location_usecase.dart';
+import 'package:stream_video/core/service_locator.dart';
 import 'playback_event.dart';
 import 'playback_state.dart';
 
 class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
   Timer? _playbackTimer;
+  final GetCurrentLocationUseCase getCurrentLocationUseCase;
 
-  PlaybackBloc() : super(const PlaybackState()) {
+  PlaybackBloc({required this.getCurrentLocationUseCase})
+    : super(const PlaybackState()) {
     on<LoadPlaybackData>(_onLoadData);
     on<PlayPlayback>(_onPlay);
     on<PausePlayback>(_onPause);
@@ -17,6 +21,32 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     on<TickPlayback>(_onTick);
     on<ChangePlaybackSpeed>(_onChangeSpeed);
     on<ChangeDuration>(_onChangeDuration);
+    on<FetchCurrentLocation>(_onFetchCurrentLocation);
+    on<ChangeMapType>(_onChangeMapType);
+  }
+
+  // GPS hiện tại
+  Future<void> _onFetchCurrentLocation(
+    FetchCurrentLocation event,
+    Emitter<PlaybackState> emit,
+  ) async {
+    emit(state.copyWith(location: const LocationLoading()));
+    final result = await getCurrentLocationUseCase();
+    result.when(
+      success: (location) => emit(
+        state.copyWith(
+          location: LocationLoaded(location),
+          currentLocation: location,
+        ),
+      ),
+      error: (failure) =>
+          emit(state.copyWith(location: LocationError(failure.message))),
+    );
+  }
+
+  // Thay đổi loại bản đồ
+  void _onChangeMapType(ChangeMapType event, Emitter<PlaybackState> emit) {
+    emit(state.copyWith(mapType: event.mapType));
   }
 
   // ─── Load mock data ────────────────────────────────
@@ -76,15 +106,13 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     emit(state.copyWith(isPlaying: false));
   }
 
-  // ─── Seek ──────────────────────────────────────────
-
+  //Seek
   void _onSeek(SeekPlayback event, Emitter<PlaybackState> emit) {
     final clampedIndex = event.index.clamp(0, state.totalPoints - 1);
     emit(state.copyWith(currentIndex: clampedIndex));
   }
 
-  // ─── Tick (timer) ──────────────────────────────────
-
+  // Tick (timer)
   void _onTick(TickPlayback event, Emitter<PlaybackState> emit) {
     if (!state.isPlaying) return;
 
@@ -99,8 +127,7 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     }
   }
 
-  // ─── Speed ─────────────────────────────────────────
-
+  // Speed
   void _onChangeSpeed(ChangePlaybackSpeed event, Emitter<PlaybackState> emit) {
     emit(state.copyWith(playbackSpeed: event.speed));
     if (state.isPlaying) {
@@ -109,13 +136,12 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     }
   }
 
-  // ─── Duration filter ───────────────────────────────
-
+  // Duration filter
   void _onChangeDuration(ChangeDuration event, Emitter<PlaybackState> emit) {
     add(LoadPlaybackData(vehicleId: state.vehicleId, hours: event.hours));
   }
 
-  // ─── Timer helpers ─────────────────────────────────
+  // Timer helpers
 
   void _startTimer() {
     _stopTimer();

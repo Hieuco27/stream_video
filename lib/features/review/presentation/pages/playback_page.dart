@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
+import 'package:stream_video/core/service_locator.dart';
+import 'package:stream_video/features/review/presentation/pages/widget/playback_action.dart';
 import '../bloc/playback_bloc.dart';
 import '../bloc/playback_event.dart';
 import '../bloc/playback_state.dart';
@@ -19,9 +21,12 @@ class PlaybackPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          PlaybackBloc()
-            ..add(const LoadPlaybackData(vehicleId: 'V001', hours: 1)),
+      create: (context) =>
+          PlaybackBloc(
+              getCurrentLocationUseCase: sl.reviewGetCurrentLocationUseCase,
+            )
+            ..add(const LoadPlaybackData(vehicleId: 'V001', hours: 1))
+            ..add(const FetchCurrentLocation()),
       child: const _PlaybackView(),
     );
   }
@@ -46,12 +51,19 @@ class _PlaybackViewState extends State<_PlaybackView> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.primary3,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(gradient: headerGradient),
-        ),
+
         centerTitle: true,
+        leading: IconButton(
+          icon: Image.asset(
+            'assets/images/list.png',
+            width: 24.w,
+            height: 25.h,
+            color: AppColors.textColor,
+          ),
+          onPressed: () {},
+        ),
         title: Text(
           'Xem lại',
           style: TextStyle(
@@ -65,93 +77,135 @@ class _PlaybackViewState extends State<_PlaybackView> {
             icon: Icon(
               Icons.local_shipping_rounded,
               color: AppColors.textColor,
-              size: 22.sp,
+              size: 24.sp,
             ),
             onPressed: () {
               // TODO: chọn xe
             },
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(40),
+          child: Padding(
+            padding: EdgeInsets.only(left: 12.w, right: 12.w, bottom: 10.h),
+            child: const TimeFilterBar(),
+          ),
+        ),
       ),
-      body: BlocConsumer<PlaybackBloc, PlaybackState>(
-        listenWhen: (prev, curr) =>
-            prev.currentIndex != curr.currentIndex && curr.isPlaying,
+      body: BlocListener<PlaybackBloc, PlaybackState>(
+        listenWhen: (prev, curr) => prev.location != curr.location,
         listener: (context, state) {
-          // Auto-follow xe khi đang play
-          final point = state.currentPoint;
-          if (point != null) {
-            _mapController.move(
-              LatLng(point.latitude, point.longitude),
-              _mapController.camera.zoom,
+          if (state.location is LocationLoaded) {
+            final loc = (state.location as LocationLoaded).location;
+            _mapController.move(loc, 15.0);
+          } else if (state.location is LocationError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text((state.location as LocationError).message),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
-        builder: (context, state) {
-          return Column(
-            children: [
-              // Thanh chọn thời gian
-              const TimeFilterBar(),
-
-              // Bản đồ + info card overlay
-              Expanded(
-                child: Stack(
-                  children: [
-                    // Bản đồ
-                    PlaybackMap(mapController: _mapController),
-
-                    // Loading overlay
-                    if (state.status == PlaybackStatus.loading)
-                      const Center(
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(20),
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      ),
-
-                    // Info card overlay (trên cùng)
-                    if (state.status == PlaybackStatus.loaded)
-                      Positioned(
-                        top: 8.h,
-                        left: 8.w,
-                        child: const PlaybackInfoCard(),
-                      ),
-
-                    // Error overlay
-                    if (state.status == PlaybackStatus.error)
-                      Center(
-                        child: Card(
-                          color: Colors.red.shade50,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red,
-                                  size: 40,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  state.errorMessage ?? 'Đã xảy ra lỗi',
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              ],
+        child: BlocConsumer<PlaybackBloc, PlaybackState>(
+          listenWhen: (prev, curr) =>
+              prev.currentIndex != curr.currentIndex && curr.isPlaying,
+          listener: (context, state) {
+            // Auto-follow xe khi đang play
+            final point = state.currentPoint;
+            if (point != null) {
+              _mapController.move(
+                LatLng(point.latitude, point.longitude),
+                _mapController.camera.zoom,
+              );
+            }
+          },
+          builder: (context, state) {
+            return Column(
+              children: [
+                // Bản đồ + info card overlay
+                Expanded(
+                  child: Stack(
+                    children: [
+                      // Bản đồ
+                      PlaybackMap(mapController: _mapController),
+                      // Loading overlay
+                      if (state.status == PlaybackStatus.loading)
+                        const Center(
+                          child: Card(
+                            child: Padding(
+                              padding: EdgeInsets.all(20),
+                              child: CircularProgressIndicator(),
                             ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-              ),
 
-              // Thanh điều khiển dưới cùng
-              const PlaybackControlBar(),
-            ],
-          );
-        },
+                      // Đang lấy vị trí GPS overlay
+                      if (state.location is LocationLoading)
+                        Container(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      // Info card overlay
+                      if (state.status == PlaybackStatus.loaded)
+                        Positioned(
+                          top: 8.h,
+                          left: 8.w,
+                          child: const PlaybackInfoCard(),
+                        ),
+
+                      // Error overlay
+                      if (state.status == PlaybackStatus.error)
+                        Center(
+                          child: Card(
+                            color: Colors.red.shade50,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    state.errorMessage ?? 'Đã xảy ra lỗi',
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      Positioned(
+                        right: 12.w,
+                        bottom: 12.h,
+                        child: PlaybackAction(
+                          mapController: _mapController,
+                          state: state,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Thanh điều khiển dưới cùng
+                const PlaybackControlBar(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

@@ -43,8 +43,9 @@ class _TrackingViewState extends State<_TrackingView> {
   Widget build(BuildContext context) {
     return BlocBuilder<TrackingBloc, TrackingState>(
       builder: (context, state) {
-        // Loading vị trí
-        if (state.location is LocationLoading) {
+        // Loading vị trí ban đầu
+        if (state.location is LocationLoading &&
+            state.currentLocation == null) {
           return const Scaffold(
             body: Center(
               child: Column(
@@ -93,21 +94,36 @@ class _TrackingViewState extends State<_TrackingView> {
         // Hiện bản đồ
         return Scaffold(
           appBar: TrackingAppBar(state: state, mapController: _mapController),
-          body: Stack(
-            children: [
-              TrackingMap(state: state, mapController: _mapController),
-              // Nút tìm kiếm — góc trên phải sát AppBar
-              Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
-              // FAB menu — góc dưới phải
-              Positioned(
-                right: 16.w,
-                bottom: 24.h,
-                child: TrackingFabMenu(
-                  state: state,
-                  mapController: _mapController,
+          body: BlocListener<TrackingBloc, TrackingState>(
+            listenWhen: (prev, curr) => prev.location != curr.location,
+            listener: (context, state) {
+              if (state.location is LocationLoaded) {
+                if (state.currentLocation != null) {
+                  _mapController.move(state.currentLocation!, 15.0);
+                }
+              } else if (state.location is LocationError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text((state.location as LocationError).message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: Stack(
+              children: [
+                TrackingMap(state: state, mapController: _mapController),
+                Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
+                Positioned(
+                  right: 16.w,
+                  bottom: 24.h,
+                  child: TrackingFabMenu(
+                    state: state,
+                    mapController: _mapController,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

@@ -9,7 +9,7 @@ import '../../bloc/playback_state.dart';
 class PlaybackControlBar extends StatelessWidget {
   const PlaybackControlBar({super.key});
 
-  static const _speeds = [1.0, 2.0, 4.0, 8.0, 16.0];
+  static const _speeds = [1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0];
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +18,11 @@ class PlaybackControlBar extends StatelessWidget {
         if (state.status != PlaybackStatus.loaded) {
           return const SizedBox.shrink();
         }
-
         return Container(
-          height: 45.h,
-          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+          height: 40.h,
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
           decoration: BoxDecoration(
-            color: AppColors.primary1,
+            color: AppColors.primary3,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.08),
@@ -50,12 +49,12 @@ class PlaybackControlBar extends StatelessWidget {
                     width: 30.w,
                     height: 30.w,
                     decoration: BoxDecoration(
-                      color: AppColors.primary1,
+                      color: AppColors.primary3,
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary1.withValues(alpha: 0.3),
+                          color: AppColors.primary3.withValues(alpha: 0.3),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -79,12 +78,13 @@ class PlaybackControlBar extends StatelessWidget {
                       activeTrackColor: AppColors.textColor,
                       inactiveTrackColor: AppColors.darkTextSecondary
                           .withValues(alpha: 0.9),
-                      thumbColor: AppColors.primary1,
-                      thumbShape: _VehicleThumbShape(),
+                      thumbColor: AppColors.primary3,
+                      thumbShape: const _VehicleThumbShape(),
                       trackHeight: 2,
                       overlayShape: const RoundSliderOverlayShape(
-                        overlayRadius: 16,
+                        overlayRadius: 20,
                       ),
+                      overlayColor: Colors.white.withValues(alpha: 0.15),
                     ),
                     child: Slider(
                       value: state.currentIndex.toDouble(),
@@ -118,7 +118,7 @@ class PlaybackControlBar extends StatelessWidget {
                     height: 30.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.primary1,
+                      color: AppColors.primary3,
                       border: Border.all(color: AppColors.textColor, width: 3),
                     ),
                     child: Center(
@@ -141,10 +141,14 @@ class PlaybackControlBar extends StatelessWidget {
   }
 }
 
-/// Thumb shape nhỏ hình tròn với icon xe
+/// Thumb shape với hiệu ứng:
 class _VehicleThumbShape extends SliderComponentShape {
+  const _VehicleThumbShape();
+
+  static double _prevValue = 0;
+
   @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) => const Size(20, 20);
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) => const Size(32, 32);
 
   @override
   void paint(
@@ -162,28 +166,76 @@ class _VehicleThumbShape extends SliderComponentShape {
     required Size sizeWithOverflow,
   }) {
     final canvas = context.canvas;
+    final icon = Icons.local_shipping_rounded;
 
-    // Vòng ngoài trắng
-    final outerPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, 11, outerPaint);
+    final activation = activationAnimation.value;
+    final baseSize = 24.0;
+    final holdSize = 32.0;
+    final currentSize = baseSize + (holdSize - baseSize) * activation;
 
-    // Vòng trong xanh
-    final innerPaint = Paint()
-      ..color = AppColors.primary1
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, 8, innerPaint);
+    final direction = value - _prevValue;
+    _prevValue = value;
 
-    // Icon xe nhỏ (vẽ tam giác)
-    final iconPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    final path = Path()
-      ..moveTo(center.dx, center.dy - 5)
-      ..lineTo(center.dx - 4, center.dy + 3)
-      ..lineTo(center.dx + 4, center.dy + 3)
-      ..close();
-    canvas.drawPath(path, iconPaint);
+    if (direction.abs() > 0.001) {
+      final trackWidth = parentBox.size.width;
+
+      for (int i = 3; i >= 1; i--) {
+        final trailOffset = -direction.sign * (i * 8.0);
+        final trailCenter = center + Offset(trailOffset.clamp(-24, 24), 0);
+
+        if (trailCenter.dx < 0 || trailCenter.dx > trackWidth) continue;
+
+        final opacity = (0.15 - i * 0.04).clamp(0.0, 1.0);
+
+        final trailPainter = TextPainter(textDirection: TextDirection.ltr);
+        trailPainter.text = TextSpan(
+          text: String.fromCharCode(icon.codePoint),
+          style: TextStyle(
+            fontSize: baseSize - i * 2,
+            fontFamily: icon.fontFamily,
+            package: icon.fontPackage,
+            color: Colors.white.withValues(alpha: opacity),
+          ),
+        );
+        trailPainter.layout();
+        trailPainter.paint(
+          canvas,
+          trailCenter - Offset(trailPainter.width / 2, trailPainter.height / 2),
+        );
+      }
+    }
+
+    // ── 3. Vẽ icon chính ──
+    // Glow mờ chỉ phía SAU xe (ngược hướng di chuyển)
+    if (activation > 0.1) {
+      // Hướng ngược lại = phía sau xe
+      final behindOffset = direction >= 0 ? -12.0 : 12.0;
+      final glowPaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.25 * activation)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+      final glowRect = Rect.fromCenter(
+        center: center + Offset(behindOffset * activation, 0),
+        width: currentSize * 0.8,
+        height: currentSize * 0.6,
+      );
+      canvas.drawOval(glowRect, glowPaint);
+    }
+
+    // Icon xe chính
+    final iconPainter = TextPainter(textDirection: TextDirection.ltr);
+    iconPainter.text = TextSpan(
+      text: String.fromCharCode(icon.codePoint),
+      style: TextStyle(
+        fontSize: currentSize,
+        fontFamily: icon.fontFamily,
+        package: icon.fontPackage,
+        color: Colors.white,
+      ),
+    );
+    iconPainter.layout();
+    iconPainter.paint(
+      canvas,
+      center - Offset(iconPainter.width / 2, iconPainter.height / 2),
+    );
   }
 }

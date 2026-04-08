@@ -6,96 +6,107 @@ import '../../bloc/playback_bloc.dart';
 import '../../bloc/playback_event.dart';
 import '../../bloc/playback_state.dart';
 
-class TimeFilterBar extends StatelessWidget {
+class TimeFilterBar extends StatelessWidget implements PreferredSizeWidget {
   const TimeFilterBar({super.key});
 
   static const _filters = [1, 4, 8, 24];
+
+  @override
+  Size get preferredSize => const Size.fromHeight(40);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlaybackBloc, PlaybackState>(
       buildWhen: (prev, curr) => prev.selectedHours != curr.selectedHours,
       builder: (context, state) {
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-          child: Row(
-            children: [
-              ..._filters.map((h) => _FilterChip(
-                    label: '${h}H',
-                    isSelected: state.selectedHours == h,
-                    onTap: () {
-                      context.read<PlaybackBloc>().add(ChangeDuration(h));
-                    },
-                  )),
-              _FilterChip(
-                label: 'Tùy chọn',
-                isSelected: !_filters.contains(state.selectedHours),
-                onTap: () async {
-                  final picked = await showTimePicker(
-                    context: context,
-                    initialTime: const TimeOfDay(hour: 2, minute: 0),
+        return SizedBox(
+          height: 25.h,
+          child: Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: AppColors.primary3,
+              border: Border.all(color: AppColors.textColor, width: 1),
+              borderRadius: BorderRadius.circular(25.r),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Các chip 1H, 4H, 8H, 24H – xen kẽ divider
+                ..._filters.expand((h) {
+                  final chip = Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<PlaybackBloc>().add(ChangeDuration(h));
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          color: state.selectedHours == h
+                              ? AppColors.background
+                              : Colors.transparent,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${h}H',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w500,
+                            color: state.selectedHours == h
+                                ? Colors.black
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   );
-                  if (picked != null && context.mounted) {
-                    final hours = picked.hour.clamp(1, 48);
-                    context.read<PlaybackBloc>().add(ChangeDuration(hours));
-                  }
-                },
-              ),
-            ],
+                  return [
+                    chip,
+                    Container(
+                      width: 1,
+                      color: Colors.white.withValues(alpha: 0.5),
+                    ),
+                  ];
+                }),
+
+                // Chip "Tùy chọn" (cuối cùng, không có divider sau)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: context,
+                        initialTime: const TimeOfDay(hour: 2, minute: 0),
+                      );
+                      if (picked != null && context.mounted) {
+                        final hours = picked.hour.clamp(1, 48);
+                        context.read<PlaybackBloc>().add(ChangeDuration(hours));
+                      }
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        color: !_filters.contains(state.selectedHours)
+                            ? AppColors.background
+                            : Colors.transparent,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Tùy chọn',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w600,
+                          color: !_filters.contains(state.selectedHours)
+                              ? Colors.black
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
-    );
-  }
-}
-
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: EdgeInsets.symmetric(horizontal: 3.w),
-          padding: EdgeInsets.symmetric(vertical: 8.h),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary1 : Colors.white,
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(
-              color: isSelected ? AppColors.primary1 : const Color(0xFFDDDDDD),
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary1.withValues(alpha: 0.3),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : const Color(0xFF555555),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

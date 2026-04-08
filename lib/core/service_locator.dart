@@ -27,6 +27,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../features/profile/presentation/bloc/settings/settings_repository.dart';
 import '../features/profile/presentation/bloc/settings/settings_bloc.dart';
 
+import '../features/review/domain/repositories/location_repository.dart'
+    as review_loc_repo;
+import '../features/review/data/repositories/location_repository_impl.dart'
+    as review_loc_repo_impl;
+import '../features/review/domain/usecases/get_current_location_usecase.dart'
+    as review_usecase;
+
 /// Quản lý tất cả dependencies của app.
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -78,6 +85,16 @@ class ServiceLocator {
 
   late final ReverseGeocodeUseCase reverseGeocodeUseCase =
       ReverseGeocodeUseCase(nominatimService);
+
+  // ---------Review feature---------
+  late final review_loc_repo.LocationRepository reviewLocationRepository =
+      review_loc_repo_impl.LocationRepositoryImpl(
+        locationService: locationService,
+      );
+  late final review_usecase.GetCurrentLocationUseCase
+  reviewGetCurrentLocationUseCase = review_usecase.GetCurrentLocationUseCase(
+    repository: reviewLocationRepository,
+  );
 
   late final SignInUseCase signInUseCase = SignInUseCase(authRepository);
   late final SignOutUseCase signOutUseCase = SignOutUseCase(authRepository);
