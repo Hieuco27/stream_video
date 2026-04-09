@@ -7,16 +7,12 @@ import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.da
 
 extension AppThemeExtension on BuildContext {
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
-
   Color get cardColor =>
-      isDark ? AppColors.darkSurfaceAlt : Colors.white.withValues(alpha: 0.85);
-
+      isDark ? AppColors.darkSurfaceAlt : Colors.white.withValues(alpha: 0.9);
   Color get textColor =>
       isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-
   Color get searchBg =>
       isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white;
-
   Color get backgroundCard =>
       isDark ? AppColors.darkGradientEnd : AppColors.darkTextPrimary;
 }
@@ -24,23 +20,39 @@ extension AppThemeExtension on BuildContext {
 class VehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;
   final VoidCallback? onTap;
+  final bool isSelected;
 
-  const VehicleCard({super.key, required this.vehicle, this.onTap});
+  const VehicleCard({
+    super.key,
+    required this.vehicle,
+    this.onTap,
+    this.isSelected = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 12.w, vertical: 5.h),
+
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 5.h),
         padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
-          color: context.cardColor,
+          color: isSelected
+              ? context.cardColor.withValues(alpha: 0.55)
+              : context.cardColor,
           borderRadius: BorderRadius.circular(12.r),
+          border: isSelected
+              ? Border.all(
+                  color: Colors.white.withValues(alpha: 0.6),
+                  width: 1.5,
+                )
+              : null,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.18),
-              blurRadius: 3,
+              color: Colors.black.withValues(alpha: isSelected ? 0.28 : 0.18),
+              blurRadius: isSelected ? 6 : 3,
               spreadRadius: 2,
               offset: const Offset(0, 2),
             ),

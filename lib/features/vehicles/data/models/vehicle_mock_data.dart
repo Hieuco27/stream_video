@@ -4,7 +4,7 @@ final List<VehicleEntity> vehicleMockData = [
   VehicleEntity(
     id: '1',
     name: 'Xe 1',
-    plate: '123456',
+    plate: '35B123456',
     type: 'Xe máy',
     status: 'Đang hoạt động',
     location: 'Hà Nội, Việt Nam',
@@ -22,7 +22,7 @@ final List<VehicleEntity> vehicleMockData = [
   VehicleEntity(
     id: '2',
     name: 'Xe 2',
-    plate: '123456',
+    plate: '35b126456',
     type: 'Xe máy',
     status: 'Đang hoạt động',
     location: 'Hà Nội',
@@ -40,7 +40,7 @@ final List<VehicleEntity> vehicleMockData = [
   VehicleEntity(
     id: '3',
     name: 'Xe 3',
-    plate: '123456',
+    plate: '35b678901',
     type: 'Xe máy',
     status: 'Đang hoạt động',
     location: 'Hà Nội',
@@ -58,7 +58,7 @@ final List<VehicleEntity> vehicleMockData = [
   VehicleEntity(
     id: '4',
     name: 'Xe 4',
-    plate: '123456',
+    plate: '35b673401',
     type: 'Xe máy',
     status: 'Đang hoạt động',
     location: 'Hà Nội',

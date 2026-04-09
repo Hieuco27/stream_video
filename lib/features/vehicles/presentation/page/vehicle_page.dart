@@ -12,7 +12,7 @@ class VehiclePage extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark
         ? AppColors.lightTextPrimary.withValues(alpha: 0.85)
-        : Colors.white.withValues(alpha: 0.85);
+        : Colors.white;
     return Scaffold(
       backgroundColor: cardColor,
       body: Column(

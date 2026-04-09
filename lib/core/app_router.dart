@@ -1,11 +1,15 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_video/features/auth/presentation/sign_in_page.dart';
+import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
 import 'package:stream_video/main_screen.dart';
 import 'package:stream_video/screens/camera_main_screen.dart';
 import 'package:stream_video/features/profile/presentation/pages/profile_setting_page.dart';
 import 'package:stream_video/features/auth/presentation/change_passwod_page.dart';
 import 'package:stream_video/features/profile/presentation/pages/setting_page.dart';
+import 'package:stream_video/features/review/presentation/pages/playback_page.dart';
+import 'package:stream_video/features/vehicles/presentation/page/vehicle_detail_page.dart';
+import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -40,6 +44,27 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/route',
+        name: 'route',
+        builder: (context, state) => const PlaybackPage(),
+      ),
+      GoRoute(
+        path: '/detail',
+        name: 'detail',
+        builder: (context, state) {
+          final vehicle = state.extra as VehicleEntity;
+          return VehicleDetailPage(vehicle: vehicle);
+        },
+      ),
+      GoRoute(
+        path: '/map',
+        name: 'map',
+        builder: (context, state) {
+          final vehicle = state.extra as VehicleEntity?;
+          return TrackingPage(vehicle: vehicle);
+        },
       ),
     ],
     //  Xử lý khi trang không tồn tại

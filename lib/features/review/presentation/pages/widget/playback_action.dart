@@ -9,6 +9,10 @@ import 'package:stream_video/features/review/presentation/bloc/playback_event.da
 import 'package:stream_video/features/map/domain/entities/map_type.dart';
 
 class PlaybackAction extends StatefulWidget {
+  final MapController mapController;
+  final PlaybackState state;
+  final VoidCallback onToggleInfoCard;
+  final bool showInfoCard;
   const PlaybackAction({
     super.key,
     required this.mapController,
@@ -16,11 +20,6 @@ class PlaybackAction extends StatefulWidget {
     required this.onToggleInfoCard,
     required this.showInfoCard,
   });
-
-  final MapController mapController;
-  final PlaybackState state;
-  final VoidCallback onToggleInfoCard;
-  final bool showInfoCard;
 
   @override
   State<PlaybackAction> createState() => _PlaybackActionState();

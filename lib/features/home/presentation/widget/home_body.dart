@@ -55,8 +55,8 @@ class HomeBody extends StatelessWidget {
       _FeatureItem(
         icon: Image.asset(
           'assets/images/home/map.png',
-          width: 40.sp,
-          height: 40.sp,
+          width: 20.sp,
+          height: 20.sp,
         ),
         label: 'Bản đồ',
         onTap: () => onNavigateToTab(2),

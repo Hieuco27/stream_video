@@ -9,9 +9,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'widget/tracking_app_bar.dart';
 import 'widget/tracking_map.dart';
 import 'widget/tracking_fab_menu.dart';
+import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_info_panel.dart';
+import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class TrackingPage extends StatelessWidget {
-  const TrackingPage({super.key});
+  final VehicleEntity? vehicle;
+  const TrackingPage({super.key, this.vehicle});
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +27,14 @@ class TrackingPage extends StatelessWidget {
         reverseGeocodeUseCase: sl.reverseGeocodeUseCase,
         getRouteHistoryUseCase: sl.getRouteHistoryUseCase,
       )..add(const LoadCurrentLocation()),
-      child: const _TrackingView(),
+      child: _TrackingView(vehicle: vehicle),
     );
   }
 }
 
 class _TrackingView extends StatefulWidget {
-  const _TrackingView();
+  final VehicleEntity? vehicle;
+  const _TrackingView({this.vehicle});
 
   @override
   State<_TrackingView> createState() => _TrackingViewState();
@@ -38,6 +42,7 @@ class _TrackingView extends StatefulWidget {
 
 class _TrackingViewState extends State<_TrackingView> {
   final MapController _mapController = MapController();
+  bool _showPanel = true; // điều khiển hiển thị VehicleInfoPanel
 
   @override
   Widget build(BuildContext context) {
@@ -92,8 +97,13 @@ class _TrackingViewState extends State<_TrackingView> {
         }
 
         // Hiện bản đồ
+        final hasVehicle = widget.vehicle != null;
         return Scaffold(
-          appBar: TrackingAppBar(state: state, mapController: _mapController),
+          appBar: TrackingAppBar(
+            state: state,
+            mapController: _mapController,
+            showBackButton: hasVehicle,
+          ),
           body: BlocListener<TrackingBloc, TrackingState>(
             listenWhen: (prev, curr) => prev.location != curr.location,
             listener: (context, state) {
@@ -113,15 +123,29 @@ class _TrackingViewState extends State<_TrackingView> {
             child: Stack(
               children: [
                 TrackingMap(state: state, mapController: _mapController),
-                Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
+                // Chỉ ẩn SearchButton khi có xe, FAB vẫn hiện
+                if (!hasVehicle)
+                  Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
+                // FAB luôn hiện
                 Positioned(
                   right: 16.w,
-                  bottom: 24.h,
+                  bottom: hasVehicle && _showPanel ? 200.h : 24.h,
                   child: TrackingFabMenu(
                     state: state,
                     mapController: _mapController,
                   ),
                 ),
+                // Panel thông tin xe — chỉ ẩn/hiện, không pop trang
+                if (hasVehicle && _showPanel)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: VehicleInfoPanel(
+                      vehicle: widget.vehicle!,
+                      onClose: () => setState(() => _showPanel = false),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -131,7 +155,6 @@ class _TrackingViewState extends State<_TrackingView> {
   }
 }
 
-// ─── Nút tìm kiếm ─────────────────────────────────────────────────────────────
 class _SearchButton extends StatelessWidget {
   const _SearchButton();
 
@@ -141,9 +164,7 @@ class _SearchButton extends StatelessWidget {
     return Tooltip(
       message: 'Tìm kiếm',
       child: GestureDetector(
-        onTap: () {
-          // TODO: mở màn hình tìm kiếm
-        },
+        onTap: () {},
         child: Container(
           width: size,
           height: size,
