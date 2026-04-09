@@ -36,7 +36,7 @@ class LocationError extends LocationState {
   List<Object?> get props => [message];
 }
 
-// ─── State tổng ───────────────────────────────────────
+//State tổng
 class PlaybackState extends Equatable {
   final PlaybackStatus status;
   final String? errorMessage;

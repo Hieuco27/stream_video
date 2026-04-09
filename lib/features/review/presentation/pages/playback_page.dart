@@ -14,6 +14,7 @@ import 'widget/time_filter_bar.dart';
 import 'widget/playback_info_card.dart';
 import 'widget/playback_map.dart';
 import 'widget/playback_control_bar.dart';
+import 'widget/route_log_sheet.dart';
 
 class PlaybackPage extends StatelessWidget {
   const PlaybackPage({super.key});
@@ -41,6 +42,7 @@ class _PlaybackView extends StatefulWidget {
 
 class _PlaybackViewState extends State<_PlaybackView> {
   final MapController _mapController = MapController();
+  bool _showInfoCard = true;
 
   @override
   Widget build(BuildContext context) {
@@ -50,19 +52,29 @@ class _PlaybackViewState extends State<_PlaybackView> {
         : AppGradients.primaryButton;
 
     return Scaffold(
+      drawer: BlocProvider.value(
+        value: context.read<PlaybackBloc>(),
+        child: Drawer(
+          width: MediaQuery.of(context).size.width * 0.8,
+          elevation: 0,
+          child: const RouteLogSheet(),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: AppColors.primary3,
         elevation: 0,
 
         centerTitle: true,
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/images/list.png',
-            width: 24.w,
-            height: 25.h,
-            color: AppColors.textColor,
+        leading: Builder(
+          builder: (drawerContext) => IconButton(
+            icon: Image.asset(
+              'assets/images/list.png',
+              width: 24.w,
+              height: 25.h,
+              color: AppColors.textColor,
+            ),
+            onPressed: () => Scaffold.of(drawerContext).openDrawer(),
           ),
-          onPressed: () {},
         ),
         title: Text(
           'Xem lại',
@@ -155,7 +167,8 @@ class _PlaybackViewState extends State<_PlaybackView> {
                         ),
 
                       // Info card overlay
-                      if (state.status == PlaybackStatus.loaded)
+                      if (state.status == PlaybackStatus.loaded &&
+                          _showInfoCard)
                         Positioned(
                           top: 8.h,
                           left: 8.w,
@@ -194,6 +207,10 @@ class _PlaybackViewState extends State<_PlaybackView> {
                         child: PlaybackAction(
                           mapController: _mapController,
                           state: state,
+                          showInfoCard: _showInfoCard,
+                          onToggleInfoCard: () {
+                            setState(() => _showInfoCard = !_showInfoCard);
+                          },
                         ),
                       ),
                     ],

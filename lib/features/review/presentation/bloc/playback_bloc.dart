@@ -49,8 +49,7 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     emit(state.copyWith(mapType: event.mapType));
   }
 
-  // ─── Load mock data ────────────────────────────────
-
+  // Load mock data
   Future<void> _onLoadData(
     LoadPlaybackData event,
     Emitter<PlaybackState> emit,
@@ -90,7 +89,6 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
   }
 
   // ─── Play / Pause ──
-
   void _onPlay(PlayPlayback event, Emitter<PlaybackState> emit) {
     if (state.status != PlaybackStatus.loaded) return;
     if (state.isFinished) {
@@ -106,13 +104,13 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     emit(state.copyWith(isPlaying: false));
   }
 
-  //Seek
+  // tua vị trí xe
   void _onSeek(SeekPlayback event, Emitter<PlaybackState> emit) {
     final clampedIndex = event.index.clamp(0, state.totalPoints - 1);
     emit(state.copyWith(currentIndex: clampedIndex));
   }
 
-  // Tick (timer)
+  // thời gian chọn tích đến current index
   void _onTick(TickPlayback event, Emitter<PlaybackState> emit) {
     if (!state.isPlaying) return;
 
@@ -142,7 +140,6 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
   }
 
   // Timer helpers
-
   void _startTimer() {
     _stopTimer();
     final intervalMs = (500 / state.playbackSpeed).round();

@@ -13,16 +13,22 @@ class PlaybackAction extends StatefulWidget {
     super.key,
     required this.mapController,
     required this.state,
+    required this.onToggleInfoCard,
+    required this.showInfoCard,
   });
 
   final MapController mapController;
   final PlaybackState state;
+  final VoidCallback onToggleInfoCard;
+  final bool showInfoCard;
 
   @override
   State<PlaybackAction> createState() => _PlaybackActionState();
 }
 
 class _PlaybackActionState extends State<PlaybackAction> {
+  bool _isCarActive = false;
+
   @override
   Widget build(BuildContext context) {
     final isSatellite = widget.state.mapType == MapType.satellite;
@@ -34,7 +40,8 @@ class _PlaybackActionState extends State<PlaybackAction> {
         _CircleFab(
           icon: Icons.info_outline,
           tooltip: 'Thông tin',
-          onTap: () {},
+          onTap: widget.onToggleInfoCard,
+          isActive: widget.showInfoCard,
         ),
         SizedBox(height: 12.h),
         _CircleFab(
@@ -44,6 +51,7 @@ class _PlaybackActionState extends State<PlaybackAction> {
             final newType = isSatellite ? MapType.normal : MapType.satellite;
             context.read<PlaybackBloc>().add(ChangeMapType(newType));
           },
+          isActive: isSatellite,
         ),
         SizedBox(height: 12.h),
         _CircleFab(
@@ -58,7 +66,10 @@ class _PlaybackActionState extends State<PlaybackAction> {
         _CircleFab(
           icon: Icons.car_crash,
           tooltip: 'Vị trí hiện tại',
-          onTap: () {},
+          onTap: () {
+            setState(() => _isCarActive = !_isCarActive);
+          },
+          isActive: _isCarActive,
         ),
       ],
     );
@@ -71,12 +82,14 @@ class _CircleFab extends StatelessWidget {
     required this.tooltip,
     required this.onTap,
     this.size,
+    this.isActive = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
   final double? size;
+  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +102,7 @@ class _CircleFab extends StatelessWidget {
           width: s,
           height: s,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isActive ? AppColors.gradientStart : Colors.white,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
@@ -99,7 +112,11 @@ class _CircleFab extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(icon, color: AppColors.gradientStart, size: s * 0.48),
+          child: Icon(
+            icon,
+            color: isActive ? Colors.white : AppColors.gradientStart,
+            size: s * 0.48,
+          ),
         ),
       ),
     );
