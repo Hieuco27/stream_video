@@ -106,7 +106,7 @@ class _HomeHeaderState extends State<HomeHeader> {
 
               SizedBox(height: 8.h),
               Text(
-                'Xin chào HMS!',
+                'Xin chào HMS ',
                 style: TextStyle(
                   fontSize: 15.sp,
                   color: Colors.white.withValues(alpha: 0.95),

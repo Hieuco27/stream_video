@@ -182,12 +182,6 @@ abstract class AppLocalizations {
   /// **'Thông tin của tôi'**
   String get myInfo;
 
-  /// No description provided for @themeSection.
-  ///
-  /// In vi, this message translates to:
-  /// **'Giao diện'**
-  String get themeSection;
-
   /// No description provided for @languageSection.
   ///
   /// In vi, this message translates to:

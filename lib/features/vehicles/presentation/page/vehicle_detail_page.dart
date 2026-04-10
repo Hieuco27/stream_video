@@ -13,15 +13,11 @@ class VehicleDetailPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.textColor,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.gradientStart,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            size: 18,
-            color: Colors.white,
-          ),
+          icon: const Icon(Icons.arrow_back, size: 24, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
@@ -120,21 +116,7 @@ class VehicleDetailPage extends StatelessWidget {
                   label: 'GSM/LTE',
                   value: vehicle.battery,
                 ),
-                _InfoRow(
-                  icon: Icons.signal_cellular_alt,
-                  label: 'Điện áp',
-                  value: vehicle.signal,
-                ),
-                _InfoRow(
-                  icon: Icons.signal_cellular_alt,
-                  label: 'Thẻ nhớ',
-                  value: vehicle.signal,
-                ),
-                _InfoRow(
-                  icon: Icons.signal_cellular_alt,
-                  label: 'Động',
-                  value: vehicle.signal,
-                ),
+
                 _InfoRow(
                   icon: Icons.signal_cellular_alt,
                   label: 'Điện áp',
@@ -184,7 +166,7 @@ class VehicleDetailPage extends StatelessWidget {
                 _InfoRow(
                   icon: Icons.map_outlined,
                   label: 'SL dừng đỗ',
-                  value: vehicle.location,
+                  value: vehicle.parkingDuration,
                 ),
                 _InfoRow(
                   icon: Icons.location_on_outlined,
@@ -194,22 +176,22 @@ class VehicleDetailPage extends StatelessWidget {
                 _InfoRow(
                   icon: Icons.access_time,
                   label: 'SL quá tốc độ',
-                  value: vehicle.lastUpdate,
+                  value: vehicle.stopDuration,
                 ),
                 _InfoRow(
                   icon: Icons.speed,
                   label: 'TG lái xe liên tục ',
-                  value: vehicle.speed,
+                  value: vehicle.continuousDrivingTime,
                 ),
                 _InfoRow(
                   icon: Icons.power,
                   label: 'TG lái xe trong ngày',
-                  value: vehicle.engine,
+                  value: vehicle.drivingTimeToday,
                 ),
                 _InfoRow(
                   icon: Icons.battery_full,
                   label: 'Km trong ngày',
-                  value: vehicle.battery,
+                  value: vehicle.kmToday,
                 ),
               ],
             ),

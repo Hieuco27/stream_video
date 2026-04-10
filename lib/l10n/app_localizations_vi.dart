@@ -52,8 +52,5 @@ class AppLocalizationsVi extends AppLocalizations {
   String get myInfo => 'Thông tin của tôi';
 
   @override
-  String get themeSection => 'Giao diện';
-
-  @override
   String get languageSection => 'Ngôn ngữ';
 }

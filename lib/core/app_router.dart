@@ -48,7 +48,10 @@ class AppRouter {
       GoRoute(
         path: '/route',
         name: 'route',
-        builder: (context, state) => const PlaybackPage(),
+        builder: (context, state) {
+          final vehicle = state.extra as VehicleEntity?;
+          return PlaybackPage(vehicle: vehicle);
+        },
       ),
       GoRoute(
         path: '/detail',

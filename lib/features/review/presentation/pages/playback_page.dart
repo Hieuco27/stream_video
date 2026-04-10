@@ -3,21 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/service_locator.dart';
 import 'package:stream_video/features/review/presentation/pages/widget/playback_action.dart';
+import 'package:stream_video/features/review/presentation/pages/widget/vehicle_log_sheet.dart';
+import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
+import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 import '../bloc/playback_bloc.dart';
 import '../bloc/playback_event.dart';
 import '../bloc/playback_state.dart';
-import 'widget/time_filter_bar.dart';
 import 'widget/playback_info_card.dart';
 import 'widget/playback_map.dart';
 import 'widget/playback_control_bar.dart';
 import 'widget/route_log_sheet.dart';
+import 'widget/playback_app_bar.dart';
 
 class PlaybackPage extends StatelessWidget {
-  const PlaybackPage({super.key});
+  final VehicleEntity? vehicle;
+
+  const PlaybackPage({super.key, this.vehicle});
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +30,21 @@ class PlaybackPage extends StatelessWidget {
           PlaybackBloc(
               getCurrentLocationUseCase: sl.reviewGetCurrentLocationUseCase,
             )
-            ..add(const LoadPlaybackData(vehicleId: 'V001', hours: 1))
+            ..add(
+              LoadPlaybackData(
+                vehicleId: vehicle?.id ?? vehicleMockData.first.id,
+                hours: 1,
+              ),
+            )
             ..add(const FetchCurrentLocation()),
-      child: const _PlaybackView(),
+      child: _PlaybackView(vehicle: vehicle),
     );
   }
 }
 
 class _PlaybackView extends StatefulWidget {
-  const _PlaybackView();
+  final VehicleEntity? vehicle;
+  const _PlaybackView({super.key, this.vehicle});
 
   @override
   State<_PlaybackView> createState() => _PlaybackViewState();
@@ -51,6 +61,8 @@ class _PlaybackViewState extends State<_PlaybackView> {
         ? AppGradients.darkHeader
         : AppGradients.primaryButton;
 
+    final hasVehicle = widget.vehicle != null;
+
     return Scaffold(
       drawer: BlocProvider.value(
         value: context.read<PlaybackBloc>(),
@@ -60,50 +72,16 @@ class _PlaybackViewState extends State<_PlaybackView> {
           child: const RouteLogSheet(),
         ),
       ),
-      appBar: AppBar(
-        backgroundColor: AppColors.primary3,
+      endDrawer: Drawer(
+        width: MediaQuery.of(context).size.width * 0.6,
         elevation: 0,
-
-        centerTitle: true,
-        leading: Builder(
-          builder: (drawerContext) => IconButton(
-            icon: Image.asset(
-              'assets/images/list.png',
-              width: 24.w,
-              height: 25.h,
-              color: AppColors.textColor,
-            ),
-            onPressed: () => Scaffold.of(drawerContext).openDrawer(),
-          ),
-        ),
-        title: Text(
-          'Xem lại',
-          style: TextStyle(
-            color: AppColors.textColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.local_shipping_rounded,
-              color: AppColors.textColor,
-              size: 24.sp,
-            ),
-            onPressed: () {
-              // TODO: chọn xe
-            },
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(40),
-          child: Padding(
-            padding: EdgeInsets.only(left: 12.w, right: 12.w, bottom: 10.h),
-            child: const TimeFilterBar(),
-          ),
-        ),
+        child: const VehicleLogSheet(),
       ),
+      appBar: PlaybackAppBar(
+        showBackButton: hasVehicle,
+        vehiclePlate: hasVehicle ? widget.vehicle!.plate : null,
+      ),
+
       body: BlocListener<PlaybackBloc, PlaybackState>(
         listenWhen: (prev, curr) => prev.location != curr.location,
         listener: (context, state) {

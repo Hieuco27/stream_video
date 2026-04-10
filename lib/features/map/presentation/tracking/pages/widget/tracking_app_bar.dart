@@ -34,13 +34,15 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
     return AppBar(
       automaticallyImplyLeading: false,
+      centerTitle: true,
       leading: showBackButton
           ? IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
+              icon: const Icon(Icons.arrow_back, size: 18),
               color: Colors.white,
               onPressed: () => Navigator.of(context).pop(),
             )
           : null,
+
       title: Text('Bản đồ', textAlign: TextAlign.center, style: titleStyle),
       flexibleSpace: Container(decoration: BoxDecoration(gradient: gradient)),
       // Ẩn toàn bộ action khi đang xem xe cụ thể

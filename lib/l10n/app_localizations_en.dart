@@ -51,8 +51,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myInfo => 'My Information';
 
   @override
-  String get themeSection => 'Appearance';
-
-  @override
   String get languageSection => 'Language';
 }

@@ -69,7 +69,6 @@ class PlaybackMap extends StatelessWidget {
                 markers: [
                   Marker(
                     point: state.currentLocation!,
-
                     child: const LocationMarker(),
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../bloc/tracking_bloc.dart';
 import '../bloc/tracking_event.dart';
 import '../bloc/tracking_state.dart';
@@ -42,28 +43,26 @@ class _TrackingView extends StatefulWidget {
 
 class _TrackingViewState extends State<_TrackingView> {
   final MapController _mapController = MapController();
-  bool _showPanel = true; // điều khiển hiển thị VehicleInfoPanel
+  bool _showPanel = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Nếu có xe cụ thể → move map đến xe
+    if (widget.vehicle != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _mapController.move(
+          LatLng(widget.vehicle!.latitude, widget.vehicle!.longitude),
+          15.0,
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TrackingBloc, TrackingState>(
       builder: (context, state) {
-        // Loading vị trí ban đầu
-        if (state.location is LocationLoading &&
-            state.currentLocation == null) {
-          return const Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Đang lấy vị trí...'),
-                ],
-              ),
-            ),
-          );
-        }
         // Lỗi GPS
         if (state.location is LocationError) {
           return Scaffold(
@@ -96,7 +95,6 @@ class _TrackingViewState extends State<_TrackingView> {
           );
         }
 
-        // Hiện bản đồ
         final hasVehicle = widget.vehicle != null;
         return Scaffold(
           appBar: TrackingAppBar(
@@ -108,7 +106,8 @@ class _TrackingViewState extends State<_TrackingView> {
             listenWhen: (prev, curr) => prev.location != curr.location,
             listener: (context, state) {
               if (state.location is LocationLoaded) {
-                if (state.currentLocation != null) {
+                // Chỉ move về GPS điện thoại khi KHÔNG xem xe cụ thể
+                if (!hasVehicle && state.currentLocation != null) {
                   _mapController.move(state.currentLocation!, 15.0);
                 }
               } else if (state.location is LocationError) {
@@ -122,8 +121,12 @@ class _TrackingViewState extends State<_TrackingView> {
             },
             child: Stack(
               children: [
-                TrackingMap(state: state, mapController: _mapController),
-                // Chỉ ẩn SearchButton khi có xe, FAB vẫn hiện
+                TrackingMap(
+                  state: state,
+                  mapController: _mapController,
+                  vehicle: widget.vehicle,
+                ),
+                // Ẩn SearchButton khi có xe
                 if (!hasVehicle)
                   Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
                 // FAB luôn hiện
@@ -135,7 +138,7 @@ class _TrackingViewState extends State<_TrackingView> {
                     mapController: _mapController,
                   ),
                 ),
-                // Panel thông tin xe — chỉ ẩn/hiện, không pop trang
+                // Panel thông tin xe
                 if (hasVehicle && _showPanel)
                   Positioned(
                     left: 0,
@@ -146,6 +149,10 @@ class _TrackingViewState extends State<_TrackingView> {
                       onClose: () => setState(() => _showPanel = false),
                     ),
                   ),
+                // Loading overlay
+                if (state.location is LocationLoading &&
+                    state.currentLocation == null)
+                  const Center(child: CircularProgressIndicator()),
               ],
             ),
           ),

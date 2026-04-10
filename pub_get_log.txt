@@ -12,8 +12,6 @@ C:\Users\Administrator\stre ...
  , RemoteException
     + FullyQualifiedErrorId : Nati 
    veCommandError
- 
-
     Because no versions of 
 signalr_core match >1.1.2 <2.0.0 
 and signalr_core <1.1.0 doesn't 

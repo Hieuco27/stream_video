@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:stream_video/features/map/data/models/mock_route_history.dart';
 import 'package:stream_video/features/review/domain/usecases/get_current_location_usecase.dart';
 import 'package:stream_video/core/service_locator.dart';
+import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
 import 'playback_event.dart';
 import 'playback_state.dart';
 
@@ -73,7 +74,10 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     final routePoints = history
         .map((e) => LatLng(e.latitude, e.longitude))
         .toList();
-
+    final matched = vehicleMockData.firstWhere(
+      (v) => v.id == event.vehicleId,
+      orElse: () => vehicleMockData.first,
+    );
     emit(
       state.copyWith(
         status: PlaybackStatus.loaded,
@@ -82,6 +86,7 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
         currentIndex: 0,
         selectedHours: event.hours,
         vehicleId: event.vehicleId,
+        vehiclePlate: matched.plate,
         isPlaying: false,
         errorMessage: null,
       ),

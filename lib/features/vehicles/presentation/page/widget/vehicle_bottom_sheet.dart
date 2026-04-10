@@ -70,7 +70,7 @@ class VehicleBottomSheet extends StatelessWidget {
                   ),
                   label: 'Lộ trình',
                   onTap: () {
-                    context.go('/route');
+                    context.push('/route', extra: vehicle);
                   },
                 ),
                 _MenuItem(

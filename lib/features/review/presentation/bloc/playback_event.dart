@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:stream_video/features/map/domain/entities/map_type.dart';
 
-
 sealed class PlaybackEvent extends Equatable {
   const PlaybackEvent();
   @override
@@ -42,7 +41,7 @@ class TickPlayback extends PlaybackEvent {
   const TickPlayback();
 }
 
-/// Đổi tốc độ phát: 1x, 2x, 4x
+/// Đổi tốc độ phát
 class ChangePlaybackSpeed extends PlaybackEvent {
   final double speed;
   const ChangePlaybackSpeed(this.speed);
@@ -65,7 +64,6 @@ class FetchCurrentLocation extends PlaybackEvent {
   const FetchCurrentLocation();
 }
 
-/// Thay đổi loại bản đồ (Normal / Satellite)
 class ChangeMapType extends PlaybackEvent {
   final MapType mapType;
   const ChangeMapType(this.mapType);

@@ -10,7 +10,7 @@ extension AppThemeExtension on BuildContext {
   Color get cardColor =>
       isDark ? AppColors.darkSurfaceAlt : Colors.white.withValues(alpha: 0.9);
   Color get textColor =>
-      isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+      isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
   Color get searchBg =>
       isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white;
   Color get backgroundCard =>
@@ -126,18 +126,18 @@ class VehicleCard extends StatelessWidget {
                 SizedBox(width: 4.w),
                 Text(
                   vehicle.plate,
-                  style: AppTextStyles.titleSmall2(color: context.textColor),
+                  style: TextStyle(
+                    color: context.textColor,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
             // Status
             Text(
               vehicle.status,
-              style: TextStyle(
-                fontSize: 11.sp,
-                color: Colors.red.shade400,
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(fontSize: 11.sp, color: context.textColor),
             ),
           ],
         ),

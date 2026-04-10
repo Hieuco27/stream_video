@@ -23,9 +23,6 @@ class FeatureGridItem extends StatelessWidget {
     final textColor = isDark
         ? AppColors.darkTextPrimary
         : AppColors.lightTextPrimary;
-    final shadowColor = isDark
-        ? Colors.black.withValues(alpha: 0.4)
-        : Colors.black.withValues(alpha: 0.15);
 
     return GestureDetector(
       onTap: onTap,

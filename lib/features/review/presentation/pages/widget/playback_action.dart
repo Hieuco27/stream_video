@@ -13,6 +13,7 @@ class PlaybackAction extends StatefulWidget {
   final PlaybackState state;
   final VoidCallback onToggleInfoCard;
   final bool showInfoCard;
+
   const PlaybackAction({
     super.key,
     required this.mapController,

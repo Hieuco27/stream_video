@@ -33,6 +33,7 @@ const _realWaypoints = <_WP>[
   _WP(21.00280, 105.85050, 'Trần Khát Chân, Hai Bà Trưng'),
   _WP(21.00370, 105.85210, 'Trần Khát Chân, Hai Bà Trưng'),
   _WP(21.00440, 105.85380, 'Trần Khát Chân, Hai Bà Trưng'),
+
   // Ngã tư — dừng đèn đỏ
   _WP(21.00500, 105.85520, 'Trần Khát Chân, Hai Bà Trưng'),
   _WP(21.00570, 105.85680, 'Trần Khát Chân, Hai Bà Trưng'),

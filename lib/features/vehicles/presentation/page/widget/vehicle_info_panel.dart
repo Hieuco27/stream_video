@@ -18,7 +18,7 @@ class VehicleInfoPanel extends StatelessWidget {
         '${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year}';
 
     return Container(
-      height: 250.h,
+      padding: EdgeInsets.zero,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
@@ -31,11 +31,12 @@ class VehicleInfoPanel extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           // Hàng 1: Biển số + thời gian + nút
           Padding(
-            padding: EdgeInsets.only(left: 4.w, right: 8.w, top: 5.h),
+            padding: EdgeInsets.only(left: 4.w),
             child: Row(
               children: [
                 Icon(
@@ -48,40 +49,42 @@ class VehicleInfoPanel extends StatelessWidget {
                   vehicle.plate,
                   style: TextStyle(
                     fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(width: 12.w),
                 Expanded(
                   child: Text(
                     textAlign: TextAlign.right,
                     timeStr,
                     style: TextStyle(
                       fontSize: 13.sp,
+                      fontWeight: FontWeight.w500,
                       color: AppColors.backgroundColor,
                     ),
                   ),
                 ),
                 IconButton(
+                  padding: EdgeInsets.only(bottom: 15.h),
                   icon: Icon(Icons.close, size: 18.r),
-                  color: AppColors.textPrimary,
-                  padding: EdgeInsets.zero,
+                  color: Colors.black87,
+                  visualDensity: VisualDensity.compact,
                   constraints: BoxConstraints(minWidth: 28.r, minHeight: 28.r),
                   onPressed: onClose ?? () => Navigator.of(context).pop(),
                 ),
               ],
             ),
           ),
+          Divider(height: 1, thickness: 0.8, color: Colors.grey),
+          SizedBox(height: 10.h),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on, color: Colors.red, size: 16.r),
+                Icon(Icons.location_on, color: Colors.black, size: 16.r),
                 SizedBox(width: 6.w),
                 Text(
-                  '02 giờ 17 phút ',
+                  '00 giờ 00 phút ',
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: AppColors.textPrimary,
@@ -89,11 +92,11 @@ class VehicleInfoPanel extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                SizedBox(width: 12.w),
-                Icon(Icons.location_on, color: Colors.red, size: 16.r),
-
+                SizedBox(width: 60.w),
+                Icon(Icons.location_on, color: Colors.black, size: 16.r),
                 Text(
-                  '02 giờ 17 phút ',
+                  '00 giờ 00 phút ',
+                  textAlign: TextAlign.right,
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: AppColors.textPrimary,
@@ -105,13 +108,44 @@ class VehicleInfoPanel extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
+            child: Row(
+              children: [
+                Icon(Icons.local_parking, color: Colors.black, size: 16.r),
+                SizedBox(width: 6.w),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        'Dừng đỗ:00 giờ 00 phút ',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      SizedBox(width: 60.w),
+                      Text(
+                        '00 giờ 00 phút ',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 10.h),
           //  Hàng 2: Địa chỉ
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 14.w),
+            padding: EdgeInsets.symmetric(horizontal: 4.w),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.location_on, color: Colors.red, size: 16.r),
+                Icon(Icons.location_on, color: Colors.black, size: 16.r),
                 SizedBox(width: 6.w),
                 Expanded(
                   child: Text(
@@ -146,11 +180,11 @@ class VehicleInfoPanel extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 20.h),
+          SizedBox(height: 10.h),
 
           // Hàng 4: 3 nút action
           Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 14.h),
+            padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 10.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -261,10 +295,10 @@ class _ActionButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 52.r,
-            height: 52.r,
+            width: 50.r,
+            height: 50.r,
             decoration: BoxDecoration(
-              color: const Color(0xFF075797),
+              color: AppColors.gradientStart,
               borderRadius: BorderRadius.circular(10.r),
             ),
             child: Padding(padding: EdgeInsets.all(12.r), child: icon),

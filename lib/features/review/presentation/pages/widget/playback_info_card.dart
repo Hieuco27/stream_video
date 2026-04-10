@@ -12,7 +12,10 @@ class PlaybackInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlaybackBloc, PlaybackState>(
-      buildWhen: (prev, curr) => prev.currentIndex != curr.currentIndex,
+      buildWhen: (prev, curr) =>
+          prev.currentIndex != curr.currentIndex ||
+          prev.vehiclePlate != curr.vehiclePlate ||
+          prev.status != curr.status,
       builder: (context, state) {
         final point = state.currentPoint;
         if (point == null) return const SizedBox.shrink();
