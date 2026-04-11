@@ -1,0 +1,291 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/app_theme.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/fuel_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/speed_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/stop_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/summary/summary_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/temperature_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/trip_tab.dart';
+import 'package:stream_video/features/widget/date_time_picker_widget.dart';
+import 'package:stream_video/features/widget/search_bks.dart';
+
+class ReportPage extends StatefulWidget {
+  const ReportPage({super.key});
+
+  @override
+  State<ReportPage> createState() => _ReportPageState();
+}
+
+class _ReportPageState extends State<ReportPage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  // Bộ lọc thời gian
+  late DateTime _startDate;
+  late DateTime _endDate;
+
+  // Biển số
+  String? _selectedPlate;
+
+  // Key thay đổi mỗi lần nhấn Xęm → trigger SummaryTab reload
+  Key _summaryLoadKey = const ValueKey(0);
+  int _summaryLoadCount = 0;
+
+  static const _tabs = [
+    _TabItem(label: 'Báo cáo tổng hợp'),
+    _TabItem(label: 'Báo cáo hành trình'),
+    _TabItem(label: 'Báo cáo dừng đỗ'),
+    _TabItem(label: 'Báo cáo vận tốc'),
+    _TabItem(label: 'Báo cáo nhiệt độ'),
+    _TabItem(label: 'Báo cáo nhiên liệu'),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+    final now = DateTime.now();
+    _startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    _endDate = DateTime(now.year, now.month, now.day, 23, 59, 0);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  //  Build
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.textColor,
+      appBar: _buildAppBar(),
+      bottomNavigationBar: _buildBottomTabBar(),
+      body: Column(
+        children: [
+          _buildFilterSection(),
+          _buildPlateSection(),
+
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                SummaryTab(
+                  plate: _selectedPlate,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  triggerLoad: _summaryLoadKey,
+                ),
+                TripTab(dateRange: _selectedRange),
+                StopTab(dateRange: _selectedRange),
+                SpeedTab(dateRange: _selectedRange),
+                TemperatureTab(dateRange: _selectedRange),
+                FuelTab(dateRange: _selectedRange),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onView() {
+    setState(() {
+      _summaryLoadCount++;
+      _summaryLoadKey = ValueKey(_summaryLoadCount);
+    });
+  }
+
+  DateTimeRange get _selectedRange =>
+      DateTimeRange(start: _startDate, end: _endDate);
+
+  // AppBar
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 40.h,
+      centerTitle: true,
+      backgroundColor: AppColors.primary3,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(gradient: AppGradients.primaryButton),
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Text(
+        'Báo cáo',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 17.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  // Section: Chọn thời gian
+  Widget _buildFilterSection() {
+    return Container(
+      color: AppColors.textColor,
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+      child: DateTimePickerWidget(
+        startDate: _startDate,
+        endDate: _endDate,
+        onStartChanged: (dt) => setState(() => _startDate = dt),
+        onEndChanged: (dt) => setState(() => _endDate = dt),
+      ),
+    );
+  }
+
+  // Section: Chọn biển số + Xem
+  Widget _buildPlateSection() {
+    return Container(
+      color: AppColors.textColor,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      child: Row(
+        children: [
+          // Ô chọn biển số
+          Expanded(
+            child: GestureDetector(
+              onTap: () async {
+                final result = await showSearchBKS(
+                  context,
+                  initialSelected: _selectedPlate,
+                );
+                if (result != null) {
+                  setState(() => _selectedPlate = result);
+                }
+              },
+              child: Container(
+                height: 30.h,
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AppColors.darkTextSecondary,
+                    width: 0.8,
+                  ),
+                  borderRadius: BorderRadius.circular(20.r),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.directions_car_outlined,
+                      size: 18.sp,
+                      color: AppColors.darkGradientEnd,
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        _selectedPlate ?? 'Chọn biển số',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: _selectedPlate != null
+                              ? AppColors.backgroundColor
+                              : AppColors.darkGradientEnd,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: AppColors.darkGradientEnd,
+                      size: 22.sp,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          SizedBox(width: 10.w),
+
+          // Nút Xem
+          GestureDetector(
+            onTap: _onView,
+            child: Container(
+              height: 30.h,
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              decoration: BoxDecoration(
+                color: AppColors.primary2,
+                borderRadius: BorderRadius.circular(6.r),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'Xem',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  //  Bottom TabBar
+  Widget _buildBottomTabBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.textColor,
+        border: const Border(
+          top: BorderSide(color: AppColors.darkTextSecondary, width: 0.6),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorColor: AppColors.primary2,
+          indicatorWeight: 4,
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelPadding: EdgeInsets.zero,
+          labelColor: AppColors.primary2,
+          unselectedLabelColor: AppColors.darkGradientEnd,
+          labelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
+          unselectedLabelStyle: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w500,
+          ),
+          tabs: List.generate(_tabs.length, (index) {
+            final t = _tabs[index];
+            final isLast = index == _tabs.length - 1;
+            return Tab(
+              height: 45.h,
+              child: Container(
+                width: 150.w,
+                height: double.infinity,
+                decoration: BoxDecoration(
+                  border: isLast
+                      ? null
+                      : const Border(
+                          right: BorderSide(
+                            color: AppColors.darkTextSecondary,
+                            width: 0.6,
+                          ),
+                        ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                alignment: Alignment.center,
+                child: Text(t.label),
+              ),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+}
+
+class _TabItem {
+  final String label;
+  const _TabItem({required this.label});
+}

@@ -94,8 +94,11 @@ class _SearchBKSState extends State<SearchBKS> {
         Expanded(
           child: ListView.separated(
             itemCount: _filtered.length,
-            separatorBuilder: (_, __) =>
-                Divider(height: 0.5, thickness: 0.5, color: context.textColor),
+            separatorBuilder: (_, __) => Divider(
+              height: 0.5,
+              thickness: 0.5,
+              color: AppColors.darkNavBarInactive,
+            ),
             itemBuilder: (context, index) {
               final plate = _filtered[index];
               final isSelected = plate == _selected;
@@ -215,7 +218,7 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-// ─── Item biển số ─────────────────────────────────────────────────────────────
+//  Item biển số
 class _PlateItem extends StatelessWidget {
   const _PlateItem({
     required this.plate,
@@ -324,7 +327,7 @@ class _ActionBar extends StatelessWidget {
   }
 }
 
-// ─── Helper: mở SearchBKS dưới dạng dialog giữa màn ─────────────────────────
+//  Helper: mở SearchBKS dưới dạng dialog giữa màn
 Future<String?> showSearchBKS(
   BuildContext context, {
   List<String>? plates,

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 
-class DateTimePickerWidget extends StatefulWidget {
-  const DateTimePickerWidget({super.key});
+class ReportFilterBar extends StatefulWidget {
+  const ReportFilterBar({super.key});
 
   @override
-  State<DateTimePickerWidget> createState() => _DateTimePickerWidgetState();
+  State<ReportFilterBar> createState() => _ReportFilterBarState();
 }
 
-class _DateTimePickerWidgetState extends State<DateTimePickerWidget> {
+class _ReportFilterBarState extends State<ReportFilterBar> {
   late DateTime _startDate;
   late DateTime _endDate;
 

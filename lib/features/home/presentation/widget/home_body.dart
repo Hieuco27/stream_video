@@ -86,7 +86,9 @@ class HomeBody extends StatelessWidget {
           height: 20.sp,
         ),
         label: 'Báo cáo tổng hợp',
-        onTap: () {},
+        onTap: () {
+          context.push('/report');
+        },
       ),
       _FeatureItem(
         icon: Image.asset(

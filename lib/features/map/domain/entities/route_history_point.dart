@@ -8,6 +8,8 @@ class RouteHistoryPoint extends Equatable {
   final double latitude;
   final double longitude;
   final String? address;
+  final double temperature;
+  final double fuel;
 
   const RouteHistoryPoint({
     required this.timestamp,
@@ -17,6 +19,8 @@ class RouteHistoryPoint extends Equatable {
     required this.latitude,
     required this.longitude,
     this.address,
+    required this.temperature,
+    required this.fuel,
   });
 
   @override

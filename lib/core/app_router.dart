@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_video/features/auth/presentation/sign_in_page.dart';
 import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
+import 'package:stream_video/features/report/presentation/pages/report_page.dart';
 import 'package:stream_video/main_screen.dart';
 import 'package:stream_video/screens/camera_main_screen.dart';
 import 'package:stream_video/features/profile/presentation/pages/profile_setting_page.dart';
@@ -67,6 +68,13 @@ class AppRouter {
         builder: (context, state) {
           final vehicle = state.extra as VehicleEntity?;
           return TrackingPage(vehicle: vehicle);
+        },
+      ),
+      GoRoute(
+        path: '/report',
+        name: 'report',
+        builder: (context, state) {
+          return ReportPage();
         },
       ),
     ],
