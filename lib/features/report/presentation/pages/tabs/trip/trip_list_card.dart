@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:stream_video/core/app_colors.dart';
-import 'package:stream_video/features/report/domain/entities/daily_summary_report.dart';
+import 'package:stream_video/features/report/domain/entities/trip_report.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-/// Card hiển thị báo cáo tổng hợp của 1 ngày.
-class DailySummaryCard extends StatelessWidget {
-  const DailySummaryCard({super.key, required this.data});
-
-  final DailySummaryReport data;
+class TripListCard extends StatelessWidget {
+  const TripListCard({super.key, required this.data});
+  final TripReport data;
 
   String _fmtDuration(Duration d) {
     final h = d.inHours.toString().padLeft(2, '0');
@@ -18,96 +15,53 @@ class DailySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateLabel = DateFormat('EEEE, dd/MM/yyyy', 'vi').format(data.date);
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //  Header ngày
-          Container(
-            padding: EdgeInsets.only(left: 14.w, right: 14.w),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8.r),
-                topRight: Radius.circular(8.r),
-              ),
-            ),
-            child: Row(
-              children: [
-                Text(
-                  dateLabel,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-
-          // ── Nội dung ─────────────────────────────────────────────────────
+        ],
+      ),
+      child: Column(
+        children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             child: Column(
               children: [
                 _InfoRow(
                   icon: Image.asset(
-                    'assets/images/report/bag.png',
+                    'assets/images/report/trip/user.png',
                     fit: BoxFit.contain,
                   ),
-                  label: 'Thời gian làm việc',
-                  value: _fmtDuration(data.workingTime),
+                  label: 'Họ tên lái xe',
+                  value: data.driverName,
                 ),
                 SizedBox(height: 3.h),
                 _InfoRow(
                   icon: Image.asset(
-                    'assets/images/report/parking.png',
+                    'assets/images/report/trip/license.png',
                     fit: BoxFit.contain,
                   ),
-                  label: 'Số lần dừng',
-                  value: '${data.stopCount} lần',
+                  label: 'GPLX',
+                  value: data.driverLicense,
                 ),
                 SizedBox(height: 3.h),
                 _InfoRow(
                   icon: Image.asset(
-                    'assets/images/report/four.png',
+                    'assets/images/report/trip/clock.png',
                     fit: BoxFit.contain,
                   ),
-                  label: 'Số lần quá 4 giờ',
-                  value: '${data.over4hCount} lần',
-                  highlight: data.over4hCount > 0,
+                  label: 'Thời gian chạy xe',
+                  value: _fmtDuration(data.drivingDuration),
                 ),
                 SizedBox(height: 3.h),
-                _InfoRow(
-                  icon: Image.asset(
-                    'assets/images/report/speed.png',
-                    fit: BoxFit.contain,
-                  ),
-                  label: 'Số lần quá tốc độ',
-                  value: '${data.speedVioCount} lần',
-                  highlight: data.speedVioCount > 0,
-                ),
-                SizedBox(height: 3.h),
-                _InfoRow(
-                  icon: Image.asset(
-                    'assets/images/report/stop.png',
-                    fit: BoxFit.contain,
-                  ),
-                  label: 'Thời gian dừng',
-                  value: _fmtDuration(data.stopDuration),
-                ),
-                SizedBox(height: 3.h),
-                _InfoRow(
-                  icon: Image.asset(
-                    'assets/images/report/trip.png',
-                    fit: BoxFit.contain,
-                  ),
-                  label: 'Tổng km trong ngày',
-                  value: '${data.totalKm.toStringAsFixed(1)} Km',
-                ),
+                _TimeRangeRow(start: data.startTime, end: data.endTime),
                 SizedBox(height: 3.h),
                 _AddressRow(start: data.startAddress, end: data.endAddress),
               ],
@@ -161,7 +115,6 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-/// Hiển thị điểm xuất phát và điểm đến theo kiểu route: pin xanh → chấm → pin đỏ
 class _AddressRow extends StatelessWidget {
   const _AddressRow({required this.start, required this.end});
 
@@ -188,14 +141,14 @@ class _AddressRow extends StatelessWidget {
               children: [
                 Text(
                   start,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+                  style: TextStyle(fontSize: 12.sp, color: Colors.black),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Divider(height: 30.h, thickness: 0.5, color: Colors.green),
                 Text(
                   end,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+                  style: TextStyle(fontSize: 12.sp, color: Colors.black),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -246,4 +199,59 @@ class _AddressRow extends StatelessWidget {
       ),
     ],
   );
+}
+
+class _TimeRangeRow extends StatelessWidget {
+  const _TimeRangeRow({required this.start, required this.end});
+  final DateTime start;
+  final DateTime end;
+
+  String _fmt(DateTime dt) => DateFormat('HH:mm:ss dd-MM-yyyy').format(dt);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+      child: Row(
+        children: [
+          // Start
+          Image.asset(
+            'assets/images/report/trip/clock.png',
+            fit: BoxFit.contain,
+            width: 16.sp,
+            height: 16.sp,
+          ),
+          SizedBox(width: 6.w),
+          Text(
+            _fmt(start),
+            style: TextStyle(fontSize: 12.sp, color: Colors.black),
+          ),
+          // Arrow
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            child: Icon(
+              Icons.arrow_forward_rounded,
+              size: 14,
+              color: Colors.black,
+            ),
+          ),
+          // End
+          Image.asset(
+            'assets/images/report/trip/time.png',
+            fit: BoxFit.contain,
+            width: 16.sp,
+            height: 16.sp,
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Text(
+              _fmt(end),
+              style: TextStyle(fontSize: 12.sp, color: Colors.black),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

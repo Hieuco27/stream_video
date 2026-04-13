@@ -13,8 +13,7 @@ class TotalSummaryCard extends StatelessWidget {
   String _fmtDuration(Duration d) {
     final h = d.inHours.toString().padLeft(2, '0');
     final m = (d.inMinutes % 60).toString().padLeft(2, '0');
-    final s = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '$h:$m:$s';
+    return '$h giờ $m phút';
   }
 
   @override
@@ -23,11 +22,9 @@ class TotalSummaryCard extends StatelessWidget {
       children: [
         Container(
           alignment: Alignment.center,
-          height: 35.h,
-          width: 100.w,
+          height: 25.h,
+          width: 80.w,
 
-          margin: EdgeInsets.only(top: 12.h, left: 12.w, right: 12.w),
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
           decoration: BoxDecoration(
             color: AppColors.gradientEnd,
             borderRadius: BorderRadius.circular(8.r),
@@ -39,7 +36,7 @@ class TotalSummaryCard extends StatelessWidget {
                 'Tổng',
                 style: TextStyle(
                   fontSize: 13.sp,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: Colors.white,
                 ),
               ),
@@ -69,43 +66,58 @@ class TotalSummaryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _row(
-                  icon: Icons.access_time,
-                  'Tổng thời gian làm việc',
-                  _fmtDuration(total.totalWorkingTime),
+                _InfoRow(
+                  icon: Image.asset(
+                    'assets/images/report/trip.png',
+                    fit: BoxFit.contain,
+                  ),
+                  label: 'Tổng km',
+                  value: '${total.totalKm.toStringAsFixed(1)} Km',
                 ),
                 _divider(),
-                _row(
-                  icon: Icons.stop,
-                  'Tổng số lần dừng',
-                  '${total.totalStopCount} lần',
+                _InfoRow(
+                  icon: Image.asset(
+                    'assets/images/report/bag.png',
+                    fit: BoxFit.contain,
+                  ),
+                  label: 'Thời gian làm việc',
+                  value: _fmtDuration(total.totalWorkingTime),
                 ),
                 _divider(),
-                _row(
-                  icon: Icons.warning,
-                  'Tổng lần lái > 4 giờ',
-                  '${total.totalOver4hCount} lần',
-                  warn: total.totalOver4hCount > 0,
+                _InfoRow(
+                  icon: Image.asset(
+                    'assets/images/report/stop.png',
+                    fit: BoxFit.contain,
+                  ),
+                  label: 'Thời gian dừng',
+                  value: _fmtDuration(total.totalStopDuration),
                 ),
                 _divider(),
-                _row(
-                  icon: Icons.speed,
-                  'Tổng lần quá tốc độ',
-                  '${total.totalSpeedVioCount} lần',
-                  warn: total.totalSpeedVioCount > 0,
+                _InfoRow(
+                  icon: Image.asset(
+                    'assets/images/report/four.png',
+                    fit: BoxFit.contain,
+                  ),
+                  label: 'Số lần quá 4 giờ',
+                  value: '${total.totalOver4hCount} lần',
                 ),
                 _divider(),
-                _row(
-                  icon: Icons.timer,
-                  'Tổng thời gian dừng',
-                  _fmtDuration(total.totalStopDuration),
+                _InfoRow(
+                  icon: Image.asset(
+                    'assets/images/report/speed.png',
+                    fit: BoxFit.contain,
+                  ),
+                  label: 'Số lần quá tốc độ',
+                  value: '${total.totalSpeedVioCount} lần',
                 ),
                 _divider(),
-                _row(
-                  icon: Icons.speed,
-                  'Tổng km',
-                  '${total.totalKm.toStringAsFixed(1)} km',
-                  bold: true,
+                _InfoRow(
+                  icon: Image.asset(
+                    'assets/images/report/parking.png',
+                    fit: BoxFit.contain,
+                  ),
+                  label: 'Số lần dừng',
+                  value: _fmtDuration(total.totalStopDuration),
                 ),
               ],
             ),
@@ -115,19 +127,29 @@ class TotalSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _row(
-    String label,
-    String value, {
-    bool warn = false,
-    bool bold = false,
-    IconData icon = Icons.info_outline,
-  }) {
+  Widget _divider() =>
+      Divider(height: 1, thickness: 0.5, color: Colors.white.withOpacity(0.2));
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final Widget icon;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5.5.h),
       child: Row(
         children: [
-          Icon(icon, size: 16.sp, color: Colors.black),
-          SizedBox(width: 6.w),
+          SizedBox(width: 18.sp, height: 18.sp, child: icon),
+          SizedBox(width: 8.w),
           Expanded(
             child: Text(
               label,
@@ -137,17 +159,10 @@ class TotalSummaryCard extends StatelessWidget {
           Text(
             textAlign: TextAlign.right,
             value,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: bold ? FontWeight.bold : FontWeight.w600,
-              color: warn ? Colors.yellow.shade200 : Colors.black,
-            ),
+            style: TextStyle(fontSize: 12.sp, color: Colors.black),
           ),
         ],
       ),
     );
   }
-
-  Widget _divider() =>
-      Divider(height: 1, thickness: 0.5, color: Colors.white.withOpacity(0.2));
 }

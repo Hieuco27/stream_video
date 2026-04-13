@@ -3,7 +3,7 @@ import 'package:stream_video/features/report/domain/entities/daily_summary_repor
 
 /// Sinh mock data báo cáo tổng hợp theo từng ngày trong khoảng [start, end].
 class SummaryReportMock {
-  static final _rng = Random(42); // seed cố định → data nhất quán
+  static final _rng = Random(42);
 
   static final _addresses = [
     'Số 1 Nguyễn Huệ, Quận 1, TP.HCM',
@@ -16,7 +16,6 @@ class SummaryReportMock {
     'Nguyễn Văn Linh, Quận 7, TP.HCM',
   ];
 
-  /// Trả về danh sách [DailySummaryReport] — mỗi phần tử là 1 ngày.
   static List<DailySummaryReport> generate(
     String plate,
     DateTime start,
@@ -43,6 +42,13 @@ class SummaryReportMock {
     final stopM = _rng.nextInt(60);
     final km = 50.0 + _rng.nextInt(200); // 50–250 km
 
+    final startIdx = _rng.nextInt(_addresses.length);
+    // đảm bảo endAddress khác startAddress
+    final endIdx = (_addresses.length - 1 == 0)
+        ? 0
+        : (_rng.nextInt(_addresses.length - 1) + startIdx + 1) %
+              _addresses.length;
+
     return DailySummaryReport(
       date: date,
       workingTime: Duration(hours: workHours, minutes: workMins),
@@ -51,7 +57,8 @@ class SummaryReportMock {
       speedVioCount: _rng.nextInt(8), // 0–7 vi phạm tốc độ
       stopDuration: Duration(hours: stopH, minutes: stopM),
       totalKm: km.toDouble(),
-      address: _addresses[_rng.nextInt(_addresses.length)],
+      startAddress: _addresses[startIdx],
+      endAddress: _addresses[endIdx],
     );
   }
 }

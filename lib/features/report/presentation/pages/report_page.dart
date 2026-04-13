@@ -7,8 +7,9 @@ import 'package:stream_video/features/report/presentation/pages/tabs/speed_tab.d
 import 'package:stream_video/features/report/presentation/pages/tabs/stop_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/summary/summary_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/temperature_tab.dart';
-import 'package:stream_video/features/report/presentation/pages/tabs/trip_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_tab.dart';
 import 'package:stream_video/features/widget/date_time_picker_widget.dart';
+import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
 import 'package:stream_video/features/widget/search_bks.dart';
 
 class ReportPage extends StatefulWidget {
@@ -80,7 +81,12 @@ class _ReportPageState extends State<ReportPage>
                   endDate: _endDate,
                   triggerLoad: _summaryLoadKey,
                 ),
-                TripTab(dateRange: _selectedRange),
+                TripTab(
+                  plate: _selectedPlate,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  triggerLoad: _summaryLoadKey,
+                ),
                 StopTab(dateRange: _selectedRange),
                 SpeedTab(dateRange: _selectedRange),
                 TemperatureTab(dateRange: _selectedRange),
@@ -152,6 +158,7 @@ class _ReportPageState extends State<ReportPage>
           Expanded(
             child: GestureDetector(
               onTap: () async {
+                // show dialog chọn biển số
                 final result = await showSearchBKS(
                   context,
                   initialSelected: _selectedPlate,
@@ -161,6 +168,7 @@ class _ReportPageState extends State<ReportPage>
                 }
               },
               child: Container(
+                alignment: Alignment.centerLeft,
                 height: 30.h,
                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                 decoration: BoxDecoration(
@@ -168,18 +176,14 @@ class _ReportPageState extends State<ReportPage>
                     color: AppColors.darkTextSecondary,
                     width: 0.8,
                   ),
+                  color: AppColors.textSecondary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.directions_car_outlined,
-                      size: 18.sp,
-                      color: AppColors.darkGradientEnd,
-                    ),
-                    SizedBox(width: 8.w),
                     Expanded(
                       child: Text(
+                        textAlign: TextAlign.center,
                         _selectedPlate ?? 'Chọn biển số',
                         style: TextStyle(
                           fontSize: 13.sp,

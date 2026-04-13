@@ -2,23 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
+import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
 
-// ─── Mock BKS data ────────────────────────────────────────────────────────────
-const List<String> mockBksPlates = [
-  '38E00115',
-  '38E00016',
-  '38A30079',
-  '38A03608',
-  '38A23791',
-  '38A15024',
-  '38A15192',
-  '38A13778',
-  '51A12345',
-  '51B67890',
-  '43C11223',
-  '30F99887',
-];
-
+// ─── Theme extension ───────────────────────────────────────────────────────────
 extension AppThemeExtension on BuildContext {
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
 
@@ -36,17 +22,17 @@ extension AppThemeExtension on BuildContext {
       isDark ? AppGradients.darkHeader : AppGradients.primaryButton;
 }
 
+// ─── Widget chính ──────────────────────────────────────────────────────────────
 class SearchBKS extends StatefulWidget {
   const SearchBKS({
     super.key,
-    this.plates, // danh sách biển số
     this.initialSelected,
     this.onConfirm,
     this.onCancel,
   });
 
-  final List<String>? plates;
   final String? initialSelected;
+
   final ValueChanged<String?>? onConfirm;
   final VoidCallback? onCancel;
 
@@ -55,7 +41,7 @@ class SearchBKS extends StatefulWidget {
 }
 
 class _SearchBKSState extends State<SearchBKS> {
-  late List<String> _allPlates;
+  late final List<String> _allPlates;
   late List<String> _filtered;
   String? _selected;
   final TextEditingController _searchCtrl = TextEditingController();
@@ -63,7 +49,8 @@ class _SearchBKSState extends State<SearchBKS> {
   @override
   void initState() {
     super.initState();
-    _allPlates = widget.plates ?? mockBksPlates;
+    // Lấy danh sách biển số từ vehicleMockData
+    _allPlates = vehicleMockData.map((v) => v.plate).toList();
     _filtered = List.from(_allPlates);
     _selected = widget.initialSelected;
     _searchCtrl.addListener(_onSearch);
@@ -87,38 +74,23 @@ class _SearchBKSState extends State<SearchBKS> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.max,
       children: [
         _SearchBar(controller: _searchCtrl),
-
         Expanded(
-          child: ListView.separated(
+          child: ListView.builder(
             itemCount: _filtered.length,
-            separatorBuilder: (_, __) => Divider(
-              height: 0.5,
-              thickness: 0.5,
-              color: AppColors.darkNavBarInactive,
-            ),
             itemBuilder: (context, index) {
               final plate = _filtered[index];
-              final isSelected = plate == _selected;
               return _PlateItem(
                 plate: plate,
-                isSelected: isSelected,
+                isSelected: plate == _selected,
                 onTap: () => setState(() => _selected = plate),
               );
             },
           ),
         ),
-
         _ActionBar(
-          onCancel: () {
-            if (widget.onCancel != null) {
-              widget.onCancel!();
-            } else {
-              Navigator.of(context).pop();
-            }
-          },
+          onCancel: widget.onCancel ?? () => Navigator.of(context).pop(),
           onConfirm: () => widget.onConfirm?.call(_selected),
         ),
       ],
@@ -126,29 +98,16 @@ class _SearchBKSState extends State<SearchBKS> {
   }
 }
 
-// ─── Thanh tìm kiếm ───────────────────────────────────────────────────────────
+//  Thanh tìm kiếm
 class _SearchBar extends StatelessWidget {
   const _SearchBar({required this.controller});
+
   final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark
-        ? AppColors.darkSurface.withValues(alpha: 0.85)
-        : Colors.white.withValues(alpha: 0.85);
-    final textColor = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final searchBg = isDark
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.white;
-    final searchTextColor = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final gradient = isDark
-        ? AppGradients.darkHeader
-        : AppGradients.primaryButton;
+    final gradient = context.gradient;
+
     return Container(
       decoration: BoxDecoration(gradient: gradient),
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
@@ -157,29 +116,29 @@ class _SearchBar extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30.r),
-            border: Border.all(color: Colors.black38, width: 1),
+            border: Border.all(color: Colors.black, width: 0.5),
           ),
           child: TextField(
             controller: controller,
             style: TextStyle(color: Colors.white, fontSize: 12.sp),
             cursorColor: Colors.white,
             decoration: InputDecoration(
-              hintText: 'Tìm kiếm',
+              hintText: 'Tìm kiếm biển số',
               hintStyle: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withOpacity(0.7),
                 fontSize: 12.sp,
               ),
               isDense: true,
-              prefixIcon: Icon(Icons.search, color: Colors.white, size: 16.r),
-              prefixIconConstraints: BoxConstraints(
-                minWidth: 28.w,
-                minHeight: 30.h,
-              ),
               filled: true,
               fillColor: Colors.white.withOpacity(0.1),
               contentPadding: EdgeInsets.symmetric(
                 vertical: 0,
                 horizontal: 4.w,
+              ),
+              prefixIcon: Icon(Icons.search, color: Colors.white, size: 16.r),
+              prefixIconConstraints: BoxConstraints(
+                minWidth: 28.w,
+                minHeight: 30.h,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30.r),
@@ -255,69 +214,53 @@ class _PlateItem extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 0.5, thickness: 0.5, color: context.textColor),
+          Divider(height: 0.2, thickness: 0.2, color: context.textColor),
         ],
       ),
     );
   }
 }
 
-// ─── Thanh hành động ──────────────────────────────────────────────────────────
+//  Thanh hành động
 class _ActionBar extends StatelessWidget {
   const _ActionBar({required this.onCancel, required this.onConfirm});
+
   final VoidCallback onCancel;
   final VoidCallback onConfirm;
 
   @override
   Widget build(BuildContext context) {
+    final btnStyle = TextButton.styleFrom(
+      foregroundColor: Colors.white,
+      minimumSize: Size(double.infinity, 54.h),
+      padding: EdgeInsets.zero,
+      shape: const RoundedRectangleBorder(),
+    );
+    final labelStyle = TextStyle(
+      fontSize: 12.sp,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    );
+
     return SizedBox(
       height: 40.h,
       child: Container(
         decoration: BoxDecoration(gradient: context.gradient),
         child: Row(
           children: [
-            // Trở lại
             Expanded(
               child: TextButton(
                 onPressed: onCancel,
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 54.h),
-                  padding: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(),
-                ),
-                child: Text(
-                  'Trở lại',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
+                style: btnStyle,
+                child: Text('Trở lại', style: labelStyle),
               ),
             ),
-
-            // Divider dọc
             Container(width: 1, height: 40.h, color: Colors.white54),
-
-            // Xác nhận
             Expanded(
               child: TextButton(
                 onPressed: onConfirm,
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 54.h),
-                  padding: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(),
-                ),
-                child: Text(
-                  'Xác nhận',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
+                style: btnStyle,
+                child: Text('Xác nhận', style: labelStyle),
               ),
             ),
           ],
@@ -327,12 +270,8 @@ class _ActionBar extends StatelessWidget {
   }
 }
 
-//  Helper: mở SearchBKS dưới dạng dialog giữa màn
-Future<String?> showSearchBKS(
-  BuildContext context, {
-  List<String>? plates,
-  String? initialSelected,
-}) {
+//  Helper: mở dialog tìm kiếm biển số
+Future<String?> showSearchBKS(BuildContext context, {String? initialSelected}) {
   return showDialog<String>(
     context: context,
     barrierDismissible: true,
@@ -345,7 +284,6 @@ Future<String?> showSearchBKS(
         width: double.infinity,
         height: MediaQuery.of(context).size.height * 0.55,
         child: SearchBKS(
-          plates: plates,
           initialSelected: initialSelected,
           onConfirm: (plate) => Navigator.of(context).pop(plate),
           onCancel: () => Navigator.of(context).pop(),

@@ -9,7 +9,8 @@ class DailySummaryReport extends Equatable {
   final int speedVioCount; // Số lần quá tốc độ
   final Duration stopDuration; // Tổng thời gian dừng
   final double totalKm; // Tổng km trong ngày
-  final String address; // Địa chỉ cuối ngày
+  final String startAddress; // Địa chỉ điểm xuất phát đầu ngày
+  final String endAddress;   // Địa chỉ GPS cuối cùng trong ngày
 
   const DailySummaryReport({
     required this.date,
@@ -19,20 +20,22 @@ class DailySummaryReport extends Equatable {
     required this.speedVioCount,
     required this.stopDuration,
     required this.totalKm,
-    required this.address,
+    required this.startAddress,
+    required this.endAddress,
   });
 
   @override
   List<Object?> get props => [
-        date,
-        workingTime,
-        stopCount,
-        over4hCount,
-        speedVioCount,
-        stopDuration,
-        totalKm,
-        address,
-      ];
+    date,
+    workingTime,
+    stopCount,
+    over4hCount,
+    speedVioCount,
+    stopDuration,
+    totalKm,
+    startAddress,
+    endAddress,
+  ];
 }
 
 /// Tổng hợp toàn bộ khoảng ngày — dùng cho hàng "Tổng cộng" cuối list.
@@ -86,12 +89,12 @@ class SummaryTotal extends Equatable {
 
   @override
   List<Object?> get props => [
-        totalWorkingTime,
-        totalStopCount,
-        totalOver4hCount,
-        totalSpeedVioCount,
-        totalStopDuration,
-        totalKm,
-        dayCount,
-      ];
+    totalWorkingTime,
+    totalStopCount,
+    totalOver4hCount,
+    totalSpeedVioCount,
+    totalStopDuration,
+    totalKm,
+    dayCount,
+  ];
 }
