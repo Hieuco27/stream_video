@@ -4,7 +4,7 @@ import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/fuel_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/speed_tab.dart';
-import 'package:stream_video/features/report/presentation/pages/tabs/stop_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/stop/stop_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/summary/summary_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/temperature_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_tab.dart';
@@ -90,7 +90,12 @@ class _ReportPageState extends State<ReportPage>
                   endDate: _endDate,
                   triggerLoad: _loadKeys[1],
                 ),
-                StopTab(dateRange: _selectedRange),
+                StopTab(
+                  plate: _selectedPlate,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  triggerLoad: _loadKeys[2],
+                ),
                 SpeedTab(dateRange: _selectedRange),
                 TemperatureTab(dateRange: _selectedRange),
                 FuelTab(dateRange: _selectedRange),
