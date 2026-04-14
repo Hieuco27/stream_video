@@ -43,15 +43,22 @@ class TripReport extends Equatable {
 
 class TotalTripReport extends Equatable {
   final Duration totalWorkingTime;
-  const TotalTripReport({required this.totalWorkingTime});
+  final int totalTripCount;
+  const TotalTripReport({
+    required this.totalWorkingTime,
+    required this.totalTripCount,
+  });
   factory TotalTripReport.fromList(List<TripReport> list) {
     Duration totalWorkingTime = Duration.zero;
     for (final report in list) {
       totalWorkingTime += report.drivingDuration;
     }
-    return TotalTripReport(totalWorkingTime: totalWorkingTime);
+    return TotalTripReport(
+      totalWorkingTime: totalWorkingTime,
+      totalTripCount: list.length,
+    );
   }
 
   @override
-  List<Object?> get props => [totalWorkingTime];
+  List<Object?> get props => [totalWorkingTime, totalTripCount];
 }

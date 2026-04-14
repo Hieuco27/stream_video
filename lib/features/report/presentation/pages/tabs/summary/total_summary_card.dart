@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/report/domain/entities/daily_summary_report.dart';
 
-/// Card tổng cộng — hiển thị ở cuối list, tự cộng từ [SummaryTotal].
 class TotalSummaryCard extends StatelessWidget {
   const TotalSummaryCard({super.key, required this.total});
 
@@ -34,11 +34,7 @@ class TotalSummaryCard extends StatelessWidget {
             children: [
               Text(
                 'Tổng',
-                style: TextStyle(
-                  fontSize: 13.sp,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
+                style: AppTextStyles.titleSmall2(color: Colors.white),
               ),
             ],
           ),
@@ -48,12 +44,7 @@ class TotalSummaryCard extends StatelessWidget {
         Container(
           margin: EdgeInsets.only(top: 8.h, left: 4.w, right: 4.w),
           decoration: BoxDecoration(
-            color: const Color.fromARGB(
-              255,
-              245,
-              207,
-              228,
-            ).withValues(alpha: 0.5),
+            color: AppColors.pink.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8.r),
           ),
           child: Container(
@@ -71,7 +62,7 @@ class TotalSummaryCard extends StatelessWidget {
                     'assets/images/report/trip.png',
                     fit: BoxFit.contain,
                   ),
-                  label: 'Tổng km',
+                  label: 'Tổng Km',
                   value: '${total.totalKm.toStringAsFixed(1)} Km',
                 ),
                 _divider(),
@@ -145,7 +136,7 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 5.5.h),
+      padding: EdgeInsets.symmetric(vertical: 4.h),
       child: Row(
         children: [
           SizedBox(width: 18.sp, height: 18.sp, child: icon),
@@ -153,13 +144,13 @@ class _InfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontSize: 12.sp, color: Colors.black),
+              style: AppTextStyles.titleSmall2(color: Colors.black),
             ),
           ),
           Text(
             textAlign: TextAlign.right,
             value,
-            style: TextStyle(fontSize: 12.sp, color: Colors.black),
+            style: AppTextStyles.titleSmall2(color: Colors.black),
           ),
         ],
       ),

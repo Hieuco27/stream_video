@@ -13,6 +13,8 @@ class AppColors {
   static const primary = Color(0xFF007AFF);
   static const primary2 = Color(0xFF0F6BAE);
   static const primary3 = Color(0xFF1168A7);
+  static const pink = Color(0xFFF5CFE4);
+  static const gray = Color(0xFFF2F2F2);
 
   static const primaryDark = Color(0xFF005BB5);
   static const background = Color(0xFFF2F2F7);
@@ -32,19 +34,19 @@ class AppColors {
   static const lightTextSecondary = Color(0xFF757575);
 
   // ── Dark ──
-  static const darkBackground = Color(0xFF0D1B2A); // xanh than đậm
-  static const darkSurface = Color(0xFF1A2C3D); // xanh than nhạt hơn
-  static const darkSurfaceAlt = Color(0xFF5C6875); // layer thứ 3
+  static const darkBackground = Color(0xFF0D1B2A);
+  static const darkSurface = Color(0xFF1A2C3D);
+  static const darkSurfaceAlt = Color(0xFF5C6875);
   static const darkTextPrimary = Color(0xFFEEEEEE);
   static const darkTextSecondary = Color(0xFF9E9E9E);
 
   // ── Dark gradient (xanh than → xám trắng xanh) ──
-  static const darkGradientStart = Color(0xFF0D1B2A); // xanh than
-  static const darkGradientEnd = Color(0xFF525B64); // xanh xám nhạt
+  static const darkGradientStart = Color(0xFF0D1B2A);
+  static const darkGradientEnd = Color(0xFF525B64);
 
   // ── Dark navbar ──
   static const darkNavBarBackground = Color(0xFF1A2C3D);
-  static const darkNavBarActive = Color(0xFF4FC3F7); // xanh nhạt nổi bật
+  static const darkNavBarActive = Color(0xFF4FC3F7);
   static const darkNavBarInactive = Color(0xFF607D8B);
 
   // ── Chung (không đổi theo theme) ──

@@ -74,11 +74,11 @@ class AppRouter {
         path: '/report',
         name: 'report',
         builder: (context, state) {
-          return ReportPage();
+          final tabIndex = (state.extra as int?) ?? 0;
+          return ReportPage(initialTabIndex: tabIndex);
         },
       ),
     ],
-    //  Xử lý khi trang không tồn tại
     errorBuilder: (context, state) =>
         const Scaffold(body: Center(child: Text('Trang không tồn tại!'))),
   );

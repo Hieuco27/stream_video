@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/report/domain/entities/daily_summary_report.dart';
 
-/// Card hiển thị báo cáo tổng hợp của 1 ngày.
 class DailySummaryCard extends StatelessWidget {
   const DailySummaryCard({super.key, required this.data});
 
@@ -25,7 +25,6 @@ class DailySummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //  Header ngày
           Container(
             padding: EdgeInsets.only(left: 14.w, right: 14.w),
             decoration: BoxDecoration(
@@ -48,7 +47,6 @@ class DailySummaryCard extends StatelessWidget {
             ),
           ),
 
-          // ── Nội dung ─────────────────────────────────────────────────────
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
             child: Column(
@@ -144,7 +142,7 @@ class _InfoRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontSize: 12.sp, color: Colors.black),
+              style: AppTextStyles.titleSmall2(color: Colors.black),
             ),
           ),
           Text(
@@ -161,7 +159,6 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-/// Hiển thị điểm xuất phát và điểm đến theo kiểu route: pin xanh → chấm → pin đỏ
 class _AddressRow extends StatelessWidget {
   const _AddressRow({required this.start, required this.end});
 
@@ -188,14 +185,14 @@ class _AddressRow extends StatelessWidget {
               children: [
                 Text(
                   start,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+                  style: AppTextStyles.titleSmall2(color: Colors.black),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Divider(height: 30.h, thickness: 0.5, color: Colors.green),
                 Text(
                   end,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.black87),
+                  style: AppTextStyles.titleSmall2(color: Colors.black),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

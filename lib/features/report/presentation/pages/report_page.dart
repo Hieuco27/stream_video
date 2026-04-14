@@ -9,11 +9,12 @@ import 'package:stream_video/features/report/presentation/pages/tabs/summary/sum
 import 'package:stream_video/features/report/presentation/pages/tabs/temperature_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_tab.dart';
 import 'package:stream_video/features/widget/date_time_picker_widget.dart';
-import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
+import 'package:stream_video/features/widget/info_popup.dart';
 import 'package:stream_video/features/widget/search_bks.dart';
 
 class ReportPage extends StatefulWidget {
-  const ReportPage({super.key});
+  final int initialTabIndex;
+  const ReportPage({super.key, this.initialTabIndex = 0});
 
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -23,16 +24,13 @@ class _ReportPageState extends State<ReportPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
 
-  // Bộ lọc thời gian
   late DateTime _startDate;
   late DateTime _endDate;
 
-  // Biển số
   String? _selectedPlate;
 
-  // Key thay đổi mỗi lần nhấn Xęm → trigger SummaryTab reload
-  Key _summaryLoadKey = const ValueKey(0);
-  int _summaryLoadCount = 0;
+  final List<int> _loadCounts = List.filled(6, 0);
+  late List<Key> _loadKeys;
 
   static const _tabs = [
     _TabItem(label: 'Báo cáo tổng hợp'),
@@ -46,7 +44,13 @@ class _ReportPageState extends State<ReportPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _loadKeys = List.generate(6, (i) => ValueKey('tab_${i}_0'));
+    _tabController = TabController(
+      length: _tabs.length,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
+    _tabController.addListener(() => setState(() {}));
     final now = DateTime.now();
     _startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
     _endDate = DateTime(now.year, now.month, now.day, 23, 59, 0);
@@ -71,21 +75,20 @@ class _ReportPageState extends State<ReportPage>
           _buildPlateSection(),
 
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(),
+            child: IndexedStack(
+              index: _tabController.index,
               children: [
                 SummaryTab(
                   plate: _selectedPlate,
                   startDate: _startDate,
                   endDate: _endDate,
-                  triggerLoad: _summaryLoadKey,
+                  triggerLoad: _loadKeys[0],
                 ),
                 TripTab(
                   plate: _selectedPlate,
                   startDate: _startDate,
                   endDate: _endDate,
-                  triggerLoad: _summaryLoadKey,
+                  triggerLoad: _loadKeys[1],
                 ),
                 StopTab(dateRange: _selectedRange),
                 SpeedTab(dateRange: _selectedRange),
@@ -100,14 +103,27 @@ class _ReportPageState extends State<ReportPage>
   }
 
   void _onView() {
+    if (_endDate.isBefore(_startDate)) {
+      InfoPopup.showError(
+        context,
+        title: 'Thông báo lỗi',
+        message:
+            'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu. Vui lòng chọn lại.',
+      );
+      return;
+    }
+
+    final idx = _tabController.index;
     setState(() {
-      _summaryLoadCount++;
-      _summaryLoadKey = ValueKey(_summaryLoadCount);
+      _loadCounts[idx]++;
+      _loadKeys[idx] = ValueKey('tab_${idx}_${_loadCounts[idx]}');
     });
   }
 
-  DateTimeRange get _selectedRange =>
-      DateTimeRange(start: _startDate, end: _endDate);
+  DateTimeRange get _selectedRange => DateTimeRange(
+    start: _startDate,
+    end: _endDate.isBefore(_startDate) ? _startDate : _endDate,
+  );
 
   // AppBar
   PreferredSizeWidget _buildAppBar() {

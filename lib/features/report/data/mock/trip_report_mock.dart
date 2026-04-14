@@ -77,20 +77,22 @@ class TripReportMock {
             (_rng.nextInt(_addresses.length - 1) + startIdx + 1) %
             _addresses.length;
 
-        result.add(
-          TripReport(
-            id: 'trip_${++_counter}',
-            vehicleId: vehicleId,
-            date: currentDay,
-            vehicleplate: vehiclePlate,
-            driverName: driver.name,
-            driverLicense: driver.license,
-            startTime: tripStart,
-            endTime: tripEnd,
-            startAddress: _addresses[startIdx],
-            endAddress: _addresses[endIdx],
-          ),
-        );
+        if (tripStart.isBefore(end) && tripEnd.isAfter(start)) {
+          result.add(
+            TripReport(
+              id: 'trip_${++_counter}',
+              vehicleId: vehicleId,
+              date: currentDay,
+              vehicleplate: vehiclePlate,
+              driverName: driver.name,
+              driverLicense: driver.license,
+              startTime: tripStart,
+              endTime: tripEnd,
+              startAddress: _addresses[startIdx],
+              endAddress: _addresses[endIdx],
+            ),
+          );
+        }
 
         // Nghỉ 10–30 phút giữa các chuyến
         final breakMin = 10 + _rng.nextInt(21);

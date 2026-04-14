@@ -87,7 +87,7 @@ class HomeBody extends StatelessWidget {
         ),
         label: 'Báo cáo tổng hợp',
         onTap: () {
-          context.push('/report');
+          context.push('/report', extra: 0);
         },
       ),
       _FeatureItem(
@@ -97,7 +97,9 @@ class HomeBody extends StatelessWidget {
           height: 20.sp,
         ),
         label: 'Báo cáo hành trình',
-        onTap: () {},
+        onTap: () {
+          context.push('/report', extra: 1);
+        },
       ),
       _FeatureItem(
         icon: Image.asset(
@@ -106,7 +108,9 @@ class HomeBody extends StatelessWidget {
           height: 20.sp,
         ),
         label: 'Báo cáo dừng đỗ',
-        onTap: () {},
+        onTap: () {
+          context.push('/report', extra: 2);
+        },
       ),
       _FeatureItem(
         icon: Image.asset(
@@ -126,7 +130,9 @@ class HomeBody extends StatelessWidget {
           height: 20.sp,
         ),
         label: 'Báo cáo nhiệt độ',
-        onTap: () {},
+        onTap: () {
+          context.push('/report', extra: 4);
+        },
       ),
       _FeatureItem(
         icon: Image.asset(
@@ -135,7 +141,9 @@ class HomeBody extends StatelessWidget {
           height: 20.sp,
         ),
         label: 'Báo cáo nhiên liệu',
-        onTap: () {},
+        onTap: () {
+          context.push('/report', extra: 5);
+        },
       ),
       _FeatureItem(
         icon: Image.asset(

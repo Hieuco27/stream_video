@@ -11,8 +11,6 @@ class DateTimePickerWidget extends StatefulWidget {
     this.onEndChanged,
   });
 
-  /// Controlled mode: truyền giá trị từ ngoài.
-  /// Nếu null → widget tự quản lý state nội bộ (standalone).
   final DateTime? startDate;
   final DateTime? endDate;
   final ValueChanged<DateTime>? onStartChanged;
@@ -33,8 +31,10 @@ class _DateTimePickerWidgetState extends State<DateTimePickerWidget> {
   void initState() {
     super.initState();
     final now = DateTime.now();
-    _startDate = widget.startDate ?? DateTime(now.year, now.month, now.day, 0, 0, 0);
-    _endDate = widget.endDate ?? DateTime(now.year, now.month, now.day, 23, 59, 0);
+    _startDate =
+        widget.startDate ?? DateTime(now.year, now.month, now.day, 0, 0, 0);
+    _endDate =
+        widget.endDate ?? DateTime(now.year, now.month, now.day, 23, 59, 0);
   }
 
   @override
@@ -66,13 +66,11 @@ class _DateTimePickerWidgetState extends State<DateTimePickerWidget> {
       context: context,
       initialDate: initialDate,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              primary: _textColor, // Header background color
-            ),
+            colorScheme: ColorScheme.light(primary: _textColor),
           ),
           child: child!,
         );
@@ -111,17 +109,9 @@ class _DateTimePickerWidgetState extends State<DateTimePickerWidget> {
     setState(() {
       if (isStart) {
         _startDate = newDateTime;
-        if (_startDate.isAfter(_endDate)) {
-          _endDate = _startDate.add(const Duration(hours: 1));
-        }
         widget.onStartChanged?.call(_startDate);
-        widget.onEndChanged?.call(_endDate);
       } else {
         _endDate = newDateTime;
-        if (_endDate.isBefore(_startDate)) {
-          _startDate = _endDate.subtract(const Duration(hours: 1));
-          widget.onStartChanged?.call(_startDate);
-        }
         widget.onEndChanged?.call(_endDate);
       }
     });

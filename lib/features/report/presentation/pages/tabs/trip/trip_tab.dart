@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/report/data/mock/trip_report_mock.dart';
 import 'package:stream_video/features/report/domain/entities/trip_report.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_list_card.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/trip/total_trip.dart';
+import 'package:stream_video/features/report/presentation/pages/widget/report_empty_view.dart';
 
 class TripTab extends StatefulWidget {
   final String? plate;
@@ -23,7 +26,7 @@ class TripTab extends StatefulWidget {
   State<TripTab> createState() => _TripTabState();
 }
 
-class _TripTabState extends State<TripTab> {
+class _TripTabState extends State<TripTab> with AutomaticKeepAliveClientMixin {
   List<TripReport>? _data;
   Map<DateTime, List<TripReport>> _grouped = {};
   List<DateTime> _sortedDays = [];
@@ -33,13 +36,19 @@ class _TripTabState extends State<TripTab> {
   @override
   void initState() {
     super.initState();
-    _loadData();
   }
 
   @override
   void didUpdateWidget(TripTab old) {
     super.didUpdateWidget(old);
-    // Reload khi plate hoặc dateRange thay đổi
+    if (widget.plate != old.plate) {
+      setState(() {
+        _hasLoaded = false;
+        _data = null;
+        _grouped = {};
+        _sortedDays = [];
+      });
+    }
     if (widget.triggerLoad != old.triggerLoad && widget.triggerLoad != null) {
       _loadData();
     }
@@ -49,6 +58,12 @@ class _TripTabState extends State<TripTab> {
     if (widget.plate == null ||
         widget.startDate == null ||
         widget.endDate == null) {
+      setState(() {
+        _hasLoaded = false;
+        _data = null;
+        _grouped = {};
+        _sortedDays = [];
+      });
       return;
     }
 
@@ -60,16 +75,17 @@ class _TripTabState extends State<TripTab> {
     // Giả lập độ trễ network
     await Future.delayed(const Duration(milliseconds: 600));
 
+    if (!mounted) return;
+
     final trips = TripReportMock.generate(
-      'vehicle_001', // vehicleId
-      widget.plate!, // vehiclePlate
+      'vehicle_001',
+      widget.plate!,
       widget.startDate!,
       widget.endDate!,
     );
 
     final grouped = _groupByDate(trips);
-    final sortedDays = grouped.keys.toList()
-      ..sort((a, b) => b.compareTo(a)); // ngày mới nhất lên đầu
+    final sortedDays = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     setState(() {
       _data = trips;
@@ -79,7 +95,7 @@ class _TripTabState extends State<TripTab> {
     });
   }
 
-  /// Group danh sách trip theo ngày (chỉ lấy năm/tháng/ngày)
+  /// Group danh sách trip theo ngày
   Map<DateTime, List<TripReport>> _groupByDate(List<TripReport> trips) {
     final map = <DateTime, List<TripReport>>{};
     for (final trip in trips) {
@@ -90,53 +106,53 @@ class _TripTabState extends State<TripTab> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    // Chưa bấm tải lần nào
+    super.build(context);
     if (!_hasLoaded) {
-      return Center(
-        child: Text(
-          'Chọn biển số và khoảng ngày rồi bấm Tải dữ liệu',
-          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-          textAlign: TextAlign.center,
-        ),
-      );
+      return widget.plate == null
+          ? const ReportEmptyView()
+          : ColoredBox(color: AppColors.gray, child: SizedBox.expand());
     }
 
-    // Đang loading
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // Đã load xong nhưng không có dữ liệu
     if (_data == null || _data!.isEmpty) {
-      return Center(
-        child: Text(
-          'Không có dữ liệu hành trình',
-          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-        ),
-      );
+      return const ReportNoDataView();
     }
+    final totalTripReport = TotalTripReport.fromList(_data!);
+
     return ColoredBox(
-      // 👈 thêm
       color: const Color(0xFFF2F2F2),
       child: ListView.builder(
         padding: EdgeInsets.only(top: 8.h, bottom: 24.h),
-        itemCount: _sortedDays.length,
+        itemCount: _sortedDays.length + 1,
         itemBuilder: (context, index) {
+          if (index == _sortedDays.length) {
+            return TotalTrip(totalTripReport: totalTripReport);
+          }
+
           final day = _sortedDays[index];
           final dayTrips = _grouped[day]!;
 
+          // Báo cáo theo từng ngày
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               _DateHeader(date: day),
               ...dayTrips.map((trip) => TripListCard(data: trip)),
+              SizedBox(height: 8.h),
             ],
           );
         },
       ),
     );
   }
+
 }
 
 /// Header hiển thị ngày
@@ -151,8 +167,8 @@ class _DateHeader extends StatelessWidget {
       alignment: Alignment.center,
       height: 25.h,
       width: 100.w,
-      margin: EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h, bottom: 4.h),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      margin: EdgeInsets.only(left: 16.w, right: 16.w, top: 5.h, bottom: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
       decoration: BoxDecoration(
         color: Colors.blue,
         borderRadius: BorderRadius.circular(8.r),

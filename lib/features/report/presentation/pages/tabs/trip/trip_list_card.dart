@@ -226,7 +226,6 @@ class _TimeRangeRow extends StatelessWidget {
             _fmt(start),
             style: TextStyle(fontSize: 12.sp, color: Colors.black),
           ),
-          // Arrow
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Icon(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/report/data/mock/summary_report_mock.dart';
 import 'package:stream_video/features/report/domain/entities/daily_summary_report.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/summary/daily_summary_card.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/summary/total_summary_card.dart';
+import 'package:stream_video/features/report/presentation/pages/widget/report_empty_view.dart';
 
 class SummaryTab extends StatefulWidget {
   const SummaryTab({
@@ -18,23 +20,29 @@ class SummaryTab extends StatefulWidget {
   final DateTime? startDate;
   final DateTime? endDate;
 
-  /// Thay đổi key này khi nhấn [Xem] để trigger load lại data.
   final Key? triggerLoad;
 
   @override
   State<SummaryTab> createState() => _SummaryTabState();
 }
 
-class _SummaryTabState extends State<SummaryTab> {
+class _SummaryTabState extends State<SummaryTab>
+    with AutomaticKeepAliveClientMixin {
   List<DailySummaryReport>? _data;
   SummaryTotal? _total;
   bool _loading = false;
-  bool _hasLoaded = false; // đã nhấn Xem lần nào chưa
+  bool _hasLoaded = false;
 
   @override
   void didUpdateWidget(covariant SummaryTab old) {
     super.didUpdateWidget(old);
-    // Load lại khi trigger thay đổi (khi ấn nút Xem)
+    if (widget.plate != old.plate) {
+      setState(() {
+        _hasLoaded = false;
+        _data = null;
+        _total = null;
+      });
+    }
     if (widget.triggerLoad != old.triggerLoad && widget.triggerLoad != null) {
       _load();
     }
@@ -44,6 +52,11 @@ class _SummaryTabState extends State<SummaryTab> {
     if (widget.plate == null ||
         widget.startDate == null ||
         widget.endDate == null) {
+      setState(() {
+        _hasLoaded = false;
+        _data = null;
+        _total = null;
+      });
       return;
     }
 
@@ -71,25 +84,28 @@ class _SummaryTabState extends State<SummaryTab> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    //  Chưa nhấn Xem
+    super.build(context);
     if (!_hasLoaded) {
-      return _buildEmpty();
+      return widget.plate == null
+          ? const ReportEmptyView()
+          : ColoredBox(color: AppColors.gray, child: SizedBox.expand());
     }
 
-    //  Loading
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    //  Không có dữ liệu
     if (_data == null || _data!.isEmpty) {
-      return _buildNoData();
+      return const ReportNoDataView();
     }
 
     //  Danh sách báo cáo
     return ListView.builder(
-      itemCount: _data!.length + 1, // +1 cho card tổng
+      itemCount: _data!.length + 1,
       padding: EdgeInsets.only(top: 8.h, bottom: 16.h),
       itemBuilder: (ctx, i) {
         if (i < _data!.length) {
@@ -101,40 +117,4 @@ class _SummaryTabState extends State<SummaryTab> {
     );
   }
 
-  Widget _buildEmpty() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.assignment_outlined,
-            size: 56.sp,
-            color: Colors.grey.shade300,
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            'Chọn biển số và nhấn Xem',
-            style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade400),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNoData() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.inbox_outlined, size: 56.sp, color: Colors.grey.shade300),
-          SizedBox(height: 12.h),
-          Text(
-            'Không có dữ liệu trong khoảng thời gian này',
-            style: TextStyle(fontSize: 13.sp, color: Colors.grey.shade400),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
 }
