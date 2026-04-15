@@ -67,8 +67,8 @@ class _HomeHeaderState extends State<HomeHeader> {
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.r),
-          bottomRight: Radius.circular(20.r),
+          bottomLeft: Radius.circular(35.r),
+          bottomRight: Radius.circular(35.r),
         ),
       ),
       child: SafeArea(
@@ -133,7 +133,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                         decoration: InputDecoration(
                           hintText: 'Tìm kiếm...',
                           hintStyle: TextStyle(
-                            fontSize: 12.sp,
+                            fontSize: 13.sp,
                             color: searchHintColor,
                           ),
                           isDense: true,

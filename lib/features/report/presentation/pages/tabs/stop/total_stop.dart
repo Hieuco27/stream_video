@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/features/report/domain/entities/stop_report.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/text_styles.dart';
-import 'package:stream_video/features/report/domain/entities/trip_report.dart';
 import 'package:stream_video/features/report/presentation/pages/widget/report_label_chip.dart';
 
-class TotalTrip extends StatelessWidget {
-  const TotalTrip({super.key, required this.totalTripReport});
-  final TotalTripReport totalTripReport;
+class TotalStopCard extends StatelessWidget {
+  const TotalStopCard({super.key, required this.totalStopReport});
+  final TotalStopReport totalStopReport;
 
   String _fmtDuration(Duration d) {
     final h = d.inHours.toString().padLeft(2, '0');
@@ -47,13 +47,13 @@ class TotalTrip extends StatelessWidget {
                     ),
                     SizedBox(width: 2.w),
                     Text(
-                      'Thời gian xe chạy',
+                      'Tổng thời gian dừng đỗ',
                       style: AppTextStyles.titleSmall2(color: Colors.black),
                     ),
                   ],
                 ),
                 Text(
-                  _fmtDuration(totalTripReport.totalWorkingTime),
+                  _fmtDuration(totalStopReport.totalWorkingTime),
                   style: AppTextStyles.titleSmall2(color: Colors.black),
                 ),
               ],

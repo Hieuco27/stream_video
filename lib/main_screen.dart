@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/home/presentation/home_page.dart';
@@ -50,31 +51,12 @@ class _PillNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const _items = [
-    _NavItem(
-      icon: Icons.home_outlined,
-      activeIcon: Icons.home_rounded,
-      label: 'Trang chủ',
-    ),
-    _NavItem(
-      icon: Icons.local_shipping_outlined,
-      activeIcon: Icons.local_shipping_rounded,
-      label: 'Danh sách xe',
-    ),
-    _NavItem(
-      icon: Icons.map_outlined,
-      activeIcon: Icons.map_rounded,
-      label: 'Bản đồ',
-    ),
-    _NavItem(
-      icon: Icons.replay_outlined,
-      activeIcon: Icons.replay_rounded,
-      label: 'Xem lại',
-    ),
-    _NavItem(
-      icon: Icons.person_outline,
-      activeIcon: Icons.person_rounded,
-      label: 'Tài khoản',
-    ),
+    _NavItem(icon: 'assets/images/navbar/home.svg', label: 'Trang chủ'),
+
+    _NavItem(icon: 'assets/images/navbar/car2.svg', label: 'Danh sách xe'),
+    _NavItem(icon: 'assets/images/navbar/map.svg', label: 'Bản đồ'),
+    _NavItem(icon: 'assets/images/navbar/review.svg', label: 'Xem lại'),
+    _NavItem(icon: 'assets/images/navbar/account.svg', label: 'Tài khoản'),
   ];
 
   @override
@@ -135,10 +117,14 @@ class _PillNavBar extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            isSelected ? item.activeIcon : item.icon,
-                            size: 25.sp,
-                            color: isSelected ? activeColor : inactiveColor,
+                          SvgPicture.asset(
+                            item.icon,
+                            width: 25.sp,
+                            height: 25.sp,
+                            colorFilter: ColorFilter.mode(
+                              isSelected ? activeColor : inactiveColor,
+                              BlendMode.srcIn,
+                            ),
                           ),
                           SizedBox(height: 3.h),
                           Text(
@@ -149,7 +135,7 @@ class _PillNavBar extends StatelessWidget {
                               fontSize: 11.sp,
                               fontWeight: isSelected
                                   ? FontWeight.w600
-                                  : FontWeight.w400,
+                                  : FontWeight.w500,
                               color: isSelected ? activeColor : inactiveColor,
                             ),
                           ),
@@ -164,7 +150,7 @@ class _PillNavBar extends StatelessWidget {
 
           // ── Center floating button ──
           Positioned(
-            top: -8,
+            top: -15,
             left: 0,
             right: 0,
             child: Center(
@@ -188,10 +174,18 @@ class _PillNavBar extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Icon(
-                    selectedIndex == 2 ? _items[2].activeIcon : _items[2].icon,
-                    color: Colors.white,
-                    size: 24.sp,
+                  child: Center(
+                    child: SizedBox(
+                      width: 30.sp,
+                      height: 30.sp,
+                      child: SvgPicture.asset(
+                        _items[2].icon,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -265,12 +259,7 @@ class _NotchedNavPainter extends CustomPainter {
 }
 
 class _NavItem {
-  const _NavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.label,
-  });
-  final IconData icon;
-  final IconData activeIcon;
+  const _NavItem({required this.icon, required this.label});
+  final String icon;
   final String label;
 }

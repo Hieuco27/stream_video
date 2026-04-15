@@ -18,7 +18,7 @@ class DailySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateLabel = DateFormat('EEEE, dd/MM/yyyy', 'vi').format(data.date);
+    final dateLabel = DateFormat('dd/MM/yyyy', 'vi').format(data.date);
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 2.w, vertical: 2.h),

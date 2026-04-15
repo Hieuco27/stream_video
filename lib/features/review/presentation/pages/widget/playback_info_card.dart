@@ -142,46 +142,10 @@ class PlaybackInfoCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // const Spacer(),
-                    // Trạng thái động cơ
-                    // Container(
-                    //   padding: EdgeInsets.symmetric(
-                    //     horizontal: 8.w,
-                    //     vertical: 4.h,
-                    //   ),
-                    //   decoration: BoxDecoration(
-                    //     color: point.engineOn
-                    //         ? Colors.green.withValues(alpha: 0.1)
-                    //         : Colors.red.withValues(alpha: 0.1),
-                    //     borderRadius: BorderRadius.circular(6.r),
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       Icon(
-                    //         point.engineOn
-                    //             ? Icons.power_rounded
-                    //             : Icons.power_off_rounded,
-                    //         size: 14.sp,
-                    //         color: point.engineOn ? Colors.green : Colors.red,
-                    //       ),
-                    //       SizedBox(width: 4.w),
-                    //       Text(
-                    //         point.engineOn ? 'ON' : 'OFF',
-                    //         style: TextStyle(
-                    //           fontSize: 11.sp,
-                    //           fontWeight: FontWeight.w600,
-                    //           color: point.engineOn ? Colors.green : Colors.red,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
 
-              Spacer(),
               // Hàng 3: địa chỉ
               if (point.address != null)
                 Padding(

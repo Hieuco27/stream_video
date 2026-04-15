@@ -46,9 +46,7 @@ class _ReportFilterBarState extends State<ReportFilterBar> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(
-              primary: _textColor, // Header background color
-            ),
+            colorScheme: ColorScheme.light(primary: _textColor),
           ),
           child: child!,
         );
@@ -81,7 +79,7 @@ class _ReportFilterBarState extends State<ReportFilterBar> {
       pickedDate.day,
       pickedTime.hour,
       pickedTime.minute,
-      0, // Mặc định giây = 0 như thiết kế
+      0,
     );
 
     setState(() {

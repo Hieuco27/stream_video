@@ -4,6 +4,7 @@ import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/report/domain/entities/daily_summary_report.dart';
+import 'package:stream_video/features/report/presentation/pages/widget/report_label_chip.dart';
 
 class TotalSummaryCard extends StatelessWidget {
   const TotalSummaryCard({super.key, required this.total});
@@ -20,27 +21,8 @@ class TotalSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          alignment: Alignment.center,
-          height: 25.h,
-          width: 80.w,
-
-          decoration: BoxDecoration(
-            color: AppColors.gradientEnd,
-            borderRadius: BorderRadius.circular(8.r),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Tổng',
-                style: AppTextStyles.titleSmall2(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-
-        // ── Card nội dung ──
+        const ReportLabelChip(label: 'Tổng'),
+        // Card nội dung
         Container(
           margin: EdgeInsets.only(top: 8.h, left: 4.w, right: 4.w),
           decoration: BoxDecoration(

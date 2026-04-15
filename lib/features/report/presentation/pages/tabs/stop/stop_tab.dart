@@ -5,8 +5,9 @@ import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/report/data/mock/stop_report_mock.dart';
 import 'package:stream_video/features/report/domain/entities/stop_report.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/stop/stop_list_card.dart';
-import 'package:stream_video/features/report/presentation/pages/tabs/stop/total_trip.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/stop/total_stop.dart';
 import 'package:stream_video/features/report/presentation/pages/widget/report_empty_view.dart';
+import 'package:stream_video/features/report/presentation/pages/widget/report_label_chip.dart';
 
 class StopTab extends StatefulWidget {
   const StopTab({
@@ -111,7 +112,7 @@ class _StopTabState extends State<StopTab> with AutomaticKeepAliveClientMixin {
         itemCount: _sortedDays.length + 1,
         itemBuilder: (context, index) {
           if (index == _sortedDays.length) {
-            return TotalStopCard(total: total);
+            return TotalStopCard(totalStopReport: total);
           }
 
           final day = _sortedDays[index];
@@ -120,41 +121,12 @@ class _StopTabState extends State<StopTab> with AutomaticKeepAliveClientMixin {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _DateHeader(date: day),
+              ReportLabelChip.date(date: day),
               ...dayStops.map((stop) => StopListCard(data: stop)),
               SizedBox(height: 8.h),
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-class _DateHeader extends StatelessWidget {
-  const _DateHeader({required this.date});
-  final DateTime date;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = DateFormat('dd/MM/yyyy', 'vi').format(date);
-    return Container(
-      alignment: Alignment.center,
-      height: 25.h,
-      width: 100.w,
-      margin: EdgeInsets.only(left: 16.w, right: 16.w, top: 5.h, bottom: 4.h),
-      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 13.sp,
-          fontWeight: FontWeight.w500,
-          color: Colors.white,
-        ),
       ),
     );
   }

@@ -38,7 +38,7 @@ class _SummaryTabState extends State<SummaryTab>
   @override
   void didUpdateWidget(covariant SummaryTab old) {
     super.didUpdateWidget(old);
-    // Đổi biển số → xóa dữ liệu cũ ngay
+
     if (widget.plate != old.plate) {
       setState(() {
         _hasLoaded = false;
@@ -46,7 +46,7 @@ class _SummaryTabState extends State<SummaryTab>
         _total = null;
       });
     }
-    // Nhấn Xem → load dữ liệu mới
+    // load dữ liệu mới
     if (widget.triggerLoad != old.triggerLoad && widget.triggerLoad != null) {
       _load();
     }
@@ -85,9 +85,13 @@ class _SummaryTabState extends State<SummaryTab>
           : ColoredBox(color: AppColors.gray, child: const SizedBox.expand());
     }
 
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-    if (_data == null || _data!.isEmpty) return const ReportNoDataView();
+    if (_data == null || _data!.isEmpty) {
+      return const ReportNoDataView();
+    }
 
     return ListView.builder(
       itemCount: _data!.length + 1,

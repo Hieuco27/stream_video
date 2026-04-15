@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/report/data/mock/trip_report_mock.dart';
 import 'package:stream_video/features/report/domain/entities/trip_report.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_list_card.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/trip/total_trip.dart';
 import 'package:stream_video/features/report/presentation/pages/widget/report_empty_view.dart';
+import 'package:stream_video/features/report/presentation/pages/widget/report_label_chip.dart';
 
 class TripTab extends StatefulWidget {
   final String? plate;
@@ -143,7 +143,7 @@ class _TripTabState extends State<TripTab> with AutomaticKeepAliveClientMixin {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _DateHeader(date: day),
+              ReportLabelChip.date(date: day),
               ...dayTrips.map((trip) => TripListCard(data: trip)),
               SizedBox(height: 8.h),
             ],
@@ -152,40 +152,6 @@ class _TripTabState extends State<TripTab> with AutomaticKeepAliveClientMixin {
       ),
     );
   }
-
 }
 
-/// Header hiển thị ngày
-class _DateHeader extends StatelessWidget {
-  const _DateHeader({required this.date});
-  final DateTime date;
 
-  @override
-  Widget build(BuildContext context) {
-    final label = DateFormat('dd/MM/yyyy', 'vi').format(date);
-    return Container(
-      alignment: Alignment.center,
-      height: 25.h,
-      width: 100.w,
-      margin: EdgeInsets.only(left: 16.w, right: 16.w, top: 5.h, bottom: 4.h),
-      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

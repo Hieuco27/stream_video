@@ -71,3 +71,8 @@ class ChangeMapType extends PlaybackEvent {
   @override
   List<Object?> get props => [mapType];
 }
+
+/// Reset playback về đầu (dùng khi navigate away)
+class ResetPlayback extends PlaybackEvent {
+  const ResetPlayback();
+}

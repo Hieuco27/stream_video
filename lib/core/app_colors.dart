@@ -8,7 +8,7 @@ class AppColors {
   static const headerColor = Color(0xFFC2F1A6);
 
   static const directions = Color(0xFFF53F3F);
-  static const gradientStart = Color(0xFF075797);
+  static const gradientStart = Color(0xFF0077B6);
   static const gradientEnd = Color(0xFF2184F5);
   static const primary = Color(0xFF007AFF);
   static const primary2 = Color(0xFF0F6BAE);

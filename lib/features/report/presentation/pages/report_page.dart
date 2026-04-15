@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/fuel_tab.dart';
-import 'package:stream_video/features/report/presentation/pages/tabs/speed_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/speed/speed_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/stop/stop_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/summary/summary_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/temperature_tab.dart';
@@ -96,7 +96,12 @@ class _ReportPageState extends State<ReportPage>
                   endDate: _endDate,
                   triggerLoad: _loadKeys[2],
                 ),
-                SpeedTab(dateRange: _selectedRange),
+                SpeedTab(
+                  plate: _selectedPlate,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  triggerLoad: _loadKeys[3],
+                ),
                 TemperatureTab(dateRange: _selectedRange),
                 FuelTab(dateRange: _selectedRange),
               ],
@@ -168,18 +173,16 @@ class _ReportPageState extends State<ReportPage>
     );
   }
 
-  // Section: Chọn biển số + Xem
+  // Chọn biển số + Xem
   Widget _buildPlateSection() {
     return Container(
       color: AppColors.textColor,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       child: Row(
         children: [
-          // Ô chọn biển số
           Expanded(
             child: GestureDetector(
               onTap: () async {
-                // show dialog chọn biển số
                 final result = await showSearchBKS(
                   context,
                   initialSelected: _selectedPlate,

@@ -24,6 +24,7 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
     on<ChangeDuration>(_onChangeDuration);
     on<FetchCurrentLocation>(_onFetchCurrentLocation);
     on<ChangeMapType>(_onChangeMapType);
+    on<ResetPlayback>(_onReset);
   }
 
   // GPS hiện tại
@@ -48,6 +49,12 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
   // Thay đổi loại bản đồ
   void _onChangeMapType(ChangeMapType event, Emitter<PlaybackState> emit) {
     emit(state.copyWith(mapType: event.mapType));
+  }
+
+  // Reset khi navigate away
+  void _onReset(ResetPlayback event, Emitter<PlaybackState> emit) {
+    _stopTimer();
+    emit(state.copyWith(currentIndex: 0, isPlaying: false));
   }
 
   // Load mock data
