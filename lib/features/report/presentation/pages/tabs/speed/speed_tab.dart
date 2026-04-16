@@ -86,9 +86,7 @@ class _SpeedTabState extends State<SpeedTab>
     final sortedDays = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     // Flat list để phân trang dễ hơn
-    final allGroups = [
-      for (final day in sortedDays) ...grouped[day]!,
-    ];
+    final allGroups = [for (final day in sortedDays) ...grouped[day]!];
 
     setState(() {
       _data = records;
@@ -156,7 +154,6 @@ class _SpeedTabState extends State<SpeedTab>
     );
   }
 
-  /// Trả về slice của _allGroups cho trang hiện tại.
   List<SpeedMinuteGroup> _pageGroups() {
     final start = _currentPage * _kPageSize;
     final end = (start + _kPageSize).clamp(0, _allGroups.length);
@@ -222,11 +219,7 @@ class _NavButton extends StatelessWidget {
           color: enabled ? AppColors.primary : Colors.grey.shade300,
           borderRadius: BorderRadius.circular(20.r),
         ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 20.sp,
-        ),
+        child: Icon(icon, color: Colors.white, size: 20.sp),
       ),
     );
   }

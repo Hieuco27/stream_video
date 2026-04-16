@@ -19,8 +19,9 @@ import 'widget/playback_app_bar.dart';
 
 class PlaybackPage extends StatefulWidget {
   final VehicleEntity? vehicle;
+  final bool isActive;
 
-  const PlaybackPage({super.key, this.vehicle});
+  const PlaybackPage({super.key, this.vehicle, this.isActive = true});
 
   @override
   State<PlaybackPage> createState() => _PlaybackPageState();
@@ -48,11 +49,11 @@ class _PlaybackPageState extends State<PlaybackPage> {
   }
 
   @override
-  void deactivate() {
-    // Gọi khi page bị đẩy vào background (push route khác)
-    // hoặc trước dispose — bắt cả 2 trường hợp navigate away
-    _bloc.add(const ResetPlayback());
-    super.deactivate();
+  void didUpdateWidget(PlaybackPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isActive && !widget.isActive) {
+      _bloc.add(const ResetPlayback());
+    }
   }
 
   @override

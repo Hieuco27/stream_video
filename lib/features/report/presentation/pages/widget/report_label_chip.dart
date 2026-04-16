@@ -30,9 +30,7 @@ class ReportLabelChip extends StatelessWidget {
   }
 
   final String label;
-
   final Color? color;
-
   final EdgeInsets? margin;
 
   @override

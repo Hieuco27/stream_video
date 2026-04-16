@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
           HomePage(onNavigateToTab: _onItemTapped),
           const VehiclePage(),
           const TrackingPage(),
-          const PlaybackPage(),
+          PlaybackPage(isActive: _selectedIndex == 3),
           const ProfileSettingPage(),
         ],
       ),

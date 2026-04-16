@@ -119,7 +119,6 @@ class InfoPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: barrierDismissible,
-
       child: Dialog(
         backgroundColor: Colors.white,
         insetPadding: EdgeInsets.symmetric(horizontal: 16.w),
