@@ -64,53 +64,38 @@ class VehicleBottomSheet extends StatelessWidget {
               childAspectRatio: 0.9,
               children: [
                 _MenuItem(
-                  icon: Image.asset(
-                    'assets/images/home/hanhtrinh.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/xemlaihanhtrinh.png',
                   label: 'Lộ trình',
                   onTap: () {
                     context.push('/route', extra: vehicle);
                   },
                 ),
                 _MenuItem(
-                  icon: Image.asset(
-                    'assets/images/home/detail.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/detail.png',
                   label: 'Chi tiết',
                   onTap: () {
                     context.push('/detail', extra: vehicle);
                   },
                 ),
                 _MenuItem(
-                  icon: Image.asset(
-                    'assets/images/home/report.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/baocaotonghop.png',
                   label: 'Báo cáo',
                   onTap: () {
-                    Navigator.of(context).pop();
+                    context.push('/report', extra: 0);
                   },
                 ),
                 _MenuItem(
-                  icon: Image.asset(
-                    'assets/images/home/map.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/map.png',
                   label: 'Bản đồ',
                   onTap: () {
                     context.push('/map', extra: vehicle);
                   },
                 ),
                 _MenuItem(
-                  icon: Image.asset(
-                    'assets/images/home/camera.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/camera.png',
                   label: 'Camera',
                   onTap: () {
-                    Navigator.of(context).pop();
+                    context.push('/camera');
                   },
                 ),
               ],
@@ -122,15 +107,15 @@ class VehicleBottomSheet extends StatelessWidget {
   }
 }
 
-// ─── Menu item ───────────────────────────────────────────────────────────────
+//  Menu item
 class _MenuItem extends StatelessWidget {
   const _MenuItem({
-    required this.icon,
+    required this.iconPath,
     required this.label,
     required this.onTap,
   });
 
-  final Widget icon;
+  final String iconPath;
   final String label;
   final VoidCallback onTap;
 
@@ -152,7 +137,10 @@ class _MenuItem extends StatelessWidget {
                 color: AppColors.backgroundColor.withValues(alpha: 0.8),
               ),
             ),
-            child: Padding(padding: EdgeInsets.all(12.r), child: icon),
+            child: Padding(
+              padding: EdgeInsets.all(12.r),
+              child: Image.asset(iconPath, fit: BoxFit.contain),
+            ),
           ),
           SizedBox(height: 6.h),
           Text(

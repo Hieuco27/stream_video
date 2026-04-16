@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stream_video/core/app_colors.dart';
-import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
+import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_info_widget.dart';
 
 extension AppThemeExtension on BuildContext {
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
@@ -40,8 +41,8 @@ class VehicleCard extends StatelessWidget {
         padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
           color: isSelected
-              ? context.cardColor.withValues(alpha: 0.55)
-              : context.cardColor,
+              ? Colors.white.withValues(alpha: 0.55)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12.r),
           border: isSelected
               ? Border.all(
@@ -59,173 +60,27 @@ class VehicleCard extends StatelessWidget {
           ],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _buildCarImage(),
-            SizedBox(width: 2.w),
-            Expanded(child: _buildInfo(context)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Car icon with warning overlay
-  Widget _buildCarImage() {
-    return SizedBox(
-      width: 55.w,
-      height: 70.h,
-      child: Stack(
-        children: [
-          // Car icon
-          Center(
-            child: Icon(
-              Icons.directions_car,
-              size: 48.sp,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          // Warning triangle
-          Positioned(
-            left: 0,
-            top: 0,
-            child: Container(
-              padding: EdgeInsets.all(2.w),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade700,
-                borderRadius: BorderRadius.circular(4.r),
-              ),
-              child: Icon(
-                Icons.warning_rounded,
-                size: 14.sp,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIcon(IconData icon) {
-    return Icon(icon, size: 18.sp, color: AppColors.primary);
-  }
-
-  /// Vehicle info section
-  Widget _buildInfo(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // License plate
-            Row(
-              children: [
-                _buildIcon(Icons.directions_car_filled),
-                SizedBox(width: 4.w),
-                Text(
-                  vehicle.plate,
-                  style: TextStyle(
-                    color: context.textColor,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w600,
+            SizedBox(
+              width: 35.sp,
+              height: 100.sp,
+              child: ClipRect(
+                child: Transform.scale(
+                  scale: 1.7,
+                  child: SvgPicture.asset(
+                    'assets/images/map/car1.svg',
+                    height: 100.sp,
+                    fit: BoxFit.contain,
                   ),
                 ),
-              ],
-            ),
-            // Status
-            Text(
-              vehicle.status,
-              style: TextStyle(fontSize: 11.sp, color: context.textColor),
-            ),
-          ],
-        ),
-
-        SizedBox(height: 2.h),
-
-        // ── Row 2: Driver name ──
-        Row(
-          children: [
-            _buildIcon(Icons.person_outline),
-            SizedBox(width: 4.w),
-            Expanded(
-              child: Text(
-                vehicle.name.isNotEmpty ? vehicle.name : '...',
-                style: AppTextStyles.titleSmall2(color: context.textColor),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
+            SizedBox(width: 6.w),
+            Expanded(child: VehicleInfoWidget(vehicle: vehicle)),
           ],
         ),
-
-        SizedBox(height: 6.h),
-
-        // ── Row 3: Speed + Parking duration ──
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Speed
-            Row(
-              children: [
-                _buildIcon(Icons.speed),
-                SizedBox(width: 4.w),
-                Text(
-                  vehicle.speed,
-                  style: AppTextStyles.titleSmall2(color: context.textColor),
-                ),
-              ],
-            ),
-            // Parking duration
-            Row(
-              children: [
-                _buildIcon(Icons.local_parking),
-                SizedBox(width: 4.w),
-                Text(
-                  '00 giờ 00 phút',
-                  style: AppTextStyles.titleSmall2(color: context.textColor),
-                ),
-              ],
-            ),
-          ],
-        ),
-
-        SizedBox(height: 4.h),
-
-        // ── Row 4: Stop duration + Last update ──
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Stop duration
-            Row(
-              children: [
-                _buildIcon(Icons.timer_outlined),
-                SizedBox(width: 4.w),
-                Text(
-                  '00 giờ 00 phút',
-                  style: AppTextStyles.titleSmall2(color: context.textColor),
-                ),
-              ],
-            ),
-            // Last update time
-            Text(
-              vehicle.lastUpdate,
-              style: AppTextStyles.titleSmall2(color: context.textColor),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            _buildIcon(Icons.location_on),
-            SizedBox(width: 4.w),
-            Text(
-              vehicle.location,
-              style: AppTextStyles.titleSmall2(color: context.textColor),
-            ),
-          ],
-        ),
-      ],
+      ),
     );
   }
 }

@@ -11,35 +11,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _searchQuery = '';
+  final _searchNotifier = ValueNotifier<String>('');
+
+  @override
+  void dispose() {
+    _searchNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          // Background image (logo3) - chìm sâu phía sau, mờ dần
           Positioned.fill(
-            child: Opacity(
-              opacity: isDark ? 0.3 : 0.3,
-              child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
+            child: RepaintBoundary(
+              child: Image.asset(
+                'assets/images/logo3.png',
+                fit: BoxFit.cover,
+                opacity: const AlwaysStoppedAnimation(0.3),
+              ),
             ),
           ),
-          // Header + Body nổi lên trên background
+
           Column(
             children: [
-              HomeHeader(
-                onSearchChanged: (query) {
-                  setState(() {
-                    _searchQuery = query.toLowerCase();
-                  });
-                },
-              ),
+              HomeHeader(searchNotifier: _searchNotifier),
               Expanded(
                 child: HomeBody(
-                  searchQuery: _searchQuery,
+                  searchNotifier: _searchNotifier,
                   onNavigateToTab: (index) {
                     widget.onNavigateToTab?.call(index);
                   },

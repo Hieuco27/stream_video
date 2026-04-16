@@ -6,7 +6,7 @@ import 'package:stream_video/features/report/presentation/pages/tabs/fuel_tab.da
 import 'package:stream_video/features/report/presentation/pages/tabs/speed/speed_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/stop/stop_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/summary/summary_tab.dart';
-import 'package:stream_video/features/report/presentation/pages/tabs/temperature_tab.dart';
+import 'package:stream_video/features/report/presentation/pages/tabs/temperature/temperature_tab.dart';
 import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_tab.dart';
 import 'package:stream_video/features/widget/date_time_picker_widget.dart';
 import 'package:stream_video/features/widget/info_popup.dart';
@@ -102,7 +102,12 @@ class _ReportPageState extends State<ReportPage>
                   endDate: _endDate,
                   triggerLoad: _loadKeys[3],
                 ),
-                TemperatureTab(dateRange: _selectedRange),
+                TemperatureTab(
+                  plate: _selectedPlate,
+                  startDate: _startDate,
+                  endDate: _endDate,
+                  triggerLoad: _loadKeys[4],
+                ),
                 FuelTab(dateRange: _selectedRange),
               ],
             ),
@@ -116,9 +121,9 @@ class _ReportPageState extends State<ReportPage>
     if (_endDate.isBefore(_startDate)) {
       InfoPopup.showError(
         context,
-        title: 'Thông báo lỗi',
+        title: 'Thông báo',
         message:
-            'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu. Vui lòng chọn lại.',
+            'Thời gian không hợp lệ. Vui lòng chọn thời đến lớn hơn thời gian bắt đầu',
       );
       return;
     }

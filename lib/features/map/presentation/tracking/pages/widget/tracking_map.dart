@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_video/features/widget/location_marker.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
@@ -129,33 +131,16 @@ class TrackingMap extends StatelessWidget {
                           ),
                           child: Text(
                             vehicle!.plate,
-                            style: TextStyle(
+                            style: AppTextStyles.labelSmall(
                               color: Colors.white,
-                              fontSize: 9.sp,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         SizedBox(height: 2.h),
-                        Container(
-                          width: 28.r,
-                          height: 28.r,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF075797),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 6,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.directions_car,
-                            color: Colors.white,
-                            size: 16.r,
-                          ),
+                        SvgPicture.asset(
+                          'assets/images/map/car1.svg',
+                          width: 40.r,
+                          height: 40.r,
                         ),
                       ],
                     ),

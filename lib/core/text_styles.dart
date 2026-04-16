@@ -65,11 +65,11 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle titleSmall() {
+  static TextStyle titleSmall({Color? color}) {
     return GoogleFonts.inter(
       fontSize: 11.sp,
       fontWeight: FontWeight.w500,
-      color: AppColors.textPrimary,
+      color: color,
     );
   }
 
@@ -102,8 +102,12 @@ class AppTextStyles {
   }
 
   // Label styles
-  static TextStyle labelLarge() {
-    return GoogleFonts.inter(fontSize: 14.sp, fontWeight: FontWeight.w500);
+  static TextStyle labelLarge({Color? color}) {
+    return GoogleFonts.inter(
+      fontSize: 14.sp,
+      fontWeight: FontWeight.w500,
+      color: color,
+    );
   }
 
   static TextStyle labelMedium() {
@@ -115,8 +119,12 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle labelSmall() {
-    return GoogleFonts.inter(fontSize: 11.sp, fontWeight: FontWeight.w500);
+  static TextStyle labelSmall({Color? color}) {
+    return GoogleFonts.inter(
+      fontSize: 11.sp,
+      fontWeight: FontWeight.w500,
+      color: color,
+    );
   }
 
   // Body styles

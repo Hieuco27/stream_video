@@ -41,7 +41,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.3.2
   intl: ^0.20.2
-  
+  fl_chart: ^0.69.0
 
 
 dev_dependencies:
@@ -68,3 +68,4 @@ flutter:
     - assets/images/navbar/
     - assets/images/report/
     - assets/images/report/trip/
+    - assets/images/map/

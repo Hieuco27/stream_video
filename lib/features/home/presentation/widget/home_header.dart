@@ -4,44 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 
-class HomeHeader extends StatefulWidget {
-  final ValueChanged<String>? onSearchChanged;
+class HomeHeader extends StatelessWidget {
+  final ValueNotifier<String> searchNotifier;
 
-  const HomeHeader({super.key, this.onSearchChanged});
-
-  @override
-  State<HomeHeader> createState() => _HomeHeaderState();
-}
-
-class _HomeHeaderState extends State<HomeHeader> {
-  late Timer _timer;
-  String _timeString = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _updateTime();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateTime());
-  }
-
-  void _updateTime() {
-    final now = DateTime.now();
-    final h = now.hour.toString().padLeft(2, '0');
-    final m = now.minute.toString().padLeft(2, '0');
-    final s = now.second.toString().padLeft(2, '0');
-    final d = now.day.toString().padLeft(2, '0');
-    final mo = now.month.toString().padLeft(2, '0');
-    final y = now.year.toString();
-    setState(() {
-      _timeString = '$h:$m:$s, $d/$mo/$y';
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
+  const HomeHeader({super.key, required this.searchNotifier});
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +15,8 @@ class _HomeHeaderState extends State<HomeHeader> {
     final gradient = isDark
         ? AppGradients.darkHeader
         : AppGradients.primaryButton;
-    final searchBg = isDark
-        ? Colors.white.withValues(alpha: 0.1)
-        : Colors.white;
-    final searchTextColor = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-    final searchHintColor = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.darkTextSecondary;
-    final iconColor = isDark
-        ? AppColors.darkTextSecondary
-        : AppColors.darkTextSecondary;
+    final searchHintColor = AppColors.darkTextSecondary;
+    final iconColor = AppColors.darkTextSecondary;
 
     return Container(
       width: double.infinity,
@@ -103,7 +59,6 @@ class _HomeHeaderState extends State<HomeHeader> {
                   ),
                 ],
               ),
-
               SizedBox(height: 8.h),
               Text(
                 'Xin chào HMS ',
@@ -113,9 +68,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-
               SizedBox(height: 12.h),
-
               Container(
                 height: 35.h,
                 decoration: BoxDecoration(
@@ -129,7 +82,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                     SizedBox(width: 8.w),
                     Expanded(
                       child: TextField(
-                        onChanged: widget.onSearchChanged,
+                        // Cập nhật ValueNotifier trực tiếp — không setState
+                        onChanged: (v) =>
+                            searchNotifier.value = v.toLowerCase(),
                         decoration: InputDecoration(
                           hintText: 'Tìm kiếm...',
                           hintStyle: TextStyle(
@@ -154,23 +109,60 @@ class _HomeHeaderState extends State<HomeHeader> {
                   ],
                 ),
               ),
-
               SizedBox(height: 10.h),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  _timeString,
-                  style: TextStyle(
-                    fontSize: 13.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
+              const _ClockText(),
               SizedBox(height: 8.h),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ClockText extends StatefulWidget {
+  const _ClockText();
+
+  @override
+  State<_ClockText> createState() => _ClockTextState();
+}
+
+class _ClockTextState extends State<_ClockText> {
+  late Timer _timer;
+  late String _timeString;
+
+  @override
+  void initState() {
+    super.initState();
+    _timeString = _format(DateTime.now());
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => setState(() => _timeString = _format(DateTime.now())),
+    );
+  }
+
+  String _format(DateTime now) {
+    String p(int v) => v.toString().padLeft(2, '0');
+    return '${p(now.hour)}:${p(now.minute)}:${p(now.second)}, ${p(now.day)}/${p(now.month)}/${now.year}';
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Text(
+        _timeString,
+        style: TextStyle(
+          fontSize: 13.sp,
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontStyle: FontStyle.italic,
         ),
       ),
     );

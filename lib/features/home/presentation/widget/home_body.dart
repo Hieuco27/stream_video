@@ -3,176 +3,130 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'feature_grid_item.dart';
 import 'package:go_router/go_router.dart';
 
+class _FeatureItem {
+  final String iconPath;
+  final String label;
+  final VoidCallback onTap;
+
+  const _FeatureItem({
+    required this.iconPath,
+    required this.label,
+    required this.onTap,
+  });
+}
+
 class HomeBody extends StatelessWidget {
   final ValueChanged<int> onNavigateToTab;
-  final String searchQuery;
+  final ValueNotifier<String> searchNotifier;
 
   const HomeBody({
     super.key,
     required this.onNavigateToTab,
-    this.searchQuery = '',
+    required this.searchNotifier,
   });
+
+  List<_FeatureItem> _getItems(BuildContext context) => [
+    _FeatureItem(
+      iconPath: 'assets/images/home/map.png',
+      label: 'Bản đồ',
+      onTap: () => onNavigateToTab(2),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/xemlaihanhtrinh.png',
+      label: 'Xem lại hành trình',
+      onTap: () => onNavigateToTab(3),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/danhsachxe.png',
+      label: 'Danh sách xe',
+      onTap: () => onNavigateToTab(1),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/baocaotonghop.png',
+      label: 'Báo cáo tổng hợp',
+      onTap: () => context.push('/report', extra: 0),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/baocaohanhtrinh.png',
+      label: 'Báo cáo hành trình',
+      onTap: () => context.push('/report', extra: 1),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/baocaodungdo.png',
+      label: 'Báo cáo dừng đỗ',
+      onTap: () => context.push('/report', extra: 2),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/camera.png',
+      label: 'Camera',
+      onTap: () => context.push('/camera'),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/baocaonhietdo.png',
+      label: 'Báo cáo nhiệt độ',
+      onTap: () => context.push('/report', extra: 4),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/baocaonhienlieu.png',
+      label: 'Báo cáo nhiên liệu',
+      onTap: () => context.push('/report', extra: 5),
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/ghithongtinthe.png',
+      label: 'Ghi thông tin thẻ',
+      onTap: () {},
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/thongtindichvu.png',
+      label: 'Thông tin dịch vụ',
+      onTap: () {},
+    ),
+    _FeatureItem(
+      iconPath: 'assets/images/home/baocaotienich.png',
+      label: 'Báo cáo tiện ích',
+      onTap: () {},
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final allItems = _buildAllItems(context);
-    final filtered = allItems.where((e) {
-      return e.label.toLowerCase().contains(searchQuery.toLowerCase());
-    }).toList();
+    return ValueListenableBuilder<String>(
+      valueListenable: searchNotifier,
+      builder: (context, searchQuery, _) {
+        final filtered = _getItems(context).where((e) {
+          return e.label.toLowerCase().contains(searchQuery);
+        }).toList();
 
-    List<Widget> children = [];
-    if (filtered.isEmpty) {
-      children.add(
-        Padding(
-          padding: EdgeInsets.only(top: 40.h),
-          child: Text(
-            'Không tìm thấy tính năng nào',
-            style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
-          ),
-        ),
-      );
-    } else {
-      for (int i = 0; i < filtered.length; i += 3) {
-        int end = (i + 3 < filtered.length) ? i + 3 : filtered.length;
-        children.add(_buildRow(filtered.sublist(i, end)));
-        if (end < filtered.length) {
-          children.add(SizedBox(height: 12.h));
+        List<Widget> children = [];
+        if (filtered.isEmpty) {
+          children.add(
+            Padding(
+              padding: EdgeInsets.only(top: 40.h),
+              child: Text(
+                'Không tìm thấy tính năng nào',
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
+              ),
+            ),
+          );
+        } else {
+          for (int i = 0; i < filtered.length; i += 3) {
+            int end = (i + 3 < filtered.length) ? i + 3 : filtered.length;
+            children.add(_buildRow(filtered.sublist(i, end)));
+            if (end < filtered.length) {
+              children.add(SizedBox(height: 12.h));
+            }
+          }
         }
-      }
-    }
 
-    return Container(
-      color: Colors.transparent,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-        child: Column(children: children),
-      ),
+        return Container(
+          color: Colors.transparent,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+            child: Column(children: children),
+          ),
+        );
+      },
     );
-  }
-
-  List<_FeatureItem> _buildAllItems(BuildContext context) {
-    return [
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/map.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Bản đồ',
-        onTap: () => onNavigateToTab(2),
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/hanhtrinh.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Xem lại hành trình',
-        onTap: () => onNavigateToTab(3),
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/danhsachxe.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Danh sách xe',
-        onTap: () => onNavigateToTab(1),
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/baocaotonghop.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Báo cáo tổng hợp',
-        onTap: () {
-          context.push('/report', extra: 0);
-        },
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/baocaohanhtrinh.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Báo cáo hành trình',
-        onTap: () {
-          context.push('/report', extra: 1);
-        },
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/baocaodungdo.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Báo cáo dừng đỗ',
-        onTap: () {
-          context.push('/report', extra: 2);
-        },
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/camera.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Camera',
-        onTap: () {
-          context.push('/camera');
-        },
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/baocaonhietdo.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Báo cáo nhiệt độ',
-        onTap: () {
-          context.push('/report', extra: 4);
-        },
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/baocaonhienlieu.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Báo cáo nhiên liệu',
-        onTap: () {
-          context.push('/report', extra: 5);
-        },
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/ghithongtinthe.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Ghi thông tin thẻ',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/thongtindichvu.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Thông tin dịch vụ',
-        onTap: () {},
-      ),
-      _FeatureItem(
-        icon: Image.asset(
-          'assets/images/home/baocaotienich.png',
-          width: 20.sp,
-          height: 20.sp,
-        ),
-        label: 'Báo cáo tiện ích',
-        onTap: () {},
-      ),
-    ];
   }
 
   Widget _buildRow(List<_FeatureItem> items) {
@@ -186,7 +140,7 @@ class HomeBody extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.w),
                 child: FeatureGridItem(
-                  icon: item.icon,
+                  iconPath: item.iconPath,
                   label: item.label,
                   onTap: item.onTap,
                 ),
@@ -199,12 +153,4 @@ class HomeBody extends StatelessWidget {
       ),
     );
   }
-}
-
-class _FeatureItem {
-  final Widget icon;
-  final String label;
-  final VoidCallback onTap;
-
-  _FeatureItem({required this.icon, required this.label, required this.onTap});
 }

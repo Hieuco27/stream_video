@@ -117,13 +117,15 @@ class _PillNavBar extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SvgPicture.asset(
-                            item.icon,
-                            width: 25.sp,
-                            height: 25.sp,
-                            colorFilter: ColorFilter.mode(
-                              isSelected ? activeColor : inactiveColor,
-                              BlendMode.srcIn,
+                          RepaintBoundary(
+                            child: SvgPicture.asset(
+                              item.icon,
+                              width: 25.sp,
+                              height: 25.sp,
+                              colorFilter: ColorFilter.mode(
+                                isSelected ? activeColor : inactiveColor,
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                           SizedBox(height: 3.h),
@@ -178,11 +180,13 @@ class _PillNavBar extends StatelessWidget {
                     child: SizedBox(
                       width: 30.sp,
                       height: 30.sp,
-                      child: SvgPicture.asset(
-                        _items[2].icon,
-                        colorFilter: const ColorFilter.mode(
-                          Colors.white,
-                          BlendMode.srcIn,
+                      child: RepaintBoundary(
+                        child: SvgPicture.asset(
+                          _items[2].icon,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
                         ),
                       ),
                     ),
@@ -215,10 +219,6 @@ class _NotchedNavPainter extends CustomPainter {
       ..color = color
       ..style = PaintingStyle.fill;
 
-    final shadowPaint = Paint()
-      ..color = shadowColor
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
-
     final centerX = size.width / 2;
     final curveDepth = notchRadius * 1.5;
     final curveWidth = notchRadius + 10;
@@ -249,7 +249,8 @@ class _NotchedNavPainter extends CustomPainter {
       ..lineTo(0, size.height)
       ..close();
 
-    canvas.drawPath(path, shadowPaint);
+    // Dùng drawShadow thay MaskFilter.blur → không gọi saveLayer, GPU-native
+    canvas.drawShadow(path, shadowColor, 6, true);
     canvas.drawPath(path, paint);
   }
 

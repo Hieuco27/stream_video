@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
               return MaterialApp.router(
                 routerConfig: AppRouter.router,
                 debugShowCheckedModeBanner: false,
-                title: 'Camera App',
+                title: 'HMS GPS',
                 theme: AppTheme.light,
                 darkTheme: AppTheme.dark,
                 themeMode: settings.themeMode,

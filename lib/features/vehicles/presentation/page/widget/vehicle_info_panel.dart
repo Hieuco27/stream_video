@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class VehicleInfoPanel extends StatelessWidget {
@@ -47,19 +48,13 @@ class VehicleInfoPanel extends StatelessWidget {
                 SizedBox(width: 6.w),
                 Text(
                   vehicle.plate,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: AppTextStyles.labelLarge(color: AppColors.textPrimary),
                 ),
                 Expanded(
                   child: Text(
                     textAlign: TextAlign.right,
                     timeStr,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
+                    style: AppTextStyles.labelLarge(
                       color: AppColors.backgroundColor,
                     ),
                   ),
@@ -85,10 +80,7 @@ class VehicleInfoPanel extends StatelessWidget {
                 SizedBox(width: 6.w),
                 Text(
                   '00 giờ 00 phút ',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: AppTextStyles.labelLarge(color: AppColors.textPrimary),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -97,47 +89,14 @@ class VehicleInfoPanel extends StatelessWidget {
                 Text(
                   '00 giờ 00 phút ',
                   textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: AppColors.textPrimary,
-                  ),
+                  style: AppTextStyles.labelLarge(color: AppColors.textPrimary),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-          SizedBox(height: 10.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4.w),
-            child: Row(
-              children: [
-                Icon(Icons.local_parking, color: Colors.black, size: 16.r),
-                SizedBox(width: 6.w),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Text(
-                        'Dừng đỗ:00 giờ 00 phút ',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      SizedBox(width: 60.w),
-                      Text(
-                        '00 giờ 00 phút ',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+
           SizedBox(height: 10.h),
           //  Hàng 2: Địa chỉ
           Padding(
@@ -150,8 +109,7 @@ class VehicleInfoPanel extends StatelessWidget {
                 Expanded(
                   child: Text(
                     vehicle.location,
-                    style: TextStyle(
-                      fontSize: 14.sp,
+                    style: AppTextStyles.labelLarge(
                       color: AppColors.textPrimary,
                     ),
                     maxLines: 2,
@@ -189,34 +147,20 @@ class VehicleInfoPanel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _ActionButton(
-                  icon: Image.asset(
-                    'assets/images/home/hanhtrinh.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/xemlaihanhtrinh.png',
                   label: 'Xem lại',
                   onTap: () => context.push('/route'),
                 ),
                 _ActionButton(
-                  icon: Image.asset(
-                    'assets/images/home/detail.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/detail.png',
                   label: 'Chi tiết',
                   onTap: () => context.push('/detail', extra: vehicle),
                 ),
                 _ActionButton(
-                  icon: Image.asset(
-                    'assets/images/home/report.png',
-                    fit: BoxFit.contain,
-                  ),
+                  iconPath: 'assets/images/home/baocaohanhtrinh.png',
                   label: 'Báo cáo',
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Tính năng đang phát triển'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    context.push('/report', extra: 0);
                   },
                 ),
               ],
@@ -241,29 +185,17 @@ class _StatusChip extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 4.w),
         decoration: BoxDecoration(
-          color: AppColors.gradientStart,
+          color: AppColors.primary3,
           borderRadius: BorderRadius.circular(10.r),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
+            Text(label, style: AppTextStyles.titleSmall(color: Colors.white)),
             SizedBox(height: 2.h),
             Text(
               value,
-              style: TextStyle(
-                fontSize: 10.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.labelSmall(color: Colors.white),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -277,12 +209,12 @@ class _StatusChip extends StatelessWidget {
 
 // Nút action
 class _ActionButton extends StatelessWidget {
-  final Widget icon;
+  final String iconPath;
   final String label;
   final VoidCallback onTap;
 
   const _ActionButton({
-    required this.icon,
+    required this.iconPath,
     required this.label,
     required this.onTap,
   });
@@ -298,20 +230,16 @@ class _ActionButton extends StatelessWidget {
             width: 50.r,
             height: 50.r,
             decoration: BoxDecoration(
-              color: AppColors.gradientStart,
+              color: AppColors.primary3,
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Padding(padding: EdgeInsets.all(12.r), child: icon),
-          ),
-          SizedBox(height: 5.h),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11.sp,
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w500,
+            child: Padding(
+              padding: EdgeInsets.all(10.r),
+              child: Image.asset(iconPath, fit: BoxFit.contain),
             ),
           ),
+          SizedBox(height: 5.h),
+          Text(label, style: AppTextStyles.labelSmall(color: Colors.black)),
         ],
       ),
     );

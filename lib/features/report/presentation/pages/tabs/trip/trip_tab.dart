@@ -153,5 +153,3 @@ class _TripTabState extends State<TripTab> with AutomaticKeepAliveClientMixin {
     );
   }
 }
-
-

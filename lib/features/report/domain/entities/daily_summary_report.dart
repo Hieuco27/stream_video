@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-/// Entity đại diện cho báo cáo tổng hợp của 1 ngày / 1 xe.
 class DailySummaryReport extends Equatable {
-  final DateTime date; // ngày báo cáo
+  final DateTime date;
   final Duration workingTime; // Thời gian làm việc (lái + dừng có động cơ)
   final int stopCount; // Số lần dừng
   final int over4hCount; // Số lần lái liên tục > 4h
@@ -10,7 +9,7 @@ class DailySummaryReport extends Equatable {
   final Duration stopDuration; // Tổng thời gian dừng
   final double totalKm; // Tổng km trong ngày
   final String startAddress; // Địa chỉ điểm xuất phát đầu ngày
-  final String endAddress;   // Địa chỉ GPS cuối cùng trong ngày
+  final String endAddress; // Địa chỉ GPS cuối cùng trong ngày
 
   const DailySummaryReport({
     required this.date,

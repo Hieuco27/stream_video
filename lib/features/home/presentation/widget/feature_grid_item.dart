@@ -3,27 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 
 class FeatureGridItem extends StatelessWidget {
-  final Widget icon;
+  final String iconPath;
   final String label;
   final VoidCallback onTap;
 
   const FeatureGridItem({
     super.key,
-    required this.icon,
+    required this.iconPath,
     required this.label,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark
-        ? AppColors.darkSurface.withValues(alpha: 0.95)
-        : Colors.white.withValues(alpha: 0.85);
-    final textColor = isDark
-        ? AppColors.darkTextPrimary
-        : AppColors.lightTextPrimary;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -33,7 +25,7 @@ class FeatureGridItem extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.25),
-              blurRadius: 15,
+              blurRadius: 8,
               offset: const Offset(0, 5),
             ),
           ],
@@ -41,7 +33,16 @@ class FeatureGridItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(width: 30.w, height: 30.w, child: icon),
+            SizedBox(
+              width: 30.w,
+              height: 30.w,
+              child: Image.asset(
+                iconPath,
+                cacheWidth: 72,
+                cacheHeight: 72,
+                fit: BoxFit.contain,
+              ),
+            ),
             SizedBox(height: 2.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.w),
