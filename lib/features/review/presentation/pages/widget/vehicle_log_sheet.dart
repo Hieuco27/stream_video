@@ -225,17 +225,6 @@ class _VehicleItem extends StatelessWidget {
                 ),
               ),
             ),
-            // Trạng thái (chấm màu)
-            Container(
-              width: 8.r,
-              height: 8.r,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: vehicle.status == 'Đang hoạt động'
-                    ? Colors.green
-                    : Colors.orange,
-              ),
-            ),
           ],
         ),
       ),

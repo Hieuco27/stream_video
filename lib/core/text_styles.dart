@@ -41,11 +41,11 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle titleMedium() {
+  static TextStyle titleMedium({Color? color}) {
     return GoogleFonts.inter(
       fontSize: 16.sp,
       fontWeight: FontWeight.w600,
-      color: AppColors.textColor,
+      color: color,
     );
   }
 

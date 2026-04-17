@@ -133,7 +133,7 @@ class VehicleInfoPanel extends StatelessWidget {
                 SizedBox(width: 6.w),
                 _StatusChip(label: 'CỬA XE', value: 'Đóng'),
                 SizedBox(width: 6.w),
-                _StatusChip(label: 'TRẠNG THÁI', value: vehicle.status),
+                _StatusChip(label: 'TRẠNG THÁI', value: vehicle.status.name),
               ],
             ),
           ),

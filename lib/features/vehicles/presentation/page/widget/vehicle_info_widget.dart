@@ -48,11 +48,7 @@ class VehicleInfoWidget extends StatelessWidget {
                 ),
               ],
             ),
-            // Status
-            Text(
-              vehicle.status,
-              style: TextStyle(fontSize: 11.sp, color: context.textColor),
-            ),
+            // Status — hiển thị nhãn tiếng Việt
           ],
         ),
 

@@ -1,11 +1,13 @@
 import 'package:equatable/equatable.dart';
 
+enum VehicleStatus { moving, stopped, engineOff, noSignal, noGps }
+
 class VehicleEntity extends Equatable {
   final String id;
   final String name; // tên lái xe
   final String plate; // biển số xe
   final String type; // loại xe
-  final String status; // trạng thái
+  final VehicleStatus status; //trạng thái xe
   final String location; // vị trí
   final String speed; // tốc độ
   final String engine; // trạng thái động cơ

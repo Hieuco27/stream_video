@@ -2,9 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
+import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class VehicleAppBar extends StatelessWidget {
-  const VehicleAppBar({super.key});
+  const VehicleAppBar({
+    super.key,
+    required this.searchNotifier,
+    required this.filterNotifier,
+    required this.onFilterTap,
+  });
+
+  final ValueNotifier<String> searchNotifier;
+  final ValueNotifier<VehicleStatus?> filterNotifier;
+  final VoidCallback onFilterTap;
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +26,7 @@ class VehicleAppBar extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 140.h,
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20.r),
-          bottomRight: Radius.circular(20.r),
-        ),
-      ),
+      decoration: BoxDecoration(gradient: gradient),
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -30,7 +35,6 @@ class VehicleAppBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(height: 8.h),
-
               Row(
                 children: [
                   Container(
@@ -47,35 +51,55 @@ class VehicleAppBar extends StatelessWidget {
                     ),
                   ),
 
-                  // Title
                   Expanded(
                     child: Text(
                       'Danh sách xe',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                      style: AppTextStyles.titleMedium(),
                     ),
                   ),
 
-                  // Filter icon button
-                  Container(
-                    width: 36.w,
-                    height: 36.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.filter_alt_outlined,
-                        color: AppColors.textPrimary,
-                        size: 20.sp,
-                      ),
-                      onPressed: () {},
-                    ),
+                  ValueListenableBuilder<VehicleStatus?>(
+                    valueListenable: filterNotifier,
+                    builder: (_, status, __) {
+                      final isFiltering = status != null;
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            width: 36.w,
+                            height: 36.w,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.filter_alt_outlined,
+                                color: isFiltering
+                                    ? const Color(0xFF1976D2)
+                                    : AppColors.textPrimary,
+                                size: 20.sp,
+                              ),
+                              onPressed: onFilterTap,
+                            ),
+                          ),
+                          if (isFiltering)
+                            Positioned(
+                              top: -4,
+                              right: -4,
+                              child: Container(
+                                width: 10.r,
+                                height: 10.r,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -101,12 +125,22 @@ class VehicleAppBar extends StatelessWidget {
                           ),
                           SizedBox(width: 8.w),
                           Expanded(
-                            child: Text(
-                              'Tìm kiếm xe',
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: AppColors.textPrimary,
+                            child: TextField(
+                              onChanged: (v) =>
+                                  searchNotifier.value = v.toLowerCase(),
+                              decoration: InputDecoration(
+                                hintText: 'Tìm kiếm xe',
+                                hintStyle: AppTextStyles.titleSmall2(),
+                                isDense: true,
+                                filled: false,
+                                contentPadding: EdgeInsets.only(top: 2.h),
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
                               ),
+                              style: AppTextStyles.titleSmall2(),
                             ),
                           ),
                         ],
