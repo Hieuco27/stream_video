@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:go_router/go_router.dart';
 
@@ -43,10 +44,8 @@ class VehicleBottomSheet extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Biển số : ${vehicle.plate}',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                    style: AppTextStyles.labelLarge().copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
@@ -143,14 +142,7 @@ class _MenuItem extends StatelessWidget {
             ),
           ),
           SizedBox(height: 6.h),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
+          Text(label, style: AppTextStyles.titleSmall2()),
         ],
       ),
     );

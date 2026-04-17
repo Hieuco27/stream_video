@@ -214,14 +214,13 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     }
   }
 
-  // ─── Bản đồ ───────────────────────────────────────
+  //  Bản đồ 
 
   void _onChangeMapType(ChangeMapType event, Emitter<TrackingState> emit) {
     emit(state.copyWith(mapType: event.mapType));
   }
 
-  // ─── Lịch sử lộ trình ─────────────────────────────
-
+  //  Lịch sử lộ trình 
   Future<void> _onLoadRouteHistory(
     LoadRouteHistory event,
     Emitter<TrackingState> emit,
@@ -281,7 +280,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     emit(state.copyWith(routeHistory: const RouteHistoryIdle()));
   }
 
-  // ─── Dừng theo dõi ────────────────────────────────
+  //  Dừng theo dõi 
 
   Future<void> _onStopTracking(
     StopTracking event,
@@ -292,7 +291,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     emit(state.copyWith(vehicle: const VehicleIdle()));
   }
 
-  // ─── Helper ───────────────────────────────────────
+  //  Helper 
 
   List<Marker> _buildMarkers(List<VehicleEntity> vehicles) {
     return vehicles.map((v) => _buildSingleMarker(v)).toList();

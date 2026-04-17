@@ -92,35 +92,36 @@ class _VehicleFilterSheetState extends State<VehicleFilterSheet> {
         child: Material(
           color: Colors.white,
           elevation: 8,
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primary2,
-                    border: Border(
-                      bottom: BorderSide(color: Colors.grey.shade200),
-                    ),
-                  ),
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 12.w,
-                    vertical: 14.h,
-                  ),
-                  child: Text(
-                    'Bộ lọc xe',
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.titleMedium(color: Colors.black),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  left: 12.w,
+                  right: 12.w,
+                  top: MediaQuery.of(context).padding.top + 14.h,
+                  bottom: 14.h,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary2,
+                  border: Border(
+                    bottom: BorderSide(color: Colors.grey.shade200),
                   ),
                 ),
-
-                // Danh sách mục lọc
-                Expanded(
+                child: Text(
+                  'Bộ lọc xe',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.titleMedium(color: Colors.black),
+                ),
+              ),
+              Expanded(
+                child: SafeArea(
+                  top: false,
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
-                      for (final item in VehicleFilterSheet._items)
+                      for (final item in VehicleFilterSheet._items) ...[
                         _buildRow(
                           label: item.label,
                           count: widget.vehicles
@@ -130,8 +131,12 @@ class _VehicleFilterSheetState extends State<VehicleFilterSheet> {
                           isSelected: _selected == item.status,
                           onTap: () => _select(item.status),
                         ),
-
-                      // Tất cả xe
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey.shade300,
+                        ),
+                      ],
                       _buildRow(
                         label: 'Tất cả xe',
                         count: widget.vehicles.length,
@@ -142,8 +147,8 @@ class _VehicleFilterSheetState extends State<VehicleFilterSheet> {
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -157,12 +162,12 @@ class _VehicleFilterSheetState extends State<VehicleFilterSheet> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
         color: isSelected ? const Color(0xFFE3F2FD) : Colors.transparent,
-        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 18.h),
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 24.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -179,15 +184,7 @@ class _VehicleFilterSheetState extends State<VehicleFilterSheet> {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                      color: isSelected
-                          ? const Color(0xFF1976D2)
-                          : Colors.black87,
-                    ),
+                    style: AppTextStyles.labelLarge(color: Colors.black),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),

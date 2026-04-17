@@ -57,11 +57,11 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle titleMediumGetStart() {
+  static TextStyle titleMediumAppBar() {
     return GoogleFonts.inter(
       fontSize: 16.sp,
-      fontWeight: FontWeight.w500,
-      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textColor,
     );
   }
 
@@ -76,7 +76,7 @@ class AppTextStyles {
   static TextStyle titleSmall2({Color? color}) {
     return GoogleFonts.inter(
       fontSize: 12.sp,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w500,
       color: color,
     );
   }

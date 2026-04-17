@@ -105,7 +105,6 @@ class _PlaybackPageState extends State<PlaybackPage> {
             listenWhen: (prev, curr) =>
                 prev.currentIndex != curr.currentIndex && curr.isPlaying,
             listener: (context, state) {
-              // Auto-follow xe khi đang play
               final point = state.currentPoint;
               if (point != null) {
                 _mapController.move(
@@ -158,7 +157,6 @@ class _PlaybackPageState extends State<PlaybackPage> {
                             child: const PlaybackInfoCard(),
                           ),
 
-                        // Error overlay
                         if (state.status == PlaybackStatus.error)
                           Center(
                             child: Card(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/review/presentation/bloc/playback_bloc.dart';
 import 'package:stream_video/features/review/presentation/bloc/playback_event.dart';
 import 'package:stream_video/features/review/presentation/bloc/playback_state.dart';
@@ -82,11 +84,7 @@ class _VehicleLogSheetState extends State<VehicleLogSheet> {
       child: Text(
         'Chọn phương tiện',
         textAlign: TextAlign.center,
-        style: TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w500,
-        ),
+        style: AppTextStyles.titleMedium(),
       ),
     );
   }
@@ -198,7 +196,6 @@ class _VehicleItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
         child: Row(
           children: [
-            // Icon xe
             Container(
               width: 36.r,
               height: 36.r,
@@ -206,14 +203,17 @@ class _VehicleItem extends StatelessWidget {
                 color: isSelected ? AppColors.primary : Colors.grey.shade200,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.directions_car,
-                size: 20.r,
-                color: isSelected ? Colors.white : Colors.grey.shade600,
+              child: SvgPicture.asset(
+                'assets/images/map/car1.svg',
+                width: 20.r,
+                height: 20.r,
+                colorFilter: ColorFilter.mode(
+                  isSelected ? Colors.white : Colors.grey.shade600,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             SizedBox(width: 12.w),
-            // Biển số
             Expanded(
               child: Text(
                 textAlign: TextAlign.center,

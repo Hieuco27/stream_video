@@ -16,7 +16,9 @@ class ProfileSettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? AppColors.darkBackground : Colors.white;
-    final textColor = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
+    final textColor = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -26,13 +28,17 @@ class ProfileSettingPage extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: bgColor,
-        body: Column(children: [_buildHeader(isDark), _buildMenuItems(context, textColor)]),
+        body: Column(
+          children: [_buildHeader(isDark), _buildMenuItems(context, textColor)],
+        ),
       ),
     );
   }
 
   Widget _buildHeader(bool isDark) {
-    final gradient = isDark ? AppGradients.darkHeader : AppGradients.primaryButton;
+    final gradient = isDark
+        ? AppGradients.darkHeader
+        : AppGradients.primaryButton;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.only(

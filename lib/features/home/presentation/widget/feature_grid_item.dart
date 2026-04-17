@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class FeatureGridItem extends StatelessWidget {
   final String iconPath;
@@ -51,10 +52,8 @@ class FeatureGridItem extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 11.sp,
+                style: AppTextStyles.titleSmall2().copyWith(
                   color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),

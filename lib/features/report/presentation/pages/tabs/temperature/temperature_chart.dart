@@ -28,7 +28,7 @@ class TemperatureChart extends StatelessWidget {
         children: [
           Text(
             'Biểu đồ nhiệt độ',
-            style: AppTextStyles.titleMediumGetStart().copyWith(
+            style: AppTextStyles.titleMediumAppBar().copyWith(
               fontStyle: FontStyle.italic,
             ),
           ),

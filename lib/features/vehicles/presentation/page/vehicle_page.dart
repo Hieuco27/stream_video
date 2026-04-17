@@ -7,7 +7,8 @@ import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_
 import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_list.dart';
 
 class VehiclePage extends StatefulWidget {
-  const VehiclePage({super.key});
+  final bool isActive;
+  const VehiclePage({super.key, this.isActive = true});
 
   @override
   State<VehiclePage> createState() => _VehiclePageState();
@@ -16,6 +17,28 @@ class VehiclePage extends StatefulWidget {
 class _VehiclePageState extends State<VehiclePage> {
   final searchNotifier = ValueNotifier<String>('');
   final filterNotifier = ValueNotifier<VehicleStatus?>(null);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isLoading = false;
+
+  @override
+  void didUpdateWidget(covariant VehiclePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.isActive && widget.isActive) {
+      searchNotifier.value = '';
+      filterNotifier.value = null;
+
+      setState(() {
+        _isLoading = true;
+      });
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -24,12 +47,8 @@ class _VehiclePageState extends State<VehiclePage> {
     super.dispose();
   }
 
-  Future<void> _openFilter() async {
-    await VehicleFilterSheet.show(
-      context,
-      vehicles: vehicleMockData,
-      filterNotifier: filterNotifier,
-    );
+  void _openFilter() {
+    _scaffoldKey.currentState?.openEndDrawer();
   }
 
   @override
@@ -39,7 +58,12 @@ class _VehiclePageState extends State<VehiclePage> {
         ? AppColors.lightTextPrimary.withValues(alpha: 0.85)
         : Colors.white;
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: cardColor,
+      endDrawer: VehicleFilterSheet(
+        vehicles: vehicleMockData,
+        filterNotifier: filterNotifier,
+      ),
       body: Column(
         children: [
           VehicleAppBar(
@@ -48,11 +72,19 @@ class _VehiclePageState extends State<VehiclePage> {
             onFilterTap: _openFilter,
           ),
           Expanded(
-            child: VehicleList(
-              vehicles: vehicleMockData,
-              searchNotifier: searchNotifier,
-              filterNotifier: filterNotifier,
-            ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF1976D2),
+                      ),
+                    ),
+                  )
+                : VehicleList(
+                    vehicles: vehicleMockData,
+                    searchNotifier: searchNotifier,
+                    filterNotifier: filterNotifier,
+                  ),
           ),
         ],
       ),

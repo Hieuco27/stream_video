@@ -34,7 +34,6 @@ Color _statusBgColor(VehicleStatus s) {
   }
 }
 
-// ────────────────────────────────────────────────────────────────────────────
 
 class VehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;

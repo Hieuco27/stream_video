@@ -30,7 +30,7 @@ class _MainScreenState extends State<MainScreen> {
         index: _selectedIndex,
         children: [
           HomePage(onNavigateToTab: _onItemTapped),
-          const VehiclePage(),
+          VehiclePage(isActive: _selectedIndex == 1),
           const TrackingPage(),
           PlaybackPage(isActive: _selectedIndex == 3),
           const ProfileSettingPage(),

@@ -126,11 +126,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             ),
             title: Text(
               'Đổi mật khẩu',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.sp,
-              ),
+              style: AppTextStyles.titleMediumAppBar(),
             ),
             centerTitle: true,
           ),
@@ -214,10 +210,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                               )
                             : Text(
                                 'Đổi mật khẩu',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: AppTextStyles.titleMediumAppBar(),
                               ),
                       ),
                     ),
@@ -258,7 +251,9 @@ class _PasswordField extends StatelessWidget {
         controller: controller,
         obscureText: obscure,
         onChanged: onChanged,
-        style: TextStyle(fontSize: 13.sp, color: AppColors.textPrimary),
+        style: AppTextStyles.titleSmall2().copyWith(
+          color: AppColors.textPrimary,
+        ),
         decoration: InputDecoration(
           isDense: true,
           hintText: hint,

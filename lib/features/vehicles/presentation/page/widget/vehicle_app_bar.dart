@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
+
+Color _statusColor(VehicleStatus s) {
+  switch (s) {
+    case VehicleStatus.moving:
+      return const Color(0xFF1976D2);
+    case VehicleStatus.stopped:
+      return const Color(0xFFE53935);
+    case VehicleStatus.engineOff:
+      return const Color(0xFF555555);
+    case VehicleStatus.noSignal:
+      return const Color(0xFFFF6B35);
+    case VehicleStatus.noGps:
+      return const Color(0xFFFFCC02);
+  }
+}
 
 class VehicleAppBar extends StatelessWidget {
   const VehicleAppBar({
@@ -55,7 +71,7 @@ class VehicleAppBar extends StatelessWidget {
                     child: Text(
                       'Danh sách xe',
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.titleMedium(),
+                      style: AppTextStyles.titleMediumAppBar(),
                     ),
                   ),
 
@@ -67,8 +83,8 @@ class VehicleAppBar extends StatelessWidget {
                         clipBehavior: Clip.none,
                         children: [
                           Container(
-                            width: 36.w,
-                            height: 36.w,
+                            width: 40.w,
+                            height: 40.w,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10.r),
@@ -76,27 +92,27 @@ class VehicleAppBar extends StatelessWidget {
                             child: IconButton(
                               icon: Icon(
                                 Icons.filter_alt_outlined,
-                                color: isFiltering
-                                    ? const Color(0xFF1976D2)
-                                    : AppColors.textPrimary,
-                                size: 20.sp,
+                                color: AppColors.textPrimary,
+                                size: 24.sp,
                               ),
                               onPressed: onFilterTap,
                             ),
                           ),
-                          if (isFiltering)
+                          if (isFiltering) ...[
                             Positioned(
-                              top: -4,
-                              right: -4,
-                              child: Container(
-                                width: 10.r,
-                                height: 10.r,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
+                              bottom: 1,
+                              right: 0,
+                              child: SvgPicture.asset(
+                                'assets/images/map/car1.svg',
+                                width: 20.r,
+                                height: 20.r,
+                                colorFilter: ColorFilter.mode(
+                                  _statusColor(status!),
+                                  BlendMode.srcIn,
                                 ),
                               ),
                             ),
+                          ],
                         ],
                       );
                     },

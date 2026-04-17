@@ -8,6 +8,8 @@ import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
 import '../../bloc/tracking_state.dart';
 import '../../../../domain/entities/map_type.dart';
+import 'package:stream_video/core/text_styles.dart';
+import 'package:stream_video/features/widget/vehicle_size.dart';
 
 class TrackingFabMenu extends StatefulWidget {
   const TrackingFabMenu({
@@ -81,8 +83,6 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
   void _onItemTap(String tag) {
     switch (tag) {
       case 'route':
-        // _close();
-        _showRouteOptions();
         break;
       case 'layers':
         //_close();
@@ -93,69 +93,12 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
         _goToCurrentLocation();
         break;
       case 'info':
-        //_close();
-        _showVehicleInfo();
         break;
     }
   }
 
   void _goToCurrentLocation() {
     context.read<TrackingBloc>().add(const LoadCurrentLocation());
-  }
-
-  void _showRouteOptions() {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Chỉ đường',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'Tính năng chỉ đường sẽ hiển thị lộ trình từ vị trí của bạn đến xe.',
-              style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
-            ),
-            SizedBox(height: 20.h),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.turn_right_rounded),
-                label: const Text('Bắt đầu dẫn đường'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gradientStart,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                  final vehicles = widget.state.vehicles;
-                  if (vehicles.isNotEmpty) {
-                    final target = LatLng(
-                      vehicles.first.latitude,
-                      vehicles.first.longitude,
-                    );
-                    context.read<TrackingBloc>().add(SelectDestination(target));
-                  }
-                },
-              ),
-            ),
-            SizedBox(height: 8.h),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showMapTypeSheet() {
@@ -195,75 +138,25 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
     );
   }
 
-  void _showVehicleInfo() {
-    final vehicles = widget.state.vehicles;
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
-      ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Thông tin xe',
-              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.h),
-            if (vehicles.isEmpty)
-              Center(
-                child: Text(
-                  'Chưa có thông tin xe',
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14.sp,
-                  ),
-                ),
-              )
-            else
-              ...vehicles
-                  .take(3)
-                  .map(
-                    (v) => _VehicleInfoRow(
-                      name: v.licensePlate,
-                      lat: v.latitude,
-                      lng: v.longitude,
-                    ),
-                  ),
-            SizedBox(height: 8.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _onSettingsTap() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Trang cài đặt đang được phát triển'),
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        // Nút Settings (luôn hiển thị)
         _CircleFab(
           icon: Icons.settings_rounded,
           tooltip: 'Cài đặt',
-          onTap: _onSettingsTap,
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (context) => const VehicleSize(),
+            );
+          },
         ),
         SizedBox(height: 8.h),
 
-        // Hàng ngang: 5 nút con + nút Options
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -312,7 +205,6 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
               );
             }),
 
-            // Nút Options (toggle menu)
             _CircleFab(
               icon: _isOpen ? Icons.menu_open_rounded : Icons.menu_rounded,
               tooltip: _isOpen ? 'Đóng menu' : 'Tuỳ chọn',
@@ -325,7 +217,7 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
   }
 }
 
-// ─── Nút tròn nổi ─────────────────────────────────────────────────────────────
+// ─── Nút tròn nổi
 class _CircleFab extends StatelessWidget {
   const _CircleFab({
     required this.icon,
@@ -367,7 +259,7 @@ class _CircleFab extends StatelessWidget {
   }
 }
 
-// ─── Item trong bottom sheet chọn loại bản đồ ─────────────────────────────────
+// Item trong bottom sheet chọn loại bản đồ
 class _MapTypeItem extends StatelessWidget {
   const _MapTypeItem({
     required this.type,
@@ -415,7 +307,7 @@ class _MapTypeItem extends StatelessWidget {
   }
 }
 
-// ─── Row thông tin xe ──────────────────────────────────────────────────────────
+// Row thông tin xe
 class _VehicleInfoRow extends StatelessWidget {
   const _VehicleInfoRow({
     required this.name,
@@ -472,7 +364,7 @@ class _VehicleInfoRow extends StatelessWidget {
   }
 }
 
-// ─── Model nội bộ ──────────────────────────────────────────────────────────────
+// Model nội bộ
 class _MenuItem {
   const _MenuItem({
     required this.icon,

@@ -48,7 +48,6 @@ class VehicleInfoWidget extends StatelessWidget {
                 ),
               ],
             ),
-            // Status — hiển thị nhãn tiếng Việt
           ],
         ),
 

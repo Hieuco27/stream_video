@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class HomeHeader extends StatelessWidget {
   final ValueNotifier<String> searchNotifier;
@@ -41,11 +42,8 @@ class HomeHeader extends StatelessWidget {
                   Text(
                     'HMS GPS',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 22.sp,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.titleLarge().copyWith(
                       color: Colors.white,
-                      letterSpacing: 0.5,
                     ),
                   ),
                   const Spacer(),

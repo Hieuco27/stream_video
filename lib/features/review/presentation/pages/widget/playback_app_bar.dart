@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'time_filter_bar.dart';
 
 class PlaybackAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -39,15 +40,10 @@ class PlaybackAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         textAlign: TextAlign.center,
         (showBackButton && vehiclePlate != null) ? vehiclePlate! : 'Xem lại',
-        style: TextStyle(
-          color: AppColors.textColor,
-          fontSize: 16.sp,
-          fontWeight: FontWeight.bold,
-        ),
+        style: AppTextStyles.titleMediumAppBar(),
       ),
       actions: showBackButton
           ? [
-              // Chuyển nút danh sách lộ trình sang góc bên phải
               Builder(
                 builder: (drawerContext) => IconButton(
                   icon: Image.asset(
