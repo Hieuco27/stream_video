@@ -16,10 +16,14 @@ class TrackingFabMenu extends StatefulWidget {
     super.key,
     required this.mapController,
     required this.state,
+    this.onLocateMe,
   });
 
   final MapController mapController;
   final TrackingState state;
+
+  /// Callback báo cho parent biết user đã yêu cầu GPS thủ công
+  final VoidCallback? onLocateMe;
 
   @override
   State<TrackingFabMenu> createState() => _TrackingFabMenuState();
@@ -98,6 +102,8 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
   }
 
   void _goToCurrentLocation() {
+    // Thông báo parent trước để set flag _userRequestedLocation = true
+    widget.onLocateMe?.call();
     context.read<TrackingBloc>().add(const LoadCurrentLocation());
   }
 

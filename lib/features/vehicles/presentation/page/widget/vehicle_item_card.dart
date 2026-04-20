@@ -7,15 +7,15 @@ import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_
 Color _statusColor(VehicleStatus s) {
   switch (s) {
     case VehicleStatus.moving:
-      return const Color(0xFF1976D2); // xanh dương
+      return const Color(0xFF1976D2);
     case VehicleStatus.stopped:
-      return const Color(0xFFE53935); // đỏ
+      return const Color(0xFFE53935);
     case VehicleStatus.engineOff:
-      return const Color(0xFF555555); // xám đậm
+      return const Color(0xFF555555);
     case VehicleStatus.noSignal:
-      return const Color(0xFFFF6B35); // cam
+      return const Color(0xFFFF6B35);
     case VehicleStatus.noGps:
-      return const Color(0xFFFFCC02); // vàng
+      return const Color(0xFFFFCC02);
   }
 }
 
@@ -33,7 +33,6 @@ Color _statusBgColor(VehicleStatus s) {
       return const Color(0xFFFFFDE7);
   }
 }
-
 
 class VehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;

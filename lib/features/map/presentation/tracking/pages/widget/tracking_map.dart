@@ -11,6 +11,7 @@ import 'package:stream_video/core/text_styles.dart';
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
 import '../../bloc/tracking_state.dart';
+import '../../../../domain/entities/vehicle.dart' as map_vehicle;
 import 'route_info_card.dart';
 import 'route_history_layer.dart';
 
@@ -20,11 +21,89 @@ class TrackingMap extends StatelessWidget {
     required this.state,
     required this.mapController,
     this.vehicle,
+    this.filterNotifier,
   });
 
   final TrackingState state;
   final MapController mapController;
+
   final VehicleEntity? vehicle;
+  final ValueNotifier<VehicleStatus?>? filterNotifier;
+
+  static Color _colorForStatus(VehicleStatus status) {
+    return switch (status) {
+      VehicleStatus.moving => const Color(0xFF1976D2),
+      VehicleStatus.stopped => const Color(0xFFE53935),
+      VehicleStatus.engineOff => const Color(0xFF555555),
+      VehicleStatus.noSignal => const Color(0xFFFF6B35),
+      VehicleStatus.noGps => const Color(0xFFFFCC02),
+    };
+  }
+
+  static VehicleStatus _mapStatus(map_vehicle.VehicleStatus status) {
+    return switch (status) {
+      map_vehicle.VehicleStatus.running => VehicleStatus.moving,
+      map_vehicle.VehicleStatus.parked => VehicleStatus.stopped,
+      map_vehicle.VehicleStatus.engineOff => VehicleStatus.engineOff,
+      map_vehicle.VehicleStatus.lostGPS => VehicleStatus.noGps,
+      map_vehicle.VehicleStatus.lostSignal => VehicleStatus.noSignal,
+    };
+  }
+
+  // build marker cho từng xe trên bản đồ
+  Marker _buildVehicleMarker(
+    map_vehicle.VehicleEntity v,
+    BuildContext context,
+  ) {
+    final status = _mapStatus(v.status);
+    final color = _colorForStatus(status);
+    return Marker(
+      point: LatLng(v.latitude, v.longitude),
+      width: 56,
+      height: 62,
+      child: GestureDetector(
+        onTap: () => context.read<TrackingBloc>().add(SelectVehicle(v)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.25),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                v.licensePlate,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 2),
+            SvgPicture.asset(
+              'assets/images/map/car1.svg',
+              width: 36,
+              height: 36,
+              fit: BoxFit.contain,
+              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +143,7 @@ class TrackingMap extends StatelessWidget {
                   ),
                 ],
               ),
-            if (state.location is LocationLoading)
-              Container(
-                color: Colors.black.withValues(alpha: 0.3),
-                child: Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-              ),
+
             // Vị trí hiện tại — marker có la bàn
             if (state.currentLocation != null)
               MarkerLayer(
@@ -102,7 +172,7 @@ class TrackingMap extends StatelessWidget {
                 ],
               ),
 
-            // Marker icon xe + biển số
+            // Marker xe cụ thể — khi tracking 1 xe từ trang khác
             if (vehicle != null)
               MarkerLayer(
                 markers: [
@@ -147,8 +217,28 @@ class TrackingMap extends StatelessWidget {
                   ),
                 ],
               ),
-            if (vehicle == null && state.vehicle is VehicleLoaded)
-              MarkerLayer(markers: state.markers),
+
+            // Tất cả xe trên bản đồ — marker được build tại presentation layer
+            if (vehicle == null &&
+                state.vehicle is VehicleLoaded &&
+                filterNotifier != null)
+              ValueListenableBuilder<VehicleStatus?>(
+                valueListenable: filterNotifier!,
+                builder: (context, filter, child) {
+                  final allVehicles = (state.vehicle as VehicleLoaded).vehicles;
+                  final filtered = filter == null
+                      ? allVehicles
+                      : allVehicles
+                            .where((v) => _mapStatus(v.status) == filter)
+                            .toList();
+
+                  return MarkerLayer(
+                    markers: filtered
+                        .map((v) => _buildVehicleMarker(v, context))
+                        .toList(),
+                  );
+                },
+              ),
           ],
         ),
 

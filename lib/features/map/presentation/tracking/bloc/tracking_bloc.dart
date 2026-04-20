@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../domain/usecases/get_vehicles_usecase.dart';
 import '../../../domain/usecases/stream_vehicle_updates_usecase.dart';
@@ -8,7 +6,6 @@ import '../../../domain/usecases/get_current_location_usecase.dart';
 import '../../../domain/usecases/get_route_usecase.dart';
 import '../../../domain/usecases/get_route_history_usecase.dart';
 import '../../../domain/usecases/reverse_geocode_usecase.dart';
-import '../../../domain/entities/vehicle.dart';
 
 import 'tracking_event.dart';
 import 'tracking_state.dart';
@@ -164,45 +161,30 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     await _vehicleSubscription?.cancel();
     emit(state.copyWith(vehicle: const VehicleLoading()));
 
-    try {
-      final vehicles = await getVehiclesUseCase();
-      final markers = _buildMarkers(vehicles);
-      emit(
-        state.copyWith(
-          vehicle: VehicleLoaded(vehicles: vehicles, markers: markers),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          vehicle: VehicleError('Không tải được danh sách xe: $e'),
-        ),
-      );
-    }
+    final result = await getVehiclesUseCase();
+    result.when(
+      success: (vehicles) {
+        emit(state.copyWith(vehicle: VehicleLoaded(vehicles: vehicles)));
+      },
+      error: (failure) {
+        emit(state.copyWith(vehicle: VehicleError(failure.message)));
+      },
+    );
   }
 
   void _onUpdateVehiclePositions(
     UpdateVehiclePositions event,
     Emitter<TrackingState> emit,
   ) {
-    final markers = _buildMarkers(event.vehicles);
     final currentVehicle = state.vehicle;
     if (currentVehicle is VehicleLoaded) {
       emit(
         state.copyWith(
-          vehicle: currentVehicle.copyWith(
-            vehicles: event.vehicles,
-            markers: markers,
-            bumpVersion: true,
-          ),
+          vehicle: currentVehicle.copyWith(vehicles: event.vehicles),
         ),
       );
     } else {
-      emit(
-        state.copyWith(
-          vehicle: VehicleLoaded(vehicles: event.vehicles, markers: markers),
-        ),
-      );
+      emit(state.copyWith(vehicle: VehicleLoaded(vehicles: event.vehicles)));
     }
   }
 
@@ -283,8 +265,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     emit(state.copyWith(routeHistory: const RouteHistoryIdle()));
   }
 
-  //  Dừng theo dõi
-
+  // Dừng theo dõi
   Future<void> _onStopTracking(
     StopTracking event,
     Emitter<TrackingState> emit,
@@ -292,66 +273,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     await _vehicleSubscription?.cancel();
     _vehicleSubscription = null;
     emit(state.copyWith(vehicle: const VehicleIdle()));
-  }
-
-  //  Helper
-  List<Marker> _buildMarkers(List<VehicleEntity> vehicles) {
-    return vehicles.map((v) => _buildSingleMarker(v)).toList();
-  }
-
-  Marker _buildSingleMarker(VehicleEntity vehicle) {
-    final color = switch (vehicle.status) {
-      VehicleStatus.running => const Color(0xFF2ECC71), // xanh lá - đang chạy
-      VehicleStatus.parked => const Color(0xFFF39C12), // cam - dừng nổ máy
-      VehicleStatus.engineOff => const Color(0xFF95A5A6), // xám - tắt máy
-      VehicleStatus.lostGPS => const Color(0xFFE74C3C), // đỏ - mất GPS
-      VehicleStatus.lostSignal => const Color(
-        0xFFBDC3C7,
-      ), // xám nhạt - mất tín hiệu
-    };
-
-    return Marker(
-      point: LatLng(vehicle.latitude, vehicle.longitude),
-      width: 72,
-      height: 68,
-      child: GestureDetector(
-        onTap: () => add(SelectVehicle(vehicle)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(4),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Text(
-                vehicle.licensePlate,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Transform.rotate(
-              angle: vehicle.heading * (3.14159265 / 180),
-              child: Icon(Icons.navigation_rounded, color: color, size: 28),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override

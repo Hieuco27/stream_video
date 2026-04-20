@@ -1,3 +1,4 @@
+import 'package:stream_video/core/errors/result.dart';
 import '../entities/vehicle.dart';
 import '../repositories/vehicle_repository.dart';
 
@@ -6,7 +7,7 @@ class GetVehiclesUseCase {
 
   GetVehiclesUseCase(this.repository);
 
-  Future<List<VehicleEntity>> call() {
+  Future<Result<List<VehicleEntity>>> call() {
     return repository.getInitialVehicles();
   }
 }

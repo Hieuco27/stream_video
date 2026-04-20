@@ -7,6 +7,11 @@ import '../../bloc/tracking_event.dart';
 import '../../bloc/tracking_state.dart';
 import '../../../../domain/entities/map_type.dart';
 import 'package:stream_video/core/text_styles.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
+import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_filter_sheet.dart';
+import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
 
 class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const TrackingAppBar({
@@ -14,11 +19,13 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.mapController,
     required this.state,
     this.showBackButton = false,
+    required this.filterNotifier,
   });
 
   final MapController mapController;
   final TrackingState state;
   final bool showBackButton;
+  final ValueNotifier<VehicleStatus?> filterNotifier;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -70,28 +77,7 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
                     context.read<TrackingBloc>().add(const ClearRouteHistory());
                   },
                 ),
-              PopupMenuButton<MapType>(
-                icon: const Icon(Icons.layers),
-                tooltip: 'Kiểu bản đồ',
-                onSelected: (type) {
-                  context.read<TrackingBloc>().add(ChangeMapType(type));
-                },
-                itemBuilder: (_) => MapType.values
-                    .map(
-                      (type) => PopupMenuItem(
-                        value: type,
-                        child: Row(
-                          children: [
-                            if (type == state.mapType)
-                              const Icon(Icons.check, size: 18),
-                            const SizedBox(width: 8),
-                            Text(type.label),
-                          ],
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ),
+
               if (state.route is RouteLoaded)
                 IconButton(
                   icon: const Icon(Icons.clear),
@@ -106,6 +92,20 @@ class TrackingAppBar extends StatelessWidget implements PreferredSizeWidget {
                   if (state.currentLocation != null) {
                     mapController.move(state.currentLocation!, 15);
                   }
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.filter_alt_outlined,
+                  color: AppColors.textPrimary,
+                  size: 24.sp,
+                ),
+                onPressed: () {
+                  VehicleFilterSheet.show(
+                    context,
+                    vehicles: vehicleMockData,
+                    filterNotifier: filterNotifier,
+                  );
                 },
               ),
             ],

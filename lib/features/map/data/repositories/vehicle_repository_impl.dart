@@ -1,9 +1,9 @@
-import '../../domain/entities/vehicle.dart'
-    as map_entity; // map/domain/entities/vehicle.dart
+import '../../domain/entities/vehicle.dart' as map_entity;
 import '../../domain/repositories/vehicle_repository.dart';
 import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart'
-    as ve; // vehicles/domain/entities/vehicle_entity.dart
+    as ve;
+import 'package:stream_video/core/errors/result.dart';
 
 class VehicleRepositoryImpl implements VehicleRepository {
   bool _stopped = false;
@@ -11,11 +11,11 @@ class VehicleRepositoryImpl implements VehicleRepository {
   /// Convert VehicleStatus của vehicles → VehicleStatus của map
   static map_entity.VehicleStatus _convertStatus(ve.VehicleStatus s) {
     return switch (s) {
-      ve.VehicleStatus.moving    => map_entity.VehicleStatus.running,
-      ve.VehicleStatus.stopped   => map_entity.VehicleStatus.parked,
+      ve.VehicleStatus.moving => map_entity.VehicleStatus.running,
+      ve.VehicleStatus.stopped => map_entity.VehicleStatus.parked,
       ve.VehicleStatus.engineOff => map_entity.VehicleStatus.engineOff,
-      ve.VehicleStatus.noSignal  => map_entity.VehicleStatus.lostSignal,
-      ve.VehicleStatus.noGps     => map_entity.VehicleStatus.lostGPS,
+      ve.VehicleStatus.noSignal => map_entity.VehicleStatus.lostSignal,
+      ve.VehicleStatus.noGps => map_entity.VehicleStatus.lostGPS,
     };
   }
 
@@ -39,18 +39,18 @@ class VehicleRepositoryImpl implements VehicleRepository {
   }
 
   @override
-  Future<List<map_entity.VehicleEntity>> getInitialVehicles() async {
+  Future<Result<List<map_entity.VehicleEntity>>> getInitialVehicles() async {
     await Future.delayed(const Duration(milliseconds: 300));
-    return vehicleMockData.map(_toMapEntity).toList();
+    return Result.success(vehicleMockData.map(_toMapEntity).toList());
   }
 
   @override
-  Stream<List<map_entity.VehicleEntity>> streamVehicleUpdates() async* {
+  Stream<Result<List<map_entity.VehicleEntity>>> streamVehicleUpdates() async* {
     _stopped = false;
     while (!_stopped) {
       await Future.delayed(const Duration(seconds: 10));
       if (_stopped) break;
-      yield vehicleMockData.map(_toMapEntity).toList();
+      yield Result.success(vehicleMockData.map(_toMapEntity).toList());
     }
   }
 

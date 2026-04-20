@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_video/features/map/domain/entities/route_history_point.dart';
 import '../../../domain/entities/vehicle.dart';
 import '../../../domain/entities/map_type.dart';
 
-// ─── Vị trí ───────────────────────────
+// Vị trí
 sealed class LocationState extends Equatable {
   const LocationState();
 }
@@ -55,38 +54,22 @@ class VehicleLoading extends VehicleState {
 
 class VehicleLoaded extends VehicleState {
   final List<VehicleEntity> vehicles;
-  final List<Marker> markers;
   final VehicleEntity? selectedVehicle;
-  final int markerVersion;
 
-  const VehicleLoaded({
-    required this.vehicles,
-    required this.markers,
-    this.selectedVehicle,
-    this.markerVersion = 0,
-  });
+  const VehicleLoaded({required this.vehicles, this.selectedVehicle});
 
   VehicleLoaded copyWith({
     List<VehicleEntity>? vehicles,
-    List<Marker>? markers,
     VehicleEntity? selectedVehicle,
-    bool bumpVersion = false,
   }) {
     return VehicleLoaded(
       vehicles: vehicles ?? this.vehicles,
-      markers: markers ?? this.markers,
       selectedVehicle: selectedVehicle ?? this.selectedVehicle,
-      markerVersion: bumpVersion ? markerVersion + 1 : markerVersion,
     );
   }
 
   @override
-  List<Object?> get props => [
-    vehicles,
-    markers,
-    selectedVehicle,
-    markerVersion,
-  ];
+  List<Object?> get props => [vehicles, selectedVehicle];
 }
 
 class VehicleError extends VehicleState {
@@ -96,7 +79,7 @@ class VehicleError extends VehicleState {
   List<Object?> get props => [message];
 }
 
-// ─── Đường đi  ─────────────────────────
+// Đường đi
 sealed class RouteState extends Equatable {
   const RouteState();
 }
@@ -146,7 +129,7 @@ class RouteError extends RouteState {
   List<Object?> get props => [message];
 }
 
-// ─── Lịch sử lộ trình ───────────────────────────────
+// Lịch sử lộ trình
 sealed class RouteHistoryState extends Equatable {
   const RouteHistoryState();
 }
@@ -233,17 +216,21 @@ class TrackingState extends Equatable {
     );
   }
 
-  // ─── Getter tiện ích ─────────────────────────────
+  //  Getter tiện ích
   List<VehicleEntity> get vehicles =>
       vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).vehicles : [];
-
-  List<Marker> get markers =>
-      vehicle is VehicleLoaded ? (vehicle as VehicleLoaded).markers : [];
 
   VehicleEntity? get selectedVehicle => vehicle is VehicleLoaded
       ? (vehicle as VehicleLoaded).selectedVehicle
       : null;
 
   @override
-  List<Object?> get props => [location, vehicle, route, routeHistory, mapType, currentLocation];
+  List<Object?> get props => [
+    location,
+    vehicle,
+    route,
+    routeHistory,
+    mapType,
+    currentLocation,
+  ];
 }

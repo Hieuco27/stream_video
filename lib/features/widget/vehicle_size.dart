@@ -13,7 +13,6 @@ class VehicleSize extends StatefulWidget {
 
 class _VehicleSizeState extends State<VehicleSize> {
   int _selectedSize = 2;
-
   int _selectedMode = 2;
 
   @override

@@ -5,8 +5,8 @@ import 'package:latlong2/latlong.dart';
 import '../bloc/tracking_bloc.dart';
 import '../bloc/tracking_event.dart';
 import '../bloc/tracking_state.dart';
-import '../../../../../core/service_locator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/service_locator.dart';
 import 'widget/tracking_app_bar.dart';
 import 'widget/tracking_map.dart';
 import 'widget/tracking_fab_menu.dart';
@@ -15,27 +15,32 @@ import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.da
 
 class TrackingPage extends StatelessWidget {
   final VehicleEntity? vehicle;
-  const TrackingPage({super.key, this.vehicle});
+  final bool isActive;
+  const TrackingPage({super.key, this.vehicle, this.isActive = true});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => TrackingBloc(
-        getVehiclesUseCase: sl.getVehiclesUseCase,
-        streamVehicleUpdatesUseCase: sl.streamVehicleUpdatesUseCase,
-        getCurrentLocationUseCase: sl.getCurrentLocationUseCase,
-        getRouteUseCase: sl.getRouteUseCase,
-        reverseGeocodeUseCase: sl.reverseGeocodeUseCase,
-        getRouteHistoryUseCase: sl.getRouteHistoryUseCase,
-      )..add(const LoadCurrentLocation()),
-      child: _TrackingView(vehicle: vehicle),
-    );
+    if (vehicle != null) {
+      return BlocProvider(
+        create: (_) => TrackingBloc(
+          getVehiclesUseCase: sl.getVehiclesUseCase,
+          streamVehicleUpdatesUseCase: sl.streamVehicleUpdatesUseCase,
+          getCurrentLocationUseCase: sl.getCurrentLocationUseCase,
+          getRouteUseCase: sl.getRouteUseCase,
+          reverseGeocodeUseCase: sl.reverseGeocodeUseCase,
+          getRouteHistoryUseCase: sl.getRouteHistoryUseCase,
+        )..add(const LoadCurrentLocation()),
+        child: _TrackingView(vehicle: vehicle, isActive: isActive),
+      );
+    }
+    return _TrackingView(vehicle: vehicle, isActive: isActive);
   }
 }
 
 class _TrackingView extends StatefulWidget {
   final VehicleEntity? vehicle;
-  const _TrackingView({this.vehicle});
+  final bool isActive;
+  const _TrackingView({this.vehicle, this.isActive = true});
 
   @override
   State<_TrackingView> createState() => _TrackingViewState();
@@ -43,12 +48,19 @@ class _TrackingView extends StatefulWidget {
 
 class _TrackingViewState extends State<_TrackingView> {
   final MapController _mapController = MapController();
+  final ValueNotifier<VehicleStatus?> filterNotifier = ValueNotifier(null);
   bool _showPanel = true;
+  bool _userRequestedLocation = false;
+
+  @override
+  void dispose() {
+    filterNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    // Nếu có xe cụ thể → move map đến xe
     if (widget.vehicle != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _mapController.move(
@@ -57,10 +69,37 @@ class _TrackingViewState extends State<_TrackingView> {
         );
       });
     }
-    if (widget.vehicle == null) {
+  }
+
+  @override
+  void didUpdateWidget(_TrackingView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Khi user quay lại tab bản đồ (isActive false → true)
+    // Cần reset lại filter và re-fit camera để hiển thị toàn bộ danh sách xe
+    if (!oldWidget.isActive && widget.isActive && widget.vehicle == null) {
+      filterNotifier.value = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.read<TrackingBloc>().add(const StartTracking());
+        if (!mounted) return;
+        final bloc = context.read<TrackingBloc>();
+        final vehicleState = bloc.state.vehicle;
+        if (vehicleState is VehicleLoaded) {
+          final vehicles = vehicleState.vehicles;
+          if (vehicles.length == 1) {
+            _mapController.move(
+              LatLng(vehicles[0].latitude, vehicles[0].longitude),
+              14.0,
+            );
+          } else if (vehicles.length > 1) {
+            final bounds = LatLngBounds.fromPoints(
+              vehicles.map((v) => LatLng(v.latitude, v.longitude)).toList(),
+            );
+            _mapController.fitCamera(
+              CameraFit.bounds(
+                bounds: bounds,
+                padding: const EdgeInsets.all(60),
+              ),
+            );
+          }
         }
       });
     }
@@ -108,14 +147,18 @@ class _TrackingViewState extends State<_TrackingView> {
             state: state,
             mapController: _mapController,
             showBackButton: hasVehicle,
+            filterNotifier: filterNotifier,
           ),
           body: BlocListener<TrackingBloc, TrackingState>(
             listenWhen: (prev, curr) => prev.location != curr.location,
             listener: (context, state) {
-              if (state.location is LocationLoaded) {
-                // Chỉ move về GPS điện thoại khi KHÔNG xem xe cụ thể
-                if (!hasVehicle && state.currentLocation != null) {
+              if (state.location is LocationLoaded &&
+                  state.currentLocation != null) {
+                // Chỉ move về GPS khi user chủ động nhấn nút "Vị trí của tôi"
+                // Không move tự động để tránh ghi đè vị trí xe / fitCamera xe
+                if (_userRequestedLocation) {
                   _mapController.move(state.currentLocation!, 15.0);
+                  setState(() => _userRequestedLocation = false);
                 }
               } else if (state.location is LocationError) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -154,7 +197,9 @@ class _TrackingViewState extends State<_TrackingView> {
                     );
                   } else if (vehicles.length > 1) {
                     final bounds = LatLngBounds.fromPoints(
-                      vehicles.map((v) => LatLng(v.latitude, v.longitude)).toList(),
+                      vehicles
+                          .map((v) => LatLng(v.latitude, v.longitude))
+                          .toList(),
                     );
                     _mapController.fitCamera(
                       CameraFit.bounds(
@@ -171,6 +216,7 @@ class _TrackingViewState extends State<_TrackingView> {
                     state: state,
                     mapController: _mapController,
                     vehicle: widget.vehicle,
+                    filterNotifier: filterNotifier,
                   ),
                   // Ẩn SearchButton khi có xe
                   if (!hasVehicle)
@@ -182,6 +228,10 @@ class _TrackingViewState extends State<_TrackingView> {
                     child: TrackingFabMenu(
                       state: state,
                       mapController: _mapController,
+                      onLocateMe: () {
+                        // Đánh dấu đây là user request trước khi dispatch
+                        setState(() => _userRequestedLocation = true);
+                      },
                     ),
                   ),
                   // Panel thông tin xe

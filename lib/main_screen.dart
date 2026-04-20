@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/service_locator.dart';
 import 'package:stream_video/features/home/presentation/home_page.dart';
+import 'package:stream_video/features/map/presentation/tracking/bloc/tracking_bloc.dart';
+import 'package:stream_video/features/map/presentation/tracking/bloc/tracking_event.dart';
 import 'package:stream_video/features/map/presentation/tracking/pages/tracking_page.dart';
 import 'package:stream_video/features/profile/presentation/pages/profile_setting_page.dart';
 import 'package:stream_video/features/review/presentation/pages/playback_page.dart';
 import 'package:stream_video/features/vehicles/presentation/page/vehicle_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -25,20 +29,33 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: [
-          HomePage(onNavigateToTab: _onItemTapped),
-          VehiclePage(isActive: _selectedIndex == 1),
-          const TrackingPage(),
-          PlaybackPage(isActive: _selectedIndex == 3),
-          const ProfileSettingPage(),
-        ],
-      ),
-      bottomNavigationBar: _PillNavBar(
-        selectedIndex: _selectedIndex,
-        onTap: _onItemTapped,
+    return BlocProvider(
+      create: (_) =>
+          TrackingBloc(
+              getVehiclesUseCase: sl.getVehiclesUseCase,
+              streamVehicleUpdatesUseCase: sl.streamVehicleUpdatesUseCase,
+              getCurrentLocationUseCase: sl.getCurrentLocationUseCase,
+              getRouteUseCase: sl.getRouteUseCase,
+              reverseGeocodeUseCase: sl.reverseGeocodeUseCase,
+              getRouteHistoryUseCase: sl.getRouteHistoryUseCase,
+            )
+            ..add(const StartTracking())
+            ..add(const LoadCurrentLocation()),
+      child: Scaffold(
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            HomePage(onNavigateToTab: _onItemTapped),
+            VehiclePage(isActive: _selectedIndex == 1),
+            TrackingPage(isActive: _selectedIndex == 2),
+            PlaybackPage(isActive: _selectedIndex == 3),
+            const ProfileSettingPage(),
+          ],
+        ),
+        bottomNavigationBar: _PillNavBar(
+          selectedIndex: _selectedIndex,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
@@ -52,7 +69,6 @@ class _PillNavBar extends StatelessWidget {
 
   static const _items = [
     _NavItem(icon: 'assets/images/navbar/home.svg', label: 'Trang chủ'),
-
     _NavItem(icon: 'assets/images/navbar/car2.svg', label: 'Danh sách xe'),
     _NavItem(icon: 'assets/images/navbar/map.svg', label: 'Bản đồ'),
     _NavItem(icon: 'assets/images/navbar/review.svg', label: 'Xem lại'),
@@ -74,7 +90,7 @@ class _PillNavBar extends StatelessWidget {
         : Colors.black.withValues(alpha: 0.08);
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final barHeight = 40.h + bottomPadding;
+    final barHeight = 41.h + bottomPadding;
     final notchRadius = 30.w;
 
     return SizedBox(
@@ -94,9 +110,9 @@ class _PillNavBar extends StatelessWidget {
             ),
           ),
 
-          // ── Tab items (left 2 + right 2) ──
+          // Tab items (left 2 + right 2)
           Positioned(
-            bottom: 6,
+            bottom: 0,
             left: 0,
             right: 0,
             height: barHeight,
