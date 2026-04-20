@@ -57,6 +57,13 @@ class _TrackingViewState extends State<_TrackingView> {
         );
       });
     }
+    if (widget.vehicle == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<TrackingBloc>().add(const StartTracking());
+        }
+      });
+    }
   }
 
   @override
@@ -119,41 +126,112 @@ class _TrackingViewState extends State<_TrackingView> {
                 );
               }
             },
-            child: Stack(
-              children: [
-                TrackingMap(
-                  state: state,
-                  mapController: _mapController,
-                  vehicle: widget.vehicle,
-                ),
-                // Ẩn SearchButton khi có xe
-                if (!hasVehicle)
-                  Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
-                // FAB luôn hiện
-                Positioned(
-                  right: 16.w,
-                  bottom: hasVehicle && _showPanel ? 200.h : 24.h,
-                  child: TrackingFabMenu(
+            child: BlocListener<TrackingBloc, TrackingState>(
+              listenWhen: (prev, curr) => prev.vehicle != curr.vehicle,
+              listener: (context, state) {
+                if (state.vehicle is VehicleError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text((state.vehicle as VehicleError).message),
+                      backgroundColor: Colors.red,
+                      action: SnackBarAction(
+                        label: 'Thử lại',
+                        textColor: Colors.white,
+                        onPressed: () => context.read<TrackingBloc>().add(
+                          const StartTracking(),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                // Fit bản đồ để hiện tất cả xe sau khi load xong
+                if (!hasVehicle && state.vehicle is VehicleLoaded) {
+                  final vehicles = (state.vehicle as VehicleLoaded).vehicles;
+                  if (vehicles.length == 1) {
+                    _mapController.move(
+                      LatLng(vehicles[0].latitude, vehicles[0].longitude),
+                      14.0,
+                    );
+                  } else if (vehicles.length > 1) {
+                    final bounds = LatLngBounds.fromPoints(
+                      vehicles.map((v) => LatLng(v.latitude, v.longitude)).toList(),
+                    );
+                    _mapController.fitCamera(
+                      CameraFit.bounds(
+                        bounds: bounds,
+                        padding: const EdgeInsets.all(60),
+                      ),
+                    );
+                  }
+                }
+              },
+              child: Stack(
+                children: [
+                  TrackingMap(
                     state: state,
                     mapController: _mapController,
+                    vehicle: widget.vehicle,
                   ),
-                ),
-                // Panel thông tin xe
-                if (hasVehicle && _showPanel)
+                  // Ẩn SearchButton khi có xe
+                  if (!hasVehicle)
+                    Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
+                  // FAB luôn hiện
                   Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: VehicleInfoPanel(
-                      vehicle: widget.vehicle!,
-                      onClose: () => setState(() => _showPanel = false),
+                    right: 16.w,
+                    bottom: hasVehicle && _showPanel ? 200.h : 24.h,
+                    child: TrackingFabMenu(
+                      state: state,
+                      mapController: _mapController,
                     ),
                   ),
-                // Loading overlay
-                if (state.location is LocationLoading &&
-                    state.currentLocation == null)
-                  const Center(child: CircularProgressIndicator()),
-              ],
+                  // Panel thông tin xe
+                  if (hasVehicle && _showPanel)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: VehicleInfoPanel(
+                        vehicle: widget.vehicle!,
+                        onClose: () => setState(() => _showPanel = false),
+                      ),
+                    ),
+                  // Loading overlay GPS
+                  if (state.location is LocationLoading &&
+                      state.currentLocation == null)
+                    const Center(child: CircularProgressIndicator()),
+                  // Loading overlay danh sách xe
+                  if (!hasVehicle && state.vehicle is VehicleLoading)
+                    Positioned(
+                      top: 16,
+                      left: 0,
+                      right: 0,
+                      child: const Center(
+                        child: Card(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Text('Đang tải danh sách xe...'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         );

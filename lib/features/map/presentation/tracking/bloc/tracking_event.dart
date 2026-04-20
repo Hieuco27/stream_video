@@ -10,7 +10,9 @@ sealed class TrackingEvent extends Equatable {
 }
 
 // bắt đầu theo dõi
-class StartTracking extends TrackingEvent {}
+class StartTracking extends TrackingEvent {
+  const StartTracking();
+}
 
 // cập nhật vị trí xe
 class UpdateVehiclePositions extends TrackingEvent {
@@ -55,7 +57,6 @@ class SelectDestination extends TrackingEvent {
 class ClearRoute extends TrackingEvent {
   const ClearRoute();
 }
-
 
 class ResetRoute extends TrackingEvent {
   const ResetRoute();

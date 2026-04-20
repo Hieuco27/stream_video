@@ -59,10 +59,12 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     final result = await getCurrentLocationUseCase();
     result.when(
       success: (location) {
-        emit(state.copyWith(
-          location: LocationLoaded(location),
-          currentLocation: location,
-        ));
+        emit(
+          state.copyWith(
+            location: LocationLoaded(location),
+            currentLocation: location,
+          ),
+        );
       },
       error: (failure) {
         emit(state.copyWith(location: LocationError(failure.message)));
@@ -127,10 +129,12 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     final result = await getCurrentLocationUseCase();
     result.when(
       success: (location) {
-        emit(state.copyWith(
-           location: LocationLoaded(location),
-           currentLocation: location,
-        ));
+        emit(
+          state.copyWith(
+            location: LocationLoaded(location),
+            currentLocation: location,
+          ),
+        );
       },
       error: (failure) {
         emit(state.copyWith(location: LocationError(failure.message)));
@@ -152,8 +156,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     _routeUpdateTimer = null;
   }
 
-  // ─── Xe ───────────────────────────────────────────
-
+  // Xe
   Future<void> _onStartTracking(
     StartTracking event,
     Emitter<TrackingState> emit,
@@ -161,21 +164,21 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     await _vehicleSubscription?.cancel();
     emit(state.copyWith(vehicle: const VehicleLoading()));
 
-    final vehicles = await getVehiclesUseCase();
-    if (vehicles.isEmpty) {
+    try {
+      final vehicles = await getVehiclesUseCase();
+      final markers = _buildMarkers(vehicles);
       emit(
         state.copyWith(
-          vehicle: const VehicleLoaded(vehicles: [], markers: []),
+          vehicle: VehicleLoaded(vehicles: vehicles, markers: markers),
         ),
       );
-      return;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          vehicle: VehicleError('Không tải được danh sách xe: $e'),
+        ),
+      );
     }
-    final markers = _buildMarkers(vehicles);
-    emit(
-      state.copyWith(
-        vehicle: VehicleLoaded(vehicles: vehicles, markers: markers),
-      ),
-    );
   }
 
   void _onUpdateVehiclePositions(
@@ -214,13 +217,13 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     }
   }
 
-  //  Bản đồ 
+  //  Bản đồ
 
   void _onChangeMapType(ChangeMapType event, Emitter<TrackingState> emit) {
     emit(state.copyWith(mapType: event.mapType));
   }
 
-  //  Lịch sử lộ trình 
+  //  Lịch sử lộ trình
   Future<void> _onLoadRouteHistory(
     LoadRouteHistory event,
     Emitter<TrackingState> emit,
@@ -280,7 +283,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     emit(state.copyWith(routeHistory: const RouteHistoryIdle()));
   }
 
-  //  Dừng theo dõi 
+  //  Dừng theo dõi
 
   Future<void> _onStopTracking(
     StopTracking event,
@@ -291,22 +294,61 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     emit(state.copyWith(vehicle: const VehicleIdle()));
   }
 
-  //  Helper 
-
+  //  Helper
   List<Marker> _buildMarkers(List<VehicleEntity> vehicles) {
     return vehicles.map((v) => _buildSingleMarker(v)).toList();
   }
 
   Marker _buildSingleMarker(VehicleEntity vehicle) {
+    final color = switch (vehicle.status) {
+      VehicleStatus.running => const Color(0xFF2ECC71), // xanh lá - đang chạy
+      VehicleStatus.parked => const Color(0xFFF39C12), // cam - dừng nổ máy
+      VehicleStatus.engineOff => const Color(0xFF95A5A6), // xám - tắt máy
+      VehicleStatus.lostGPS => const Color(0xFFE74C3C), // đỏ - mất GPS
+      VehicleStatus.lostSignal => const Color(
+        0xFFBDC3C7,
+      ), // xám nhạt - mất tín hiệu
+    };
+
     return Marker(
       point: LatLng(vehicle.latitude, vehicle.longitude),
-      width: 60,
-      height: 60,
+      width: 72,
+      height: 68,
       child: GestureDetector(
         onTap: () => add(SelectVehicle(vehicle)),
-        child: Transform.rotate(
-          angle: vehicle.heading * (3.14159265 / 180),
-          child: const Icon(Icons.navigation, color: Colors.blue, size: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(4),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.25),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                vehicle.licensePlate,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Transform.rotate(
+              angle: vehicle.heading * (3.14159265 / 180),
+              child: Icon(Icons.navigation_rounded, color: color, size: 28),
+            ),
+          ],
         ),
       ),
     );

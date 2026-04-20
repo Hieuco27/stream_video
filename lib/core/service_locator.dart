@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import '../features/map/data/datasources/vehicle_remote_data_source.dart';
 import '../features/map/data/repositories/vehicle_repository_impl.dart';
 import '../features/map/data/repositories/location_repository_impl.dart';
 import '../features/map/data/repositories/route_repository_impl.dart';
@@ -42,18 +41,14 @@ class ServiceLocator {
 
   // Network
   late final Dio dio = Dio();
-  late final VehicleRemoteDataSourceImpl vehicleRemoteDataSource =
-      VehicleRemoteDataSourceImpl(dio: dio);
 
   // ---------Map feature---------
   // Services (infrastructure)
   late final LocationService locationService = LocationService();
   late final DirectionsService directionsService = DirectionsService(dio: dio);
 
-  // Repositories
-  late final VehicleRepository vehicleRepository = VehicleRepositoryImpl(
-    remoteDataSource: vehicleRemoteDataSource,
-  );
+  // Repositories (Vehicle dùng mock data)
+  late final VehicleRepository vehicleRepository = VehicleRepositoryImpl();
   late final LocationRepository locationRepository = LocationRepositoryImpl(
     locationService: locationService,
   );

@@ -147,6 +147,8 @@ class TrackingMap extends StatelessWidget {
                   ),
                 ],
               ),
+            if (vehicle == null && state.vehicle is VehicleLoaded)
+              MarkerLayer(markers: state.markers),
           ],
         ),
 

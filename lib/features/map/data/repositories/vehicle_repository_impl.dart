@@ -1,34 +1,56 @@
-import '../../domain/entities/vehicle.dart';
+import '../../domain/entities/vehicle.dart'
+    as map_entity; // map/domain/entities/vehicle.dart
 import '../../domain/repositories/vehicle_repository.dart';
-import '../datasources/vehicle_remote_data_source.dart';
+import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
+import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart'
+    as ve; // vehicles/domain/entities/vehicle_entity.dart
 
 class VehicleRepositoryImpl implements VehicleRepository {
-  final VehicleRemoteDataSource remoteDataSource;
-  final String token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImN0eW5nYW5sdWMiLCJwcGlkIjpbIjI1NiIsIjEiLCIxOTcyIiwiUzdJK3M4cndXL1ArUHhlL1dGWDJxNWE4RTV4REV5b1kiXSwibmJmIjoxNzc0NDE5NjE0LCJleHAiOjE3NzUwMjQ0MTQsImlhdCI6MTc3NDQxOTYxNH0.2WtcFh6aa7x-ZDTbsWvdcnsbqa7xnzt8dBm7vTrL8X4";
-
   bool _stopped = false;
 
-  VehicleRepositoryImpl({required this.remoteDataSource});
+  /// Convert VehicleStatus của vehicles → VehicleStatus của map
+  static map_entity.VehicleStatus _convertStatus(ve.VehicleStatus s) {
+    return switch (s) {
+      ve.VehicleStatus.moving    => map_entity.VehicleStatus.running,
+      ve.VehicleStatus.stopped   => map_entity.VehicleStatus.parked,
+      ve.VehicleStatus.engineOff => map_entity.VehicleStatus.engineOff,
+      ve.VehicleStatus.noSignal  => map_entity.VehicleStatus.lostSignal,
+      ve.VehicleStatus.noGps     => map_entity.VehicleStatus.lostGPS,
+    };
+  }
 
-  @override
-  Future<List<VehicleEntity>> getInitialVehicles() async {
-    return await remoteDataSource.getInitialVehicles(token);
+  /// Convert VehicleEntity của vehicles → VehicleEntity của map
+  static map_entity.VehicleEntity _toMapEntity(ve.VehicleEntity v) {
+    // Parse speed từ "60 km/h" → 60.0
+    final speedValue =
+        double.tryParse(v.speed.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0.0;
+
+    return map_entity.VehicleEntity(
+      id: v.id,
+      licensePlate: v.plate,
+      status: _convertStatus(v.status),
+      latitude: v.latitude,
+      longitude: v.longitude,
+      speed: speedValue,
+      heading: 0.0, // vehicles mock chưa có heading
+      lastUpdate: DateTime.now(),
+      address: v.location,
+    );
   }
 
   @override
-  Stream<List<VehicleEntity>> streamVehicleUpdates() async* {
+  Future<List<map_entity.VehicleEntity>> getInitialVehicles() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return vehicleMockData.map(_toMapEntity).toList();
+  }
+
+  @override
+  Stream<List<map_entity.VehicleEntity>> streamVehicleUpdates() async* {
     _stopped = false;
-    // Hiện tại dùng Polling mỗi 10s — sau này thay bằng SignalR
     while (!_stopped) {
       await Future.delayed(const Duration(seconds: 10));
       if (_stopped) break;
-      try {
-        final cars = await getInitialVehicles();
-        yield cars;
-      } catch (e) {
-        throw Exception(e.toString());
-      }
+      yield vehicleMockData.map(_toMapEntity).toList();
     }
   }
 
