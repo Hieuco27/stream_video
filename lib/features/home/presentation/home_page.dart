@@ -19,8 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void didUpdateWidget(HomePage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Khi quay lại tab home → reset filter
-    if (widget.isActive && !oldWidget.isActive) {
+    if (!widget.isActive && oldWidget.isActive) {
       setState(() => _selectedFilter = HomeFilter.all);
     }
   }
