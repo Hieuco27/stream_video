@@ -1,131 +1,141 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'feature_grid_item.dart';
+import 'home_filter_bar.dart';
 import 'package:go_router/go_router.dart';
 
 class _FeatureItem {
   final String iconPath;
   final String label;
   final VoidCallback onTap;
+  final HomeFilter category;
 
   const _FeatureItem({
     required this.iconPath,
     required this.label,
     required this.onTap,
+    this.category = HomeFilter.all,
   });
 }
 
 class HomeBody extends StatelessWidget {
   final ValueChanged<int> onNavigateToTab;
-  final ValueNotifier<String> searchNotifier;
+  final HomeFilter filter;
 
   const HomeBody({
     super.key,
     required this.onNavigateToTab,
-    required this.searchNotifier,
+    this.filter = HomeFilter.all,
   });
 
   List<_FeatureItem> _getItems(BuildContext context) => [
     _FeatureItem(
       iconPath: 'assets/images/home/map.png',
       label: 'Bản đồ',
+      category: HomeFilter.monitor,
       onTap: () => onNavigateToTab(2),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/xemlaihanhtrinh.png',
       label: 'Xem lại hành trình',
+      category: HomeFilter.monitor,
       onTap: () => onNavigateToTab(3),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/danhsachxe.png',
       label: 'Danh sách xe',
+      category: HomeFilter.monitor,
       onTap: () => onNavigateToTab(1),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaotonghop.png',
       label: 'Báo cáo tổng hợp',
+      category: HomeFilter.report,
       onTap: () => context.push('/report', extra: 0),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaohanhtrinh.png',
       label: 'Báo cáo hành trình',
+      category: HomeFilter.report,
       onTap: () => context.push('/report', extra: 1),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaodungdo.png',
       label: 'Báo cáo dừng đỗ',
+      category: HomeFilter.report,
       onTap: () => context.push('/report', extra: 2),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/camera.png',
       label: 'Camera',
+      category: HomeFilter.monitor,
       onTap: () => context.push('/camera'),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaonhietdo.png',
       label: 'Báo cáo nhiệt độ',
+      category: HomeFilter.report,
       onTap: () => context.push('/report', extra: 4),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaonhienlieu.png',
       label: 'Báo cáo nhiên liệu',
+      category: HomeFilter.report,
       onTap: () => context.push('/report', extra: 5),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/ghithongtinthe.png',
       label: 'Ghi thông tin thẻ',
+      category: HomeFilter.monitor,
       onTap: () {},
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/thongtindichvu.png',
       label: 'Thông tin dịch vụ',
+      category: HomeFilter.monitor,
       onTap: () {},
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaotienich.png',
       label: 'Báo cáo tiện ích',
+      category: HomeFilter.report,
       onTap: () {},
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<String>(
-      valueListenable: searchNotifier,
-      builder: (context, searchQuery, _) {
-        final filtered = _getItems(context).where((e) {
-          return e.label.toLowerCase().contains(searchQuery);
-        }).toList();
+    final allItems = _getItems(context);
 
-        List<Widget> children = [];
-        if (filtered.isEmpty) {
-          children.add(
-            Padding(
-              padding: EdgeInsets.only(top: 40.h),
-              child: Text(
-                'Không tìm thấy tính năng nào',
-                style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
-              ),
-            ),
-          );
-        } else {
-          for (int i = 0; i < filtered.length; i += 3) {
-            int end = (i + 3 < filtered.length) ? i + 3 : filtered.length;
-            children.add(_buildRow(filtered.sublist(i, end)));
-            if (end < filtered.length) {
-              children.add(SizedBox(height: 12.h));
-            }
-          }
-        }
+    // Lọc theo tab đang chọn
+    final items = filter == HomeFilter.all
+        ? allItems
+        : allItems.where((e) => e.category == filter).toList();
 
-        return Container(
-          color: Colors.transparent,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-            child: Column(children: children),
+    List<Widget> children = [];
+    if (items.isEmpty) {
+      children.add(
+        Padding(
+          padding: EdgeInsets.only(top: 40.h),
+          child: Text(
+            'Không có mục nào',
+            style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
           ),
-        );
-      },
+        ),
+      );
+    } else {
+      for (int i = 0; i < items.length; i += 3) {
+        final end = (i + 3 < items.length) ? i + 3 : items.length;
+        children.add(_buildRow(items.sublist(i, end)));
+        if (end < items.length) {
+          children.add(SizedBox(height: 12.h));
+        }
+      }
+    }
+
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      child: Column(children: children),
     );
   }
 

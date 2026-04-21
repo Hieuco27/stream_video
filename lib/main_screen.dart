@@ -45,7 +45,11 @@ class _MainScreenState extends State<MainScreen> {
         body: IndexedStack(
           index: _selectedIndex,
           children: [
-            HomePage(onNavigateToTab: _onItemTapped),
+            HomePage(
+              isActive: _selectedIndex == 0,
+              onNavigateToTab: _onItemTapped,
+            ),
+
             VehiclePage(isActive: _selectedIndex == 1),
             TrackingPage(isActive: _selectedIndex == 2),
             PlaybackPage(isActive: _selectedIndex == 3),

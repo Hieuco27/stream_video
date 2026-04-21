@@ -10,6 +10,7 @@ import 'package:stream_video/features/auth/presentation/widget/validator.dart';
 import 'package:stream_video/features/auth/presentation/widget/bottom_action_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_video/core/text_styles.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -70,28 +71,27 @@ class _SignInPageState extends State<SignInPage> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            SizedBox(height: 40.h),
+                            SizedBox(height: 35.h),
                             // Logo
                             Image.asset(
                               'assets/images/logo2.png',
                               height: 120.h,
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 35.h),
                             // Title
-                            SizedBox(height: 20.h),
                             // Email
                             CustomTextField(
                               controller: _emailController,
-                              hintText: 'Tài khoản',
+                              hintText: 'Nhập tài khoản',
                               prefixIcon: Icons.person,
                               validator: AuthValidators.validateEmail,
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 10.h),
 
                             // Password field
                             CustomTextField(
                               controller: _passwordController,
-                              hintText: 'Mật khẩu',
+                              hintText: 'Nhập mật khẩu',
                               prefixIcon: Icons.lock,
                               obscureText: _obscurePassword,
                               validator: AuthValidators.validatePassword,
@@ -144,18 +144,17 @@ class _SignInPageState extends State<SignInPage> {
                                   ],
                                 ),
                                 // Forgot password
-                                GestureDetector(
-                                  onTap: () {
-                                    // TODO: handle forgot password
-                                  },
-                                  child: Text(
-                                    'Quên mật khẩu?',
-                                    style: AppTextStyles.titleSmall2(),
-                                  ),
-                                ),
+                                // GestureDetector(
+                                //   onTap: () {
+                                //   },
+                                //   child: Text(
+                                //     'Quên mật khẩu?',
+                                //     style: AppTextStyles.titleSmall2(),
+                                //   ),
+                                // ),
                               ],
                             ),
-                            SizedBox(height: 24.h),
+                            SizedBox(height: 20.h),
 
                             // Sign In button
                             SizedBox(
@@ -188,42 +187,12 @@ class _SignInPageState extends State<SignInPage> {
                                 ),
                                 child: Text(
                                   'ĐĂNG NHẬP',
-                                  style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1.3,
-                                  ),
+                                  style: AppTextStyles.titleMediumLogin()
+                                      .copyWith(color: Colors.white),
                                 ),
                               ),
                             ),
                             SizedBox(height: 16.h),
-
-                            // Sign up link
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Bạn chưa có tài khoản? ',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // TODO: navigate to sign up
-                                  },
-                                  child: Text(
-                                    'Đăng ký',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: AppColors.gradientStart,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -233,6 +202,9 @@ class _SignInPageState extends State<SignInPage> {
 
                 // Bottom action buttons
                 if (!isKeyboardOpen) const BottomActionBar(),
+
+                // Version
+                if (!isKeyboardOpen) const _AppVersion(),
 
                 // Loading overlay
                 if (isLoading)
@@ -266,6 +238,45 @@ class _BackgroundWidget extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// App version at bottom center
+class _AppVersion extends StatefulWidget {
+  const _AppVersion();
+
+  @override
+  State<_AppVersion> createState() => _AppVersionState();
+}
+
+class _AppVersionState extends State<_AppVersion> {
+  String _version = '';
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((info) {
+      if (mounted) setState(() => _version = 'Version ${info.version}');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_version.isEmpty) return const SizedBox.shrink();
+    return Positioned(
+      bottom: 8.h,
+      left: 0,
+      right: 0,
+      child: Center(
+        child: Text(
+          _version,
+          style: AppTextStyles.titleSmall2().copyWith(
+            color: Colors.grey[500],
+            fontSize: 11.sp,
+          ),
+        ),
+      ),
     );
   }
 }

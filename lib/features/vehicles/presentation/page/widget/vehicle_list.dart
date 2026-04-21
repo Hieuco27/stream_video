@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_item_card.dart';
-import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_bottom_sheet.dart';
+import 'package:stream_video/features/widget/vehicle_bottom_sheet.dart';
 
 class VehicleList extends StatefulWidget {
   final List<VehicleEntity> vehicles;

@@ -54,7 +54,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Result<void>> saveRememberStatus(bool value) async {
     try {
-      await _authLocalDataSource.saveRemeberMe(value);
+      await _authLocalDataSource.saveRememberMe(value);
       return Result.success(null);
     } catch (e) {
       return Result.error(ServerFailure(message: e.toString()));

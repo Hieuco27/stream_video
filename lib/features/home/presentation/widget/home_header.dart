@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/text_styles.dart';
 
 class HomeHeader extends StatelessWidget {
-  final ValueNotifier<String> searchNotifier;
-
-  const HomeHeader({super.key, required this.searchNotifier});
+  const HomeHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +20,7 @@ class HomeHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
+      height: 180.h,
       decoration: BoxDecoration(
         gradient: gradient,
         borderRadius: BorderRadius.only(
@@ -35,10 +35,9 @@ class HomeHeader extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 8.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  const Spacer(),
                   Text(
                     'HMS GPS',
                     textAlign: TextAlign.center,
@@ -46,70 +45,69 @@ class HomeHeader extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.notifications_outlined,
-                      size: 26.sp,
-                      color: Colors.white,
+                  // Grid icon bên trái
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: SvgPicture.asset(
+                        'assets/images/home/grid.svg',
+                        width: 18.w,
+                        height: 18.h,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // 3 icon bên phải
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        GestureDetector(
+                          onTap: () {},
+                          child: SvgPicture.asset(
+                            'assets/images/signin/zalo.svg',
+                            width: 26.w,
+                            height: 26.h,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        GestureDetector(
+                          onTap: () {},
+                          child: SvgPicture.asset(
+                            'assets/images/signin/phone.svg',
+                            width: 22.w,
+                            height: 22.h,
+                            colorFilter: const ColorFilter.mode(
+                              Colors.white,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Icon(
+                            Icons.notifications_outlined,
+                            size: 26.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 8.h),
-              Text(
-                'Xin chào HMS ',
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  color: Colors.white.withValues(alpha: 0.95),
-                  fontWeight: FontWeight.w400,
-                ),
+
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: const _ClockText(),
               ),
-              SizedBox(height: 12.h),
-              Container(
-                height: 35.h,
-                decoration: BoxDecoration(
-                  color: AppColors.textColor,
-                  borderRadius: BorderRadius.circular(25.r),
-                ),
-                child: Row(
-                  children: [
-                    SizedBox(width: 14.w),
-                    Icon(Icons.search, color: iconColor, size: 22.sp),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      child: TextField(
-                        // Cập nhật ValueNotifier trực tiếp — không setState
-                        onChanged: (v) =>
-                            searchNotifier.value = v.toLowerCase(),
-                        decoration: InputDecoration(
-                          hintText: 'Tìm kiếm...',
-                          hintStyle: TextStyle(
-                            fontSize: 13.sp,
-                            color: searchHintColor,
-                          ),
-                          isDense: true,
-                          filled: false,
-                          contentPadding: EdgeInsets.only(top: 2.h),
-                          border: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                        ),
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10.h),
-              const _ClockText(),
-              SizedBox(height: 8.h),
             ],
           ),
         ),

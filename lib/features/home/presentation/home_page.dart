@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'widget/home_header.dart';
 import 'widget/home_body.dart';
+import 'widget/home_filter_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomePage extends StatefulWidget {
   final ValueChanged<int>? onNavigateToTab;
-  const HomePage({super.key, this.onNavigateToTab});
+  final bool isActive;
+  const HomePage({super.key, this.onNavigateToTab, this.isActive = true});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final _searchNotifier = ValueNotifier<String>('');
+  HomeFilter _selectedFilter = HomeFilter.all;
+
+  @override
+  void didUpdateWidget(HomePage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Khi quay lại tab home → reset filter
+    if (widget.isActive && !oldWidget.isActive) {
+      setState(() => _selectedFilter = HomeFilter.all);
+    }
+  }
 
   @override
   void dispose() {
-    _searchNotifier.dispose();
     super.dispose();
   }
 
@@ -37,10 +48,18 @@ class _HomePageState extends State<HomePage> {
 
           Column(
             children: [
-              HomeHeader(searchNotifier: _searchNotifier),
+              HomeHeader(),
+              SizedBox(height: 8.h),
+              HomeFilterBar(
+                selected: _selectedFilter,
+                onChanged: (filter) {
+                  setState(() => _selectedFilter = filter);
+                },
+              ),
+              SizedBox(height: 8.h),
               Expanded(
                 child: HomeBody(
-                  searchNotifier: _searchNotifier,
+                  filter: _selectedFilter,
                   onNavigateToTab: (index) {
                     widget.onNavigateToTab?.call(index);
                   },
