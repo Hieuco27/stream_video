@@ -292,7 +292,7 @@ class _PasswordField extends StatelessWidget {
   }
 }
 
-// ─── Inline error text ────────────────────────────────────────────────────────
+// Inline error text
 class _ErrorText extends StatelessWidget {
   const _ErrorText(this.message);
   final String message;
@@ -305,7 +305,9 @@ class _ErrorText extends StatelessWidget {
         SizedBox(width: 4.w),
         Text(
           message,
-          style: TextStyle(color: Colors.red.shade600, fontSize: 11.sp),
+          style: AppTextStyles.titleSmall2().copyWith(
+            color: Colors.red.shade600,
+          ),
         ),
       ],
     );

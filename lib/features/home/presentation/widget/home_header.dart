@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/text_styles.dart';
+import 'package:stream_video/features/auth/presentation/widget/contact_hms.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -68,7 +69,9 @@ class HomeHeader extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            ContactHMS.launchZalo();
+                          },
                           child: SvgPicture.asset(
                             'assets/images/signin/zalo.svg',
                             width: 26.w,
@@ -77,7 +80,13 @@ class HomeHeader extends StatelessWidget {
                         ),
                         SizedBox(width: 8.w),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (_) =>
+                                  const Hotline(mode: HotlineMode.call),
+                            );
+                          },
                           child: SvgPicture.asset(
                             'assets/images/signin/phone.svg',
                             width: 22.w,

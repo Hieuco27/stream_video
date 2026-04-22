@@ -295,8 +295,7 @@ class _MapTypeItem extends StatelessWidget {
             SizedBox(width: 12.w),
             Text(
               type.label,
-              style: TextStyle(
-                fontSize: 15.sp,
+              style: AppTextStyles.labelLarge().copyWith(
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 color: isSelected
                     ? AppColors.gradientStart

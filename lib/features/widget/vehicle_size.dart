@@ -48,10 +48,7 @@ class _VehicleSizeState extends State<VehicleSize> {
                     ),
                   ),
                   SizedBox(width: 8.w),
-                  Text(
-                    'Kích thước xe',
-                    style: AppTextStyles.labelLarge().copyWith(fontSize: 16.sp),
-                  ),
+                  Text('Kích thước xe', style: AppTextStyles.labelLarge()),
                 ],
               ),
             ),
@@ -78,11 +75,7 @@ class _VehicleSizeState extends State<VehicleSize> {
                 children: [
                   Text(
                     'Chế độ',
-                    style: TextStyle(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
+                    style: AppTextStyles.labelLarge(color: Colors.black),
                   ),
                   SizedBox(width: 16.w),
                   Expanded(
@@ -129,8 +122,10 @@ class _VehicleSizeState extends State<VehicleSize> {
             width: 76.w,
             height: 76.w,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16.r),
+              color: isSelected
+                  ? AppColors.primary.withValues(alpha: 0.08)
+                  : Colors.white,
+              borderRadius: BorderRadius.circular(14.r),
               border: Border.all(color: color, width: isSelected ? 1.8 : 1.0),
               boxShadow: isSelected
                   ? [
@@ -149,6 +144,10 @@ class _VehicleSizeState extends State<VehicleSize> {
                   'assets/images/map/car1.svg',
                   width: 32.w,
                   height: 32.w,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.primary,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
             ),
@@ -158,7 +157,7 @@ class _VehicleSizeState extends State<VehicleSize> {
             label,
             style: AppTextStyles.labelLarge().copyWith(
               color: textColor,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
             ),
           ),
         ],
@@ -182,7 +181,6 @@ class _VehicleSizeState extends State<VehicleSize> {
           child: Text(
             title,
             style: AppTextStyles.titleSmall2().copyWith(
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
               color: isSelected ? Colors.white : Colors.black87,
             ),
           ),

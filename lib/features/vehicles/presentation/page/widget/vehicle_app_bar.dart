@@ -5,6 +5,7 @@ import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
+import 'package:stream_video/features/widget/vehicle_size.dart';
 
 Color _statusColor(VehicleStatus s) {
   switch (s) {
@@ -198,12 +199,17 @@ class VehicleAppBar extends StatelessWidget {
                         color: AppColors.textPrimary,
                         size: 20.sp,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const VehicleSize(),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
-
               SizedBox(height: 14.h),
             ],
           ),
