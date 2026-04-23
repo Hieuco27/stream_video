@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:latlong2/latlong.dart';
+
 import 'package:stream_video/core/app_colors.dart';
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
@@ -17,10 +17,14 @@ class TrackingFabMenu extends StatefulWidget {
     required this.mapController,
     required this.state,
     this.onLocateMe,
+    required this.sizeNotifier,
+    required this.modeNotifier,
   });
 
   final MapController mapController;
   final TrackingState state;
+  final ValueNotifier<int> sizeNotifier;
+  final ValueNotifier<int> modeNotifier;
 
   /// Callback báo cho parent biết user đã yêu cầu GPS thủ công
   final VoidCallback? onLocateMe;
@@ -32,6 +36,7 @@ class TrackingFabMenu extends StatefulWidget {
 class _TrackingFabMenuState extends State<TrackingFabMenu>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+
   bool _isOpen = false;
 
   static const _menuItems = [
@@ -157,7 +162,12 @@ class _TrackingFabMenuState extends State<TrackingFabMenu>
             showModalBottomSheet(
               context: context,
               backgroundColor: Colors.transparent,
-              builder: (context) => const VehicleSize(),
+              builder: (context) => VehicleSize(
+                initialSize: widget.sizeNotifier.value,
+                initialMode: widget.modeNotifier.value,
+                onSizeChanged: (idx) => widget.sizeNotifier.value = idx,
+                onModeChanged: (idx) => widget.modeNotifier.value = idx,
+              ),
             );
           },
         ),

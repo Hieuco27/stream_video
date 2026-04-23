@@ -22,8 +22,12 @@ class TrackingMap extends StatelessWidget {
     required this.mapController,
     this.vehicle,
     this.filterNotifier,
+    required this.sizeNotifier,
+    required this.modeNotifier,
   });
 
+  final ValueNotifier<int> sizeNotifier;
+  final ValueNotifier<int> modeNotifier;
   final TrackingState state;
   final MapController mapController;
 
@@ -50,17 +54,31 @@ class TrackingMap extends StatelessWidget {
     };
   }
 
+  static const _sizeMap = [
+    (svgSize: 48.0, markerW: 72.0, markerH: 78.0),
+    (svgSize: 40.0, markerW: 60.0, markerH: 66.0),
+    (svgSize: 32.0, markerW: 48.0, markerH: 54.0),
+  ];
+
   // build marker cho từng xe trên bản đồ
   Marker _buildVehicleMarker(
     map_vehicle.VehicleEntity v,
-    BuildContext context,
-  ) {
+    BuildContext context, {
+    required double svgSize,
+    required double markerW,
+    required double markerH,
+    required int mode,
+  }) {
     final status = _mapStatus(v.status);
     final color = _colorForStatus(status);
+
+    final labelText = mode == 2 ? v.id : v.licensePlate;
+    final showIcon = mode != 1;
+
     return Marker(
       point: LatLng(v.latitude, v.longitude),
-      width: 56,
-      height: 62,
+      width: markerW,
+      height: markerH,
       child: GestureDetector(
         onTap: () => context.read<TrackingBloc>().add(SelectVehicle(v)),
         child: Column(
@@ -81,7 +99,7 @@ class TrackingMap extends StatelessWidget {
                 ],
               ),
               child: Text(
-                v.licensePlate,
+                labelText,
                 style: const TextStyle(
                   color: Colors.black,
                   fontSize: 10,
@@ -91,14 +109,16 @@ class TrackingMap extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(height: 2),
-            SvgPicture.asset(
-              'assets/images/map/car1.svg',
-              width: 36,
-              height: 36,
-              fit: BoxFit.contain,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-            ),
+            if (showIcon) ...[
+              const SizedBox(height: 2),
+              SvgPicture.asset(
+                'assets/images/map/car1.svg',
+                width: svgSize,
+                height: svgSize,
+                fit: BoxFit.contain,
+                colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+              ),
+            ],
           ],
         ),
       ),
@@ -222,20 +242,43 @@ class TrackingMap extends StatelessWidget {
             if (vehicle == null &&
                 state.vehicle is VehicleLoaded &&
                 filterNotifier != null)
-              ValueListenableBuilder<VehicleStatus?>(
-                valueListenable: filterNotifier!,
-                builder: (context, filter, child) {
-                  final allVehicles = (state.vehicle as VehicleLoaded).vehicles;
-                  final filtered = filter == null
-                      ? allVehicles
-                      : allVehicles
-                            .where((v) => _mapStatus(v.status) == filter)
-                            .toList();
+              ValueListenableBuilder<int>(
+                valueListenable: sizeNotifier,
+                builder: (context, sizeIdx, _) {
+                  final sz = _sizeMap[sizeIdx];
+                  return ValueListenableBuilder<int>(
+                    valueListenable: modeNotifier,
+                    builder: (context, mode, _) {
+                      return ValueListenableBuilder<VehicleStatus?>(
+                        valueListenable: filterNotifier!,
+                        builder: (context, filter, _) {
+                          final allVehicles =
+                              (state.vehicle as VehicleLoaded).vehicles;
+                          final filtered = filter == null
+                              ? allVehicles
+                              : allVehicles
+                                    .where(
+                                      (v) => _mapStatus(v.status) == filter,
+                                    )
+                                    .toList();
 
-                  return MarkerLayer(
-                    markers: filtered
-                        .map((v) => _buildVehicleMarker(v, context))
-                        .toList(),
+                          return MarkerLayer(
+                            markers: filtered
+                                .map(
+                                  (v) => _buildVehicleMarker(
+                                    v,
+                                    context,
+                                    svgSize: sz.svgSize,
+                                    markerW: sz.markerW,
+                                    markerH: sz.markerH,
+                                    mode: mode,
+                                  ),
+                                )
+                                .toList(),
+                          );
+                        },
+                      );
+                    },
                   );
                 },
               ),

@@ -49,12 +49,16 @@ class _TrackingView extends StatefulWidget {
 class _TrackingViewState extends State<_TrackingView> {
   final MapController _mapController = MapController();
   final ValueNotifier<VehicleStatus?> filterNotifier = ValueNotifier(null);
+  final ValueNotifier<int> sizeNotifier = ValueNotifier(2);
+  final ValueNotifier<int> modeNotifier = ValueNotifier(2);
   bool _showPanel = true;
   bool _userRequestedLocation = false;
 
   @override
   void dispose() {
     filterNotifier.dispose();
+    sizeNotifier.dispose();
+    modeNotifier.dispose();
     super.dispose();
   }
 
@@ -217,6 +221,8 @@ class _TrackingViewState extends State<_TrackingView> {
                     mapController: _mapController,
                     vehicle: widget.vehicle,
                     filterNotifier: filterNotifier,
+                    sizeNotifier: sizeNotifier,
+                    modeNotifier: modeNotifier,
                   ),
                   // Ẩn SearchButton khi có xe
                   if (!hasVehicle)
@@ -228,6 +234,8 @@ class _TrackingViewState extends State<_TrackingView> {
                     child: TrackingFabMenu(
                       state: state,
                       mapController: _mapController,
+                      sizeNotifier: sizeNotifier,
+                      modeNotifier: modeNotifier,
                       onLocateMe: () {
                         // Đánh dấu đây là user request trước khi dispatch
                         setState(() => _userRequestedLocation = true);

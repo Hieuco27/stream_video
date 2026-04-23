@@ -5,15 +5,26 @@ import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/core/text_styles.dart';
 
 class VehicleSize extends StatefulWidget {
-  const VehicleSize({super.key});
+  const VehicleSize({
+    super.key,
+    this.onSizeChanged,
+    this.onModeChanged,
+    this.initialSize = 2,
+    this.initialMode = 2,
+  });
+
+  final ValueChanged<int>? onSizeChanged;
+  final ValueChanged<int>? onModeChanged;
+  final int initialSize;
+  final int initialMode;
 
   @override
   State<VehicleSize> createState() => _VehicleSizeState();
 }
 
 class _VehicleSizeState extends State<VehicleSize> {
-  int _selectedSize = 2;
-  int _selectedMode = 2;
+  late int _selectedSize = widget.initialSize;
+  late int _selectedMode = widget.initialMode;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +124,10 @@ class _VehicleSizeState extends State<VehicleSize> {
     final textColor = isSelected ? AppColors.primary : Colors.grey;
 
     return GestureDetector(
-      onTap: () => setState(() => _selectedSize = index),
+      onTap: () {
+        setState(() => _selectedSize = index);
+        widget.onSizeChanged?.call(index);
+      },
       behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -170,7 +184,10 @@ class _VehicleSizeState extends State<VehicleSize> {
 
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _selectedMode = index),
+        onTap: () {
+          setState(() => _selectedMode = index);
+          widget.onModeChanged?.call(index);
+        },
         behavior: HitTestBehavior.opaque,
         child: Container(
           decoration: BoxDecoration(
