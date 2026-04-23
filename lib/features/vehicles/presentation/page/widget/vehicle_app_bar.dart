@@ -27,12 +27,22 @@ class VehicleAppBar extends StatelessWidget {
     super.key,
     required this.searchNotifier,
     required this.filterNotifier,
+    required this.sortAscNotifier,
     required this.onFilterTap,
   });
 
   final ValueNotifier<String> searchNotifier;
   final ValueNotifier<VehicleStatus?> filterNotifier;
+  final ValueNotifier<bool> sortAscNotifier;
   final VoidCallback onFilterTap;
+
+  void _showSortSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _VehicleSortSheet(sortAscNotifier: sortAscNotifier),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,10 +190,9 @@ class VehicleAppBar extends StatelessWidget {
                         color: AppColors.textPrimary,
                         size: 20.sp,
                       ),
-                      onPressed: () {},
+                      onPressed: () => _showSortSheet(context),
                     ),
                   ),
-
                   SizedBox(width: 6.w),
 
                   Container(
@@ -213,6 +222,109 @@ class VehicleAppBar extends StatelessWidget {
               SizedBox(height: 14.h),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Sort Bottom Sheet ──
+class _VehicleSortSheet extends StatelessWidget {
+  const _VehicleSortSheet({required this.sortAscNotifier});
+
+  final ValueNotifier<bool> sortAscNotifier;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF1E1E2C) : Colors.white;
+    final textColor = isDark ? Colors.white : AppColors.textPrimary;
+
+    return ValueListenableBuilder<bool>(
+      valueListenable: sortAscNotifier,
+      builder: (context, isAsc, _) {
+        return Container(
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: EdgeInsets.only(top: 12.h, bottom: 12.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Sắp xếp theo',
+                style: AppTextStyles.titleMedium(color: textColor),
+              ),
+              SizedBox(height: 12.h),
+              _SortOption(
+                icon: Icons.arrow_upward_rounded,
+                label: 'Sắp xếp từ A → Z',
+                isSelected: isAsc,
+                onTap: () {
+                  sortAscNotifier.value = true;
+                },
+              ),
+
+              Divider(height: 1, thickness: 1, color: Colors.grey.shade300),
+              _SortOption(
+                icon: Icons.arrow_downward_rounded,
+                label: 'Sắp xếp từ Z → A',
+                isSelected: !isAsc,
+                onTap: () {
+                  sortAscNotifier.value = false;
+                },
+              ),
+              Divider(height: 1, thickness: 1, color: Colors.grey.shade300),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SortOption extends StatelessWidget {
+  const _SortOption({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? AppColors.primary : Colors.black;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : Colors.transparent,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22.sp),
+            SizedBox(width: 12.w),
+            Text(
+              label,
+              style: AppTextStyles.titleSmall2().copyWith(
+                color: color,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+            const Spacer(),
+            if (isSelected)
+              Icon(Icons.check_rounded, color: color, size: 22.sp),
+          ],
         ),
       ),
     );

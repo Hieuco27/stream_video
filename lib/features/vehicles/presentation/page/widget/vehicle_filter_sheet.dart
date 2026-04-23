@@ -112,7 +112,7 @@ class _VehicleFilterSheetState extends State<VehicleFilterSheet> {
                 child: Text(
                   'Bộ lọc xe',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.titleMedium(color: Colors.black),
+                  style: AppTextStyles.titleMedium(color: Colors.white),
                 ),
               ),
               Expanded(

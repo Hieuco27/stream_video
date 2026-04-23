@@ -17,6 +17,7 @@ class VehiclePage extends StatefulWidget {
 class _VehiclePageState extends State<VehiclePage> {
   final searchNotifier = ValueNotifier<String>('');
   final filterNotifier = ValueNotifier<VehicleStatus?>(null);
+  final sortAscNotifier = ValueNotifier<bool>(true);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isLoading = false;
 
@@ -26,6 +27,7 @@ class _VehiclePageState extends State<VehiclePage> {
     if (!oldWidget.isActive && widget.isActive) {
       searchNotifier.value = '';
       filterNotifier.value = null;
+      sortAscNotifier.value = true;
 
       setState(() {
         _isLoading = true;
@@ -44,6 +46,7 @@ class _VehiclePageState extends State<VehiclePage> {
   void dispose() {
     searchNotifier.dispose();
     filterNotifier.dispose();
+    sortAscNotifier.dispose();
     super.dispose();
   }
 
@@ -69,6 +72,7 @@ class _VehiclePageState extends State<VehiclePage> {
           VehicleAppBar(
             searchNotifier: searchNotifier,
             filterNotifier: filterNotifier,
+            sortAscNotifier: sortAscNotifier,
             onFilterTap: _openFilter,
           ),
           Expanded(
@@ -84,6 +88,7 @@ class _VehiclePageState extends State<VehiclePage> {
                     vehicles: vehicleMockData,
                     searchNotifier: searchNotifier,
                     filterNotifier: filterNotifier,
+                    sortAscNotifier: sortAscNotifier,
                   ),
           ),
         ],

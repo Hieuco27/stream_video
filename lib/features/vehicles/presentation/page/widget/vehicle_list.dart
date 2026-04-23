@@ -8,12 +8,14 @@ class VehicleList extends StatefulWidget {
   final List<VehicleEntity> vehicles;
   final ValueNotifier<String> searchNotifier;
   final ValueNotifier<VehicleStatus?> filterNotifier;
+  final ValueNotifier<bool> sortAscNotifier;
 
   const VehicleList({
     super.key,
     required this.vehicles,
     required this.searchNotifier,
     required this.filterNotifier,
+    required this.sortAscNotifier,
   });
 
   @override
@@ -23,14 +25,23 @@ class VehicleList extends StatefulWidget {
 class _VehicleListState extends State<VehicleList> {
   int? _selectedIndex;
 
-  List<VehicleEntity> _applyFilters(String search, VehicleStatus? status) {
-    return widget.vehicles.where((v) {
-      final matchSearch =
-          search.isEmpty ||
-          v.plate.toLowerCase().contains(search.toLowerCase());
-      final matchStatus = status == null || v.status == status;
-      return matchSearch && matchStatus;
-    }).toList();
+  List<VehicleEntity> _applyFilters(
+    String search,
+    VehicleStatus? status,
+    bool sortAsc,
+  ) {
+    final filtered =
+        widget.vehicles.where((v) {
+          final matchSearch =
+              search.isEmpty ||
+              v.plate.toLowerCase().contains(search.toLowerCase());
+          final matchStatus = status == null || v.status == status;
+          return matchSearch && matchStatus;
+        }).toList()..sort(
+          (a, b) =>
+              sortAsc ? a.plate.compareTo(b.plate) : b.plate.compareTo(a.plate),
+        );
+    return filtered;
   }
 
   @override
@@ -61,45 +72,54 @@ class _VehicleListState extends State<VehicleList> {
         return ValueListenableBuilder<VehicleStatus?>(
           valueListenable: widget.filterNotifier,
           builder: (context, statusFilter, _) {
-            final filtered = _applyFilters(searchValue, statusFilter);
+            return ValueListenableBuilder<bool>(
+              valueListenable: widget.sortAscNotifier,
+              builder: (context, sortAsc, _) {
+                final filtered = _applyFilters(
+                  searchValue,
+                  statusFilter,
+                  sortAsc,
+                );
 
-            if (filtered.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.only(top: 40.h),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.search_off_rounded,
-                        size: 48.sp,
-                        color: Colors.grey.shade300,
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 40.h),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.search_off_rounded,
+                            size: 48.sp,
+                            color: Colors.grey.shade300,
+                          ),
+                          SizedBox(height: 8.h),
+                          Text(
+                            'Không tìm thấy xe nào',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        'Không tìm thấy xe nào',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
+                    ),
+                  );
+                }
 
-            return ListView.builder(
-              padding: EdgeInsets.all(2.w),
-              itemCount: filtered.length,
-              itemBuilder: (context, index) {
-                return VehicleCard(
-                  vehicle: filtered[index],
-                  isSelected: _selectedIndex == index,
-                  onTap: () async {
-                    setState(() => _selectedIndex = index);
-                    await VehicleBottomSheet.show(context, filtered[index]);
-                    if (mounted) setState(() => _selectedIndex = null);
+                return ListView.builder(
+                  padding: EdgeInsets.all(2.w),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    return VehicleCard(
+                      vehicle: filtered[index],
+                      isSelected: _selectedIndex == index,
+                      onTap: () async {
+                        setState(() => _selectedIndex = index);
+                        await VehicleBottomSheet.show(context, filtered[index]);
+                        if (mounted) setState(() => _selectedIndex = null);
+                      },
+                    );
                   },
                 );
               },
