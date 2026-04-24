@@ -19,21 +19,6 @@ Color _statusColor(VehicleStatus s) {
   }
 }
 
-Color _statusBgColor(VehicleStatus s) {
-  switch (s) {
-    case VehicleStatus.moving:
-      return const Color(0xFFE3F2FD);
-    case VehicleStatus.stopped:
-      return const Color(0xFFFFEBEE);
-    case VehicleStatus.engineOff:
-      return const Color(0xFFF5F5F5);
-    case VehicleStatus.noSignal:
-      return const Color(0xFFFFF3E0);
-    case VehicleStatus.noGps:
-      return const Color(0xFFFFFDE7);
-  }
-}
-
 class VehicleCard extends StatelessWidget {
   final VehicleEntity vehicle;
   final VoidCallback? onTap;
@@ -49,7 +34,6 @@ class VehicleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _statusColor(vehicle.status);
-    final bgColor = _statusBgColor(vehicle.status);
 
     return GestureDetector(
       onTap: onTap,

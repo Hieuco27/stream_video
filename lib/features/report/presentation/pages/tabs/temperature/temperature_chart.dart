@@ -137,11 +137,7 @@ class TemperatureChart extends StatelessWidget {
                       );
                       return LineTooltipItem(
                         '${DateFormat('HH:mm').format(t)}\n${s.y.toStringAsFixed(1)} °C',
-                        TextStyle(
-                          color: Colors.white,
-                          fontSize: 11.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        AppTextStyles.titleSmall2(color: Colors.white),
                       );
                     }).toList(),
                   ),

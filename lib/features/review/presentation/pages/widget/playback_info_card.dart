@@ -5,6 +5,7 @@ import 'package:stream_video/core/app_colors.dart';
 import '../../bloc/playback_bloc.dart';
 import '../../bloc/playback_state.dart';
 import 'package:stream_video/core/app_theme.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class PlaybackInfoCard extends StatelessWidget {
   const PlaybackInfoCard({super.key});
@@ -30,8 +31,8 @@ class PlaybackInfoCard extends StatelessWidget {
             '${point.timestamp.second.toString().padLeft(2, '0')}';
 
         return Container(
-          height: 110.h,
-          width: 250.w,
+          height: 120.h,
+          width: 240.w,
           margin: EdgeInsets.symmetric(horizontal: 6.w),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -69,23 +70,15 @@ class PlaybackInfoCard extends StatelessWidget {
                     SizedBox(width: 6.w),
                     Text(
                       state.vehiclePlate,
-                      style: TextStyle(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textColor,
-                      ),
+                      style: AppTextStyles.titleSmall2(color: Colors.white),
                     ),
-                    SizedBox(width: 30.w),
+                    SizedBox(width: 15.w),
                     Icon(Icons.route_rounded, size: 14.sp, color: Colors.white),
-                    SizedBox(width: 30.w),
+                    SizedBox(width: 15.w),
                     Text(
                       '${state.currentDistanceKm.toStringAsFixed(1)}/'
                       '${state.totalDistanceKm.toStringAsFixed(1)} Km',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
+                      style: AppTextStyles.titleSmall2(color: Colors.white),
                     ),
                   ],
                 ),
@@ -103,17 +96,11 @@ class PlaybackInfoCard extends StatelessWidget {
                       children: [
                         Text(
                           timeStr,
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: AppColors.darkTextSecondary,
-                          ),
+                          style: AppTextStyles.titleSmall(color: Colors.grey),
                         ),
                         Text(
                           clockStr,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: AppTextStyles.titleSmall2(color: Colors.black),
                         ),
                       ],
                     ),
@@ -123,21 +110,13 @@ class PlaybackInfoCard extends StatelessWidget {
                       children: [
                         Text(
                           '${point.speedGPS.toInt()}',
-                          style: TextStyle(
-                            fontSize: 28.sp,
-                            color: point.speedGPS > 0
-                                ? AppColors.textPrimary
-                                : AppColors.textPrimary,
-                          ),
+                          style: AppTextStyles.headlineMedium(),
                         ),
                         Padding(
                           padding: EdgeInsets.all(2.h),
                           child: Text(
-                            ' km/h',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              color: AppColors.lightTextPrimary,
-                            ),
+                            ' Km/h',
+                            style: AppTextStyles.titleSmall2(),
                           ),
                         ),
                       ],
@@ -149,7 +128,11 @@ class PlaybackInfoCard extends StatelessWidget {
               // Hàng 3: địa chỉ
               if (point.address != null)
                 Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 8.h),
+                  padding: EdgeInsets.only(
+                    left: 10.w,
+                    right: 10.w,
+                    bottom: 10.h,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -158,10 +141,7 @@ class PlaybackInfoCard extends StatelessWidget {
                           point.address!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: AppColors.textPrimary,
-                          ),
+                          style: AppTextStyles.titleSmall2(),
                         ),
                       ),
                     ],

@@ -11,6 +11,7 @@ import 'package:stream_video/features/report/presentation/pages/tabs/trip/trip_t
 import 'package:stream_video/features/widget/date_time_picker_widget.dart';
 import 'package:stream_video/features/widget/info_popup.dart';
 import 'package:stream_video/features/widget/search_bks.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class ReportPage extends StatefulWidget {
   final int initialTabIndex;
@@ -153,14 +154,7 @@ class _ReportPageState extends State<ReportPage>
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
-      title: Text(
-        'Báo cáo',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 17.sp,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
+      title: Text('Báo cáo', style: AppTextStyles.titleMediumAppBar()),
     );
   }
 
@@ -214,8 +208,7 @@ class _ReportPageState extends State<ReportPage>
                       child: Text(
                         textAlign: TextAlign.center,
                         _selectedPlate ?? 'Chọn biển số',
-                        style: TextStyle(
-                          fontSize: 13.sp,
+                        style: AppTextStyles.titleSmall2(
                           color: _selectedPlate != null
                               ? AppColors.backgroundColor
                               : AppColors.darkGradientEnd,
@@ -249,11 +242,7 @@ class _ReportPageState extends State<ReportPage>
               alignment: Alignment.center,
               child: Text(
                 'Xem',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.titleSmall2(color: Colors.white),
               ),
             ),
           ),
@@ -282,12 +271,9 @@ class _ReportPageState extends State<ReportPage>
           indicatorSize: TabBarIndicatorSize.tab,
           labelPadding: EdgeInsets.zero,
           labelColor: AppColors.primary2,
-          unselectedLabelColor: AppColors.darkGradientEnd,
-          labelStyle: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w500,
-          ),
+          unselectedLabelColor: AppColors.backgroundColor,
+          labelStyle: AppTextStyles.titleSmall3(),
+          unselectedLabelStyle: AppTextStyles.titleSmall2(),
           tabs: List.generate(_tabs.length, (index) {
             final t = _tabs[index];
             final isLast = index == _tabs.length - 1;

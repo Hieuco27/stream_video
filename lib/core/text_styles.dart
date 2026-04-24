@@ -128,11 +128,11 @@ class AppTextStyles {
   }
 
   // Body styles
-  static TextStyle bodyLarge() {
+  static TextStyle bodyLarge({Color? color}) {
     return GoogleFonts.inter(
       fontSize: 16.sp,
-      fontWeight: FontWeight.w400,
-      color: AppColors.textPrimary,
+      fontWeight: FontWeight.w500,
+      color: color,
     );
   }
 

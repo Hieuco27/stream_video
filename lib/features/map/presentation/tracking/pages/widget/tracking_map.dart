@@ -5,8 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:stream_video/features/widget/location_marker.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:stream_video/core/text_styles.dart';
 
 import '../../bloc/tracking_bloc.dart';
 import '../../bloc/tracking_event.dart';
@@ -128,6 +126,9 @@ class TrackingMap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final center = state.currentLocation ?? const LatLng(20.96, 105.82);
+    final color = vehicle != null
+        ? _colorForStatus(vehicle!.status)
+        : Colors.grey;
     return Stack(
       children: [
         FlutterMap(
@@ -193,51 +194,83 @@ class TrackingMap extends StatelessWidget {
               ),
 
             // Marker xe cụ thể — khi tracking 1 xe từ trang khác
+            // Dùng sizeNotifier + modeNotifier để điều chỉnh kích thước & chế độ
             if (vehicle != null)
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    point: LatLng(vehicle!.latitude, vehicle!.longitude),
-                    width: 70,
-                    height: 64,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5.w,
-                            vertical: 2.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF075797),
-                            borderRadius: BorderRadius.circular(4.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            vehicle!.plate,
-                            style: AppTextStyles.labelSmall(
-                              color: Colors.white,
+              ValueListenableBuilder<int>(
+                valueListenable: sizeNotifier,
+                builder: (context, sizeIdx, _) {
+                  final sz = _sizeMap[sizeIdx];
+                  return ValueListenableBuilder<int>(
+                    valueListenable: modeNotifier,
+                    builder: (context, mode, _) {
+                      final labelText = mode == 0
+                          ? vehicle!.id
+                          : vehicle!.plate;
+                      final showIcon = mode != 0;
+                      return MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(
+                              vehicle!.latitude,
+                              vehicle!.longitude,
                             ),
-                          ),
-                        ),
-                        SizedBox(height: 2.h),
-                        SvgPicture.asset(
-                          'assets/images/map/car1.svg',
-                          width: 40.r,
-                          height: 40.r,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
+                            width: sz.markerW,
+                            height: sz.markerH,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF075797),
+                                    borderRadius: BorderRadius.circular(4),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    labelText,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                if (showIcon) ...[
+                                  const SizedBox(height: 2),
+                                  SvgPicture.asset(
+                                    'assets/images/map/car1.svg',
+                                    width: sz.svgSize,
+                                    height: sz.svgSize,
+                                    fit: BoxFit.contain,
+                                    colorFilter: ColorFilter.mode(
+                                      color,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ), // ← Column
+                          ), // ← Marker
+                        ], // ← markers: []
+                      ); // ← MarkerLayer
+                    }, // ← builder inner
+                  ); // ← ValueListenableBuilder inner
+                }, // ← builder outer
+              ), // ← ValueListenableBuilder outer
             // Tất cả xe trên bản đồ — marker được build tại presentation layer
             if (vehicle == null &&
                 state.vehicle is VehicleLoaded &&

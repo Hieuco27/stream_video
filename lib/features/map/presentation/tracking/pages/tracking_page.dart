@@ -227,32 +227,37 @@ class _TrackingViewState extends State<_TrackingView> {
                   // Ẩn SearchButton khi có xe
                   if (!hasVehicle)
                     Positioned(right: 16.w, top: 12.h, child: _SearchButton()),
-                  // FAB luôn hiện
+                  // FAB + Panel: gom vào 1 column, FAB tự đẩy lên phía trên panel
                   Positioned(
-                    right: 16.w,
-                    bottom: hasVehicle && _showPanel ? 200.h : 24.h,
-                    child: TrackingFabMenu(
-                      state: state,
-                      mapController: _mapController,
-                      sizeNotifier: sizeNotifier,
-                      modeNotifier: modeNotifier,
-                      onLocateMe: () {
-                        // Đánh dấu đây là user request trước khi dispatch
-                        setState(() => _userRequestedLocation = true);
-                      },
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // FAB luôn hiện, căn phải
+                        Padding(
+                          padding: EdgeInsets.only(right: 16.w, bottom: 12.h),
+                          child: TrackingFabMenu(
+                            state: state,
+                            mapController: _mapController,
+                            sizeNotifier: sizeNotifier,
+                            modeNotifier: modeNotifier,
+                            onLocateMe: () {
+                              setState(() => _userRequestedLocation = true);
+                            },
+                          ),
+                        ),
+                        // Panel thông tin xe (chỉ hiện khi có xe)
+                        if (hasVehicle && _showPanel)
+                          VehicleInfoPanel(
+                            vehicle: widget.vehicle!,
+                            onClose: () => setState(() => _showPanel = false),
+                          ),
+                      ],
                     ),
                   ),
-                  // Panel thông tin xe
-                  if (hasVehicle && _showPanel)
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: VehicleInfoPanel(
-                        vehicle: widget.vehicle!,
-                        onClose: () => setState(() => _showPanel = false),
-                      ),
-                    ),
                   // Loading overlay GPS
                   if (state.location is LocationLoading &&
                       state.currentLocation == null)

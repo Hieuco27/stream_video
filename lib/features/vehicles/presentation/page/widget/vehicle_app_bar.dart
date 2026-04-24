@@ -228,7 +228,7 @@ class VehicleAppBar extends StatelessWidget {
   }
 }
 
-// ── Sort Bottom Sheet ──
+// Sort Bottom Sheet
 class _VehicleSortSheet extends StatelessWidget {
   const _VehicleSortSheet({required this.sortAscNotifier});
 

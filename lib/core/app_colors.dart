@@ -49,6 +49,6 @@ class AppColors {
   static const darkNavBarActive = Color(0xFF4FC3F7);
   static const darkNavBarInactive = Color(0xFF607D8B);
 
-  // ── Chung (không đổi theo theme) ──
+  //  Chung (không đổi theo theme)
   static const primary1 = Color(0xFF2186FA);
 }

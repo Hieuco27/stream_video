@@ -224,7 +224,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _label(String text) => Text(text, style: AppTextStyles.titleSmall());
+  Widget _label(String text) => Text(text, style: AppTextStyles.titleSmall2());
 }
 
 // ─── Password TextField ───

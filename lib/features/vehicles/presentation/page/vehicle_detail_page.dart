@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
 
 class VehicleDetailPage extends StatelessWidget {
@@ -22,11 +23,7 @@ class VehicleDetailPage extends StatelessWidget {
         ),
         title: Text(
           'Thông tin chi tiết',
-          style: TextStyle(
-            fontSize: 17.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: AppTextStyles.titleMediumAppBar(),
         ),
       ),
       body: SingleChildScrollView(
@@ -209,14 +206,7 @@ class VehicleDetailPage extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.only(bottom: 10.h),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.lightTextPrimary,
-              ),
-            ),
+            child: Text(title, style: AppTextStyles.titleMediumBlack()),
           ),
           ...rows.expand(
             (row) => [
@@ -258,20 +248,11 @@ class _InfoRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: AppColors.lightTextPrimary,
-                  ),
-                ),
+                Text(label, style: AppTextStyles.bodyLarge()),
                 Text(
                   value,
                   textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: AppColors.lightTextPrimary,
-                  ),
+                  style: AppTextStyles.labelLarge(),
                 ),
               ],
             ),

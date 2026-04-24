@@ -37,7 +37,7 @@ class HomeFilterBar extends StatelessWidget {
             onTap: () => onChanged(tab.value),
             child: AnimatedContainer(
               height: double.infinity,
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 100),
               curve: Curves.easeInOut,
               padding: EdgeInsets.symmetric(horizontal: 22.w),
               alignment: Alignment.center,

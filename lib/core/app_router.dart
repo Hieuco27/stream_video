@@ -11,6 +11,8 @@ import 'package:stream_video/features/profile/presentation/pages/setting_page.da
 import 'package:stream_video/features/review/presentation/pages/playback_page.dart';
 import 'package:stream_video/features/vehicles/presentation/page/vehicle_detail_page.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
+import 'package:stream_video/features/profile/presentation/pages/info_account.dart';
+import 'package:stream_video/features/auth/domain/entities/user_entity.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -76,6 +78,14 @@ class AppRouter {
         builder: (context, state) {
           final tabIndex = (state.extra as int?) ?? 0;
           return ReportPage(initialTabIndex: tabIndex);
+        },
+      ),
+      GoRoute(
+        path: '/info-account',
+        name: 'info-account',
+        builder: (context, state) {
+          final user = state.extra as UserEntity;
+          return InfoAccountPage(user: user);
         },
       ),
     ],

@@ -6,8 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_event.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_state.dart';
-import 'package:stream_video/features/auth/presentation/change_passwod_page.dart';
 import 'package:stream_video/core/app_colors.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class ProfileSettingPage extends StatelessWidget {
   const ProfileSettingPage({super.key});
@@ -29,13 +29,16 @@ class ProfileSettingPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: bgColor,
         body: Column(
-          children: [_buildHeader(isDark), _buildMenuItems(context, textColor)],
+          children: [
+            _buildHeader(context, isDark),
+            _buildMenuItems(context, textColor),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader(BuildContext context, bool isDark) {
     final gradient = isDark
         ? AppGradients.darkHeader
         : AppGradients.primaryButton;
@@ -55,8 +58,9 @@ class ProfileSettingPage extends StatelessWidget {
             child: Center(
               child: Image.asset(
                 'assets/images/logo2.png',
-                width: 70.w,
-                height: 70.w,
+                width: 80.w,
+                height: 80.w,
+                color: Colors.white,
                 fit: BoxFit.contain,
               ),
             ),
@@ -67,26 +71,20 @@ class ProfileSettingPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '50H12712',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text('50H12712', style: AppTextStyles.titleMediumAppBar()),
                 SizedBox(height: 4.h),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    final state = context.read<AuthBloc>().state;
+                    if (state is AuthAuthenticated) {
+                      context.push('/info-account', extra: state.user);
+                    }
+                  },
                   child: Row(
                     children: [
                       Text(
                         'Thông tin của tôi',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.labelLarge(color: Colors.white),
                       ),
                       SizedBox(width: 4.w),
                       Icon(
@@ -252,15 +250,8 @@ class ProfileSettingPage extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 20.w),
       leading: Icon(icon, color: iconColor, size: 26.sp),
-      title: Text(
-        title,
-        style: TextStyle(color: textColor, fontSize: 14.sp),
-      ),
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        color: textColor.withValues(alpha: 0.5),
-        size: 16.sp,
-      ),
+      title: Text(title, style: AppTextStyles.labelLarge()),
+      trailing: Icon(Icons.arrow_forward_ios, color: Colors.black, size: 14.sp),
       onTap: onTap,
     );
   }

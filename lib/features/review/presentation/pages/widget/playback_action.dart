@@ -65,7 +65,7 @@ class _PlaybackActionState extends State<PlaybackAction> {
         SizedBox(height: 12.h),
         _CircleFab(
           icon: Icons.car_crash,
-          tooltip: 'Vị trí hiện tại',
+          tooltip: '',
           onTap: () {
             setState(() => _isCarActive = !_isCarActive);
           },
@@ -107,7 +107,7 @@ class _CircleFab extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.18),
-                blurRadius: 8,
+                blurRadius: 6,
                 offset: const Offset(0, 3),
               ),
             ],
@@ -115,7 +115,7 @@ class _CircleFab extends StatelessWidget {
           child: Icon(
             icon,
             color: isActive ? Colors.white : AppColors.gradientStart,
-            size: s * 0.48,
+            size: s * 0.6,
           ),
         ),
       ),

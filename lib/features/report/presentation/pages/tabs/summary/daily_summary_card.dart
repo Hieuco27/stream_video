@@ -34,16 +34,7 @@ class DailySummaryCard extends StatelessWidget {
               ),
             ),
             child: Row(
-              children: [
-                Text(
-                  dateLabel,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 13.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+              children: [Text(dateLabel, style: AppTextStyles.labelLarge())],
             ),
           ),
 
@@ -147,9 +138,7 @@ class _InfoRow extends StatelessWidget {
           ),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
+            style: AppTextStyles.titleSmall2(
               color: highlight ? Colors.red.shade600 : Colors.black,
             ),
           ),

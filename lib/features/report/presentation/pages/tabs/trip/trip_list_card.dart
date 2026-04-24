@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:stream_video/features/report/domain/entities/trip_report.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:stream_video/core/text_styles.dart';
 
 class TripListCard extends StatelessWidget {
   const TripListCard({super.key, required this.data});
@@ -23,7 +24,7 @@ class TripListCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
@@ -95,17 +96,10 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(width: 18.sp, height: 18.sp, child: icon),
           SizedBox(width: 8.w),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(fontSize: 12.sp, color: Colors.black),
-            ),
-          ),
+          Expanded(child: Text(label, style: AppTextStyles.titleSmall2())),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
+            style: AppTextStyles.titleSmall2(
               color: highlight ? Colors.red.shade600 : Colors.black,
             ),
           ),
@@ -141,14 +135,14 @@ class _AddressRow extends StatelessWidget {
               children: [
                 Text(
                   start,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.black),
+                  style: AppTextStyles.titleSmall2(),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Divider(height: 30.h, thickness: 0.5, color: Colors.green),
                 Text(
                   end,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.black),
+                  style: AppTextStyles.titleSmall2(),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
