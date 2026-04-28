@@ -29,12 +29,14 @@ class VehicleAppBar extends StatelessWidget {
     required this.filterNotifier,
     required this.sortAscNotifier,
     required this.onFilterTap,
+    this.onTableTap,
   });
 
   final ValueNotifier<String> searchNotifier;
   final ValueNotifier<VehicleStatus?> filterNotifier;
   final ValueNotifier<bool> sortAscNotifier;
   final VoidCallback onFilterTap;
+  final VoidCallback? onTableTap;
 
   void _showSortSheet(BuildContext context) {
     showModalBottomSheet(
@@ -64,17 +66,20 @@ class VehicleAppBar extends StatelessWidget {
               SizedBox(height: 8.h),
               Row(
                 children: [
-                  Container(
-                    width: 36.w,
-                    height: 36.w,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Icon(
-                      Icons.grid_view_rounded,
-                      color: AppColors.textPrimary,
-                      size: 20.sp,
+                  GestureDetector(
+                    onTap: onTableTap,
+                    child: Container(
+                      width: 36.w,
+                      height: 36.w,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Icon(
+                        Icons.grid_view_rounded,
+                        color: AppColors.textPrimary,
+                        size: 20.sp,
+                      ),
                     ),
                   ),
 
@@ -130,9 +135,7 @@ class VehicleAppBar extends StatelessWidget {
                   ),
                 ],
               ),
-
               SizedBox(height: 12.h),
-
               Row(
                 children: [
                   Expanded(

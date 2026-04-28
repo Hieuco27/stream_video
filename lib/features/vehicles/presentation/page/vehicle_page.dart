@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stream_video/core/app_colors.dart';
 import 'package:stream_video/features/vehicles/data/models/vehicle_mock_data.dart';
 import 'package:stream_video/features/vehicles/domain/entities/vehicle_entity.dart';
+import 'package:stream_video/features/vehicles/presentation/page/vehicle_table.dart';
 import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_app_bar.dart';
 import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_filter_sheet.dart';
 import 'package:stream_video/features/vehicles/presentation/page/widget/vehicle_list.dart';
@@ -54,6 +55,15 @@ class _VehiclePageState extends State<VehiclePage> {
     _scaffoldKey.currentState?.openEndDrawer();
   }
 
+  void _openTable() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => VehicleTable(vehicles: vehicleMockData),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -74,6 +84,7 @@ class _VehiclePageState extends State<VehiclePage> {
             filterNotifier: filterNotifier,
             sortAscNotifier: sortAscNotifier,
             onFilterTap: _openFilter,
+            onTableTap: _openTable,
           ),
           Expanded(
             child: _isLoading

@@ -36,7 +36,7 @@ class VehicleBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header — biển số xe
+          // Header biển số xe
           Padding(
             padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 14.h),
             child: Row(

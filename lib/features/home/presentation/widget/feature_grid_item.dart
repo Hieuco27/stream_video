@@ -46,7 +46,7 @@ class FeatureGridItem extends StatelessWidget {
             ),
             SizedBox(height: 2.h),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              padding: EdgeInsets.symmetric(horizontal: 4.h),
               child: Text(
                 label,
                 textAlign: TextAlign.center,

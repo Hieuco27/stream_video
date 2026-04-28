@@ -139,6 +139,7 @@ class _TrackingViewState extends State<_TrackingView> {
                     },
                     child: const Text('Thử lại'),
                   ),
+                  
                 ],
               ),
             ),
@@ -252,6 +253,7 @@ class _TrackingViewState extends State<_TrackingView> {
                         // Panel thông tin xe (chỉ hiện khi có xe)
                         if (hasVehicle && _showPanel)
                           VehicleInfoPanel(
+                            
                             vehicle: widget.vehicle!,
                             onClose: () => setState(() => _showPanel = false),
                           ),

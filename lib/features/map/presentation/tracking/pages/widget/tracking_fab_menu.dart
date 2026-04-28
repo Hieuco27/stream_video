@@ -26,7 +26,6 @@ class TrackingFabMenu extends StatefulWidget {
   final ValueNotifier<int> sizeNotifier;
   final ValueNotifier<int> modeNotifier;
 
-  /// Callback báo cho parent biết user đã yêu cầu GPS thủ công
   final VoidCallback? onLocateMe;
 
   @override

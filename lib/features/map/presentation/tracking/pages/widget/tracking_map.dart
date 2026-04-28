@@ -152,7 +152,6 @@ class TrackingMap extends StatelessWidget {
               RouteHistoryLayer(
                 routeHistory: state.routeHistory as RouteHistoryLoaded,
               ),
-
             // Route navigation — polyline
             if (state.route is RouteLoaded)
               PolylineLayer(
@@ -203,10 +202,10 @@ class TrackingMap extends StatelessWidget {
                   return ValueListenableBuilder<int>(
                     valueListenable: modeNotifier,
                     builder: (context, mode, _) {
-                      final labelText = mode == 0
+                      final labelText = mode == 2
                           ? vehicle!.id
                           : vehicle!.plate;
-                      final showIcon = mode != 0;
+                      final showIcon = mode != 1;
                       return MarkerLayer(
                         markers: [
                           Marker(

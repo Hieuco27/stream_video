@@ -95,10 +95,12 @@ class _PillNavBar extends StatelessWidget {
 
     final bottomPadding = MediaQuery.of(context).padding.bottom;
     final barHeight = 41.h + bottomPadding;
+    final offsetFromBottom = 2.h;
+
     final notchRadius = 30.w;
 
     return SizedBox(
-      height: barHeight + notchRadius * 0.5,
+      height: barHeight + notchRadius * 0.3,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -116,7 +118,7 @@ class _PillNavBar extends StatelessWidget {
 
           // Tab items (left 2 + right 2)
           Positioned(
-            bottom: 0,
+            bottom: offsetFromBottom,
             left: 0,
             right: 0,
             height: barHeight,
