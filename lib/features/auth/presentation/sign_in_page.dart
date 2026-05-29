@@ -230,23 +230,27 @@ class _BackgroundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFE8F4FD), // xanh nhạt trên cùng
-            Color(0xFFFFFFFF), // trắng ở dưới
-          ],
+    return Stack(
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFE8F4FD), // xanh nhạt trên cùng
+                Color(0xFFFFFFFF), // trắng ở dưới
+              ],
+            ),
+          ),
         ),
-      ),
-      child: Positioned.fill(
-        child: Opacity(
-          opacity: 0.04,
-          child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
+        Positioned.fill(
+          child: Opacity(
+            opacity: 0.04,
+            child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
+          ),
         ),
-      ),
+      ],
     );
   }
 }
