@@ -54,7 +54,7 @@ class VehicleAppBar extends StatelessWidget {
         : AppGradients.primaryButton;
     return Container(
       width: double.infinity,
-      height: 140.h,
+      height: 150.h,
       decoration: BoxDecoration(gradient: gradient),
       child: SafeArea(
         bottom: false,
@@ -123,7 +123,7 @@ class VehicleAppBar extends StatelessWidget {
                                 width: 20.r,
                                 height: 20.r,
                                 colorFilter: ColorFilter.mode(
-                                  _statusColor(status!),
+                                  _statusColor(status),
                                   BlendMode.srcIn,
                                 ),
                               ),
