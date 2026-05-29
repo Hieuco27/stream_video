@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_video/features/auth/presentation/bloc/auth_bloc.dart';
@@ -11,12 +12,12 @@ import 'package:stream_video/core/app_theme.dart';
 import 'package:stream_video/core/service_locator.dart';
 import 'package:stream_video/features/profile/presentation/bloc/settings/settings_bloc.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   ServiceLocator();
+
   runApp(const MyApp());
 }
 

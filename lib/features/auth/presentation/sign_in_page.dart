@@ -45,6 +45,7 @@ class _SignInPageState extends State<SignInPage> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthAuthenticated) {
@@ -229,15 +230,23 @@ class _BackgroundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Opacity(
-            opacity: 0.05,
-            child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
-          ),
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFFE8F4FD), // xanh nhạt trên cùng
+            Color(0xFFFFFFFF), // trắng ở dưới
+          ],
         ),
-      ],
+      ),
+      child: Positioned.fill(
+        child: Opacity(
+          opacity: 0.04,
+          child: Image.asset('assets/images/logo3.png', fit: BoxFit.cover),
+        ),
+      ),
     );
   }
 }

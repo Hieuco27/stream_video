@@ -14,10 +14,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -46,5 +43,14 @@ class DefaultFirebaseOptions {
     messagingSenderId: '331367741787',
     projectId: 'hms-gps-33588',
     storageBucket: 'hms-gps-33588.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCO8aTIAtSAQQMWkvQHBXYOzn5BIQ7D1Uo',
+    appId: '1:331367741787:ios:be9111695550a1fc08827e',
+    messagingSenderId: '331367741787',
+    projectId: 'hms-gps-33588',
+    storageBucket: 'hms-gps-33588.firebasestorage.app',
+    iosBundleId: 'com.example.streamVideo',
   );
 }
