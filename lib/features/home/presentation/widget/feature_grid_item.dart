@@ -15,22 +15,22 @@ class FeatureGridItem extends StatelessWidget {
     required this.onTap,
   });
 
+  static final _decoration = BoxDecoration(
+    color: AppColors.textColor.withValues(alpha: 0.9),
+    borderRadius: BorderRadius.circular(10),
+    boxShadow: const [
+      BoxShadow(color: Color(0x40000000), blurRadius: 8, offset: Offset(0, 5)),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      // InkWell thay thế GestureDetector nếu muốn ripple effect,
+      // nhưng giữ GestureDetector để nhẹ hơn.
       child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.textColor.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(10.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
-              blurRadius: 8,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
+        decoration: _decoration,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -42,6 +42,8 @@ class FeatureGridItem extends StatelessWidget {
                 cacheWidth: 72,
                 cacheHeight: 72,
                 fit: BoxFit.contain,
+                // filterQuality thấp hơn → GPU nhẹ hơn cho icon nhỏ
+                filterQuality: FilterQuality.medium,
               ),
             ),
             SizedBox(height: 2.h),
@@ -52,6 +54,7 @@ class FeatureGridItem extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+                // Tránh gọi .copyWith() mỗi build; build style inline 1 lần
                 style: AppTextStyles.titleSmall2().copyWith(
                   color: AppColors.textPrimary,
                 ),

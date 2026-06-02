@@ -16,6 +16,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   HomeFilter _selectedFilter = HomeFilter.all;
 
+  late final VoidCallback _onNavigateToTabWrapper;
+
+  @override
+  void initState() {
+    super.initState();
+    _onNavigateToTabWrapper =
+        () {}; // placeholder – dùng _navigateToTab bên dưới
+  }
+
+  void _navigateToTab(int index) {
+    widget.onNavigateToTab?.call(index);
+  }
+
+  void _onFilterChanged(HomeFilter filter) {
+    if (_selectedFilter == filter) return; // tránh setState không cần thiết
+    setState(() => _selectedFilter = filter);
+  }
+
   @override
   void didUpdateWidget(HomePage oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -25,49 +43,46 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: RepaintBoundary(
-              child: Image.asset(
-                'assets/images/logo3.png',
-                fit: BoxFit.cover,
-                opacity: const AlwaysStoppedAnimation(0.3),
-              ),
-            ),
+          const Positioned.fill(
+            child: RepaintBoundary(child: _BackgroundImage()),
           ),
-
           Column(
             children: [
-              HomeHeader(),
+              const HomeHeader(),
               SizedBox(height: 8.h),
               HomeFilterBar(
                 selected: _selectedFilter,
-                onChanged: (filter) {
-                  setState(() => _selectedFilter = filter);
-                },
+                onChanged: _onFilterChanged,
               ),
               SizedBox(height: 8.h),
               Expanded(
                 child: HomeBody(
                   filter: _selectedFilter,
-                  onNavigateToTab: (index) {
-                    widget.onNavigateToTab?.call(index);
-                  },
+                  onNavigateToTab: _navigateToTab,
                 ),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class _BackgroundImage extends StatelessWidget {
+  const _BackgroundImage();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      'assets/images/logo3.png',
+      fit: BoxFit.cover,
+      opacity: const AlwaysStoppedAnimation(0.3),
     );
   }
 }

@@ -18,7 +18,7 @@ class _FeatureItem {
   });
 }
 
-class HomeBody extends StatelessWidget {
+class HomeBody extends StatefulWidget {
   final ValueChanged<int> onNavigateToTab;
   final HomeFilter filter;
 
@@ -28,24 +28,53 @@ class HomeBody extends StatelessWidget {
     this.filter = HomeFilter.all,
   });
 
-  List<_FeatureItem> _getItems(BuildContext context) => [
+  @override
+  State<HomeBody> createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<HomeBody> {
+  late final List<_FeatureItem> _allItems;
+  late List<_FeatureItem> _filteredItems;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _allItems = _buildItems(context);
+    _applyFilter();
+  }
+
+  @override
+  void didUpdateWidget(HomeBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.filter != widget.filter) {
+      _applyFilter();
+    }
+  }
+
+  void _applyFilter() {
+    _filteredItems = widget.filter == HomeFilter.all
+        ? _allItems
+        : _allItems.where((e) => e.category == widget.filter).toList();
+  }
+
+  List<_FeatureItem> _buildItems(BuildContext context) => [
     _FeatureItem(
       iconPath: 'assets/images/home/map.png',
       label: 'Bản đồ',
       category: HomeFilter.monitor,
-      onTap: () => onNavigateToTab(2),
+      onTap: () => widget.onNavigateToTab(2),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/xemlaihanhtrinh.png',
       label: 'Xem lại hành trình',
       category: HomeFilter.monitor,
-      onTap: () => onNavigateToTab(3),
+      onTap: () => widget.onNavigateToTab(3),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/danhsachxe.png',
       label: 'Danh sách xe',
       category: HomeFilter.monitor,
-      onTap: () => onNavigateToTab(1),
+      onTap: () => widget.onNavigateToTab(1),
     ),
     _FeatureItem(
       iconPath: 'assets/images/home/baocaotonghop.png',
@@ -105,62 +134,42 @@ class HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allItems = _getItems(context);
-
-    // Lọc theo tab đang chọn
-    final items = filter == HomeFilter.all
-        ? allItems
-        : allItems.where((e) => e.category == filter).toList();
-
-    List<Widget> children = [];
-    if (items.isEmpty) {
-      children.add(
-        Padding(
-          padding: EdgeInsets.only(top: 40.h),
-          child: Text(
-            'Không có mục nào',
-            style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
-          ),
+    if (_filteredItems.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.only(top: 40.h),
+        child: Text(
+          'Không có mục nào',
+          style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
         ),
       );
-    } else {
-      for (int i = 0; i < items.length; i += 3) {
-        final end = (i + 3 < items.length) ? i + 3 : items.length;
-        children.add(_buildRow(items.sublist(i, end)));
-        if (end < items.length) {
-          children.add(SizedBox(height: 12.h));
-        }
-      }
     }
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-      child: Column(children: children),
-    );
-  }
-
-  Widget _buildRow(List<_FeatureItem> items) {
-    return SizedBox(
-      height: 85.h,
-      child: Row(
-        children: List.generate(3, (index) {
-          if (index < items.length) {
-            final item = items[index];
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                child: FeatureGridItem(
-                  iconPath: item.iconPath,
-                  label: item.label,
-                  onTap: item.onTap,
-                ),
-              ),
-            );
-          } else {
-            return const Expanded(child: SizedBox.shrink());
-          }
-        }),
+    // ── GridView.builder: lazy render, chỉ build item khi hiển thị ──
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 12.h),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 12.h,
+        crossAxisSpacing: 0,
+        mainAxisExtent: 85.h,
       ),
+      itemCount: _filteredItems.length,
+      // Không cần shrinkWrap vì GridView đã nằm trong Expanded
+      itemBuilder: (context, index) {
+        final item = _filteredItems[index];
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.w),
+          // RepaintBoundary: mỗi item có layer riêng, tránh repaint toàn grid
+          child: RepaintBoundary(
+            child: FeatureGridItem(
+              key: ValueKey(item.iconPath), // stable key giúp Flutter diff đúng
+              iconPath: item.iconPath,
+              label: item.label,
+              onTap: item.onTap,
+            ),
+          ),
+        );
+      },
     );
   }
 }
